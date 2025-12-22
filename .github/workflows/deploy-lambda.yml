@@ -21,6 +21,11 @@ jobs:
   deploy:
     name: Deploy Serverless Application
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout code
@@ -30,7 +35,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -46,7 +50,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci
+          npm install
           npm install -g serverless
 
       - name: Install Python dependencies
@@ -89,9 +93,23 @@ jobs:
           curl -f "${ENDPOINT}/health" || exit 1
           echo "✅ Deployment successful!"
 
+      - name: Display deployment info
+        if: success()
+        run: |
+          STAGE=${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+          echo "=========================================="
+          echo "✅ Successfully deployed to AWS Lambda (${STAGE})"
+          echo "=========================================="
+          echo "🔗 API Endpoint: ${{ steps.deployment.outputs.endpoint }}"
+          echo "📊 Health Check: ${{ steps.deployment.outputs.endpoint }}/health"
+          echo "🤖 Agents List: ${{ steps.deployment.outputs.endpoint }}/agents"
+          echo "🎯 Generate Scenarios: ${{ steps.deployment.outputs.endpoint }}/generate-scenarios"
+          echo "=========================================="
+
       - name: Post deployment summary
         uses: actions/github-script@v7
         if: success()
+        continue-on-error: true
         with:
           script: |
             const endpoint = '${{ steps.deployment.outputs.endpoint }}';
@@ -110,6 +128,7 @@ jobs:
       - name: Notify on failure
         if: failure()
         uses: actions/github-script@v7
+        continue-on-error: true
         with:
           script: |
             github.rest.repos.createCommitComment({
