@@ -2,6 +2,13 @@
 
 A fully AI-powered scenario planning platform using Anthropic Claude for automated strategic foresight, horizon scanning, and decision support across multiple industries.
 
+## 🚀 Deployment Status
+
+**Backend:** Deploying to AWS Lambda...
+**Frontend:** Ready for deployment
+**Branch:** `claude/ai-foresight-platform-yEVtZ`
+**Last Updated:** 2025-12-22
+
 ## 🎯 Overview
 
 This platform automates the strategic foresight process by:
