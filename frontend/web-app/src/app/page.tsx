@@ -3,164 +3,184 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api-client';
-import { Sparkles, TrendingUp, Target, Zap, ArrowRight } from 'lucide-react';
+import { GlassCard, GlassButton } from '@/components/GlassCard';
+import { Sparkles, ArrowRight, Zap, TrendingUp, Target, CheckCircle2 } from 'lucide-react';
 
 export default function Home() {
   const [isHealthy, setIsHealthy] = useState<boolean | null>(null);
-  const [apiUrl, setApiUrl] = useState<string>('');
+  const [agents, setAgents] = useState<string[]>([]);
 
   useEffect(() => {
-    setApiUrl(process.env.NEXT_PUBLIC_API_URL || 'Not configured');
-
     // Check API health
     apiClient.healthCheck()
       .then(() => setIsHealthy(true))
       .catch(() => setIsHealthy(false));
+
+    // Get agents list
+    apiClient.getAgents()
+      .then(setAgents)
+      .catch(() => {});
   }, []);
 
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen bg-[var(--bg)]">
       {/* Header */}
-      <header className="border-b border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Sparkles className="w-8 h-8 text-primary-600" />
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                AI Foresight Platform
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className={`w-2 h-2 rounded-full ${isHealthy ? 'bg-green-500' : isHealthy === false ? 'bg-red-500' : 'bg-yellow-500 animate-pulse'}`}></div>
-                <span className="text-sm text-slate-600 dark:text-slate-400">
-                  {isHealthy ? 'API Connected' : isHealthy === false ? 'API Disconnected' : 'Checking...'}
-                </span>
+      <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-[var(--border)]">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 rounded-lg bg-accent-600 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
+              <span className="text-lg font-medium text-[var(--text-primary)] tracking-tight">
+                AI Foresight
+              </span>
+            </div>
+
+            {/* Status */}
+            <div className="flex items-center space-x-2">
+              <div className={`w-1.5 h-1.5 rounded-full ${
+                isHealthy ? 'bg-green-500' : isHealthy === false ? 'bg-red-500' : 'bg-yellow-500'
+              }`} />
+              <span className="text-sm text-[var(--text-secondary)]">
+                {isHealthy ? 'Connected' : isHealthy === false ? 'Disconnected' : 'Connecting...'}
+              </span>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center">
-          <h2 className="text-5xl font-extrabold text-slate-900 dark:text-white mb-6">
+      {/* Main Content */}
+      <main className="pt-24 pb-16">
+        {/* Hero */}
+        <section className="max-w-4xl mx-auto px-6 lg:px-8 text-center mb-20">
+          <h1 className="text-4xl lg:text-5xl font-light text-[var(--text-primary)] mb-6 tracking-tight">
             Strategic Foresight
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-blue-600">
+            <span className="block mt-2 bg-gradient-to-r from-accent-500 to-accent-700 bg-clip-text text-transparent">
               Powered by AI
             </span>
-          </h2>
-          <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-12">
+          </h1>
+
+          <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto mb-12 font-light leading-relaxed">
             Generate comprehensive scenario sets using AWS Bedrock's multi-model AI orchestration.
-            Synthesize signals, identify drivers, and plan strategic actions with confidence.
+            Synthesize signals, identify drivers, and plan strategic actions.
           </p>
 
-          <div className="flex justify-center space-x-4">
-            <Link
-              href="/scenarios/new"
-              className="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 transition-colors"
-            >
-              Generate Scenarios
-              <ArrowRight className="ml-2 w-5 h-5" />
+          {/* CTA */}
+          <div className="flex items-center justify-center space-x-4">
+            <Link href="/scenarios/new">
+              <GlassButton variant="primary" size="lg">
+                <span>Generate Scenarios</span>
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </GlassButton>
             </Link>
-            <Link
-              href="/scenarios"
-              className="inline-flex items-center px-8 py-3 border border-slate-300 dark:border-slate-600 text-base font-medium rounded-lg text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-            >
-              View Scenarios
+            <Link href="/scenarios">
+              <GlassButton variant="secondary" size="lg">
+                View Library
+              </GlassButton>
             </Link>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Features */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <FeatureCard
-            icon={<TrendingUp className="w-8 h-8 text-primary-600" />}
-            title="Signal Synthesis"
-            description="Extract emerging themes from weak signals and evidence using Claude Sonnet 4.5"
-          />
-          <FeatureCard
-            icon={<Target className="w-8 h-8 text-primary-600" />}
-            title="Scenario Construction"
-            description="Build plausible futures based on critical uncertainties and key drivers"
-          />
-          <FeatureCard
-            icon={<Zap className="w-8 h-8 text-primary-600" />}
-            title="Action Planning"
-            description="Generate robust strategies that work across multiple scenarios"
-          />
-        </div>
-      </section>
-
-      {/* System Info */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8">
-          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
-            System Architecture
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <InfoItem label="Backend" value="AWS Lambda (Serverless)" />
-            <InfoItem label="AI Models" value="AWS Bedrock Multi-Model" />
-            <InfoItem label="API Endpoint" value={apiUrl} />
-            <InfoItem label="Deployment" value="GitHub Actions CI/CD" />
+        {/* Features Grid */}
+        <section className="max-w-6xl mx-auto px-6 lg:px-8 mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <FeatureCard
+              icon={<TrendingUp className="w-5 h-5" />}
+              title="Signal Synthesis"
+              description="Extract emerging themes from weak signals using Claude Sonnet 4.5"
+            />
+            <FeatureCard
+              icon={<Target className="w-5 h-5" />}
+              title="Scenario Construction"
+              description="Build plausible futures based on critical uncertainties"
+            />
+            <FeatureCard
+              icon={<Zap className="w-5 h-5" />}
+              title="Action Planning"
+              description="Generate robust strategies across multiple scenarios"
+            />
           </div>
+        </section>
 
-          <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
-            <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-              AI Agents (7 Specialized)
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <AgentBadge name="Signal Synthesizer" model="Claude Sonnet 4.5" />
-              <AgentBadge name="Driver Extractor" model="Claude Sonnet 4.5" />
-              <AgentBadge name="Scenario Constructor" model="Claude Sonnet 4.5" />
-              <AgentBadge name="Narrative Generator" model="Claude Sonnet 4.5" />
-              <AgentBadge name="Signpost Designer" model="Claude Haiku 3.5" />
-              <AgentBadge name="Action Planner" model="Claude Sonnet 4.5" />
-              <AgentBadge name="Quality Critic" model="Claude Sonnet 4.5" />
+        {/* AI Agents */}
+        <section className="max-w-4xl mx-auto px-6 lg:px-8">
+          <GlassCard>
+            <div className="mb-6">
+              <h2 className="text-xl font-medium text-[var(--text-primary)] mb-2 tracking-tight">
+                AI Agent Pipeline
+              </h2>
+              <p className="text-sm text-[var(--text-secondary)] font-light">
+                Seven specialized agents working in sequence to generate comprehensive scenarios
+              </p>
             </div>
-          </div>
-        </div>
-      </section>
+
+            <div className="space-y-2">
+              {agents.length > 0 ? (
+                agents.map((agent, idx) => (
+                  <AgentRow key={agent} number={idx + 1} name={agent} />
+                ))
+              ) : (
+                <div className="text-sm text-[var(--text-tertiary)] text-center py-8">
+                  {isHealthy === false ? 'API disconnected' : 'Loading agents...'}
+                </div>
+              )}
+            </div>
+          </GlassCard>
+        </section>
+      </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <p className="text-center text-slate-600 dark:text-slate-400">
-            AI-Driven Strategic Foresight Platform • AWS Bedrock Multi-Model Orchestration
+      <footer className="border-t border-[var(--border)] mt-20">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+          <p className="text-center text-sm text-[var(--text-tertiary)] font-light">
+            Enterprise Strategic Foresight Platform • AWS Bedrock Multi-Model Orchestration
           </p>
         </div>
       </footer>
-    </main>
+    </div>
   );
 }
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
-      <div className="mb-4">{icon}</div>
-      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{title}</h3>
-      <p className="text-slate-600 dark:text-slate-300">{description}</p>
-    </div>
+    <GlassCard hover>
+      <div className="flex items-start space-x-3">
+        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-accent-600/10 flex items-center justify-center text-accent-600">
+          {icon}
+        </div>
+        <div>
+          <h3 className="text-base font-medium text-[var(--text-primary)] mb-1 tracking-tight">
+            {title}
+          </h3>
+          <p className="text-sm text-[var(--text-secondary)] font-light leading-relaxed">
+            {description}
+          </p>
+        </div>
+      </div>
+    </GlassCard>
   );
 }
 
-function InfoItem({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <dt className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</dt>
-      <dd className="mt-1 text-sm text-slate-900 dark:text-white font-mono">{value}</dd>
-    </div>
-  );
-}
+function AgentRow({ number, name }: { number: number; name: string }) {
+  const formatName = (name: string) => {
+    return name
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
 
-function AgentBadge({ name, model }: { name: string; model: string }) {
   return (
-    <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-700 rounded-lg px-4 py-2">
-      <span className="text-sm font-medium text-slate-900 dark:text-white">{name}</span>
-      <span className="text-xs text-slate-500 dark:text-slate-400">{model}</span>
+    <div className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-[var(--surface)] transition-colors">
+      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-accent-600/10 flex items-center justify-center">
+        <span className="text-xs font-medium text-accent-600">{number}</span>
+      </div>
+      <span className="text-sm text-[var(--text-primary)] font-light">
+        {formatName(name)}
+      </span>
+      <div className="flex-1" />
+      <CheckCircle2 className="w-4 h-4 text-green-500" />
     </div>
   );
 }
