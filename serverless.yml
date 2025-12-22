@@ -29,21 +29,27 @@ provider:
             - arn:aws:s3:::ai-foresight-data-${self:provider.stage}
             - arn:aws:s3:::ai-foresight-data-${self:provider.stage}/*
 
-        # Secrets Manager (for DB credentials)
+        # DynamoDB access
         - Effect: Allow
           Action:
-            - secretsmanager:GetSecretValue
-          Resource: '*'
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:Query
+            - dynamodb:Scan
+          Resource:
+            - arn:aws:dynamodb:${self:provider.region}:*:table/ai-foresight-cache-${self:provider.stage}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/ai-foresight-scenarios-${self:provider.stage}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/ai-foresight-scenarios-${self:provider.stage}/index/*
 
   # Environment variables
   environment:
     STAGE: ${self:provider.stage}
     AWS_REGION: ${self:provider.region}
-    REDIS_URL: ${env:REDIS_URL, 'redis://localhost:6379/0'}
-    DATABASE_URL: ${env:DATABASE_URL}
-    COST_TRACKING_ENABLED: true
-    MONTHLY_BUDGET_USD: 50
-    ENABLE_MODEL_FALLBACK: true
+    COST_TRACKING_ENABLED: 'true'
+    MONTHLY_BUDGET_USD: '50'
+    ENABLE_MODEL_FALLBACK: 'true'
     LOG_LEVEL: INFO
 
   # API Gateway configuration
@@ -201,17 +207,18 @@ resources:
       Value:
         Ref: DataLakeBucket
 
-plugins:
-  - serverless-python-requirements
-  - serverless-offline  # For local testing
+# Plugins disabled for initial deployment - will add later
+# plugins:
+#   - serverless-python-requirements
+#   - serverless-offline
 
-custom:
-  pythonRequirements:
-    dockerizePip: true
-    layer: true
-    zip: true
-    slim: true
-    strip: false
-    noDeploy:
-      - boto3
-      - botocore
+# custom:
+#   pythonRequirements:
+#     dockerizePip: true
+#     layer: true
+#     zip: true
+#     slim: true
+#     strip: false
+#     noDeploy:
+#       - boto3
+#       - botocore
