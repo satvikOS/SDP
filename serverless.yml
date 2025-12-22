@@ -46,7 +46,6 @@ provider:
   # Environment variables
   environment:
     STAGE: ${self:provider.stage}
-    AWS_REGION: ${self:provider.region}
     COST_TRACKING_ENABLED: 'true'
     MONTHLY_BUDGET_USD: '50'
     ENABLE_MODEL_FALLBACK: 'true'
