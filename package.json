@@ -1,0 +1,23 @@
+{
+  "name": "ai-foresight-platform",
+  "version": "1.0.0",
+  "description": "AI-Driven Strategic Foresight Platform",
+  "private": true,
+  "scripts": {
+    "deploy:dev": "serverless deploy --stage dev",
+    "deploy:prod": "serverless deploy --stage prod",
+    "remove:dev": "serverless remove --stage dev",
+    "remove:prod": "serverless remove --stage prod",
+    "logs": "serverless logs -f executeAgent --stage dev --tail",
+    "test": "echo \"Tests coming soon\" && exit 0"
+  },
+  "devDependencies": {
+    "serverless": "^3.38.0",
+    "serverless-python-requirements": "^6.1.0",
+    "serverless-offline": "^13.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
