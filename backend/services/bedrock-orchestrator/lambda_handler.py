@@ -5,10 +5,14 @@ import logging
 import os
 from typing import Dict, Any
 from datetime import datetime
+from bedrock_client import BedrockScenarioGenerator
 
 # Configure logging
 logger = logging.getLogger()
 logger.setLevel(os.getenv('LOG_LEVEL', 'INFO'))
+
+# Initialize Bedrock client
+bedrock_generator = BedrockScenarioGenerator()
 
 
 def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
@@ -292,12 +296,19 @@ def generate_scenario(event, context):
         if strategic_context:
             logger.info(f"Strategic context provided: {strategic_context[:200]}...")
 
-        # Generate industry-specific scenarios
+        # Generate AI-powered scenarios using AWS Bedrock
         import uuid
         scenario_set_id = str(uuid.uuid4())
 
-        # Generate scenarios based on industry and strategic context
-        scenarios = _generate_industry_scenarios(company_name, industry, region, horizon_years, strategic_context)
+        logger.info("Calling AWS Bedrock AI for scenario generation...")
+        scenarios = bedrock_generator.generate_scenarios(
+            company_name=company_name,
+            industry=industry,
+            region=region,
+            horizon_years=horizon_years,
+            strategic_context=strategic_context
+        )
+        logger.info(f"AI generated {len(scenarios)} scenarios")
 
         result = {
             'scenario_set_id': scenario_set_id,

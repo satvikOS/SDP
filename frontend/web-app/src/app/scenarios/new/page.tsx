@@ -303,68 +303,70 @@ function ScenarioDetailCard({ scenario, index }: { scenario: any; index: number 
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <GlassCard hover className="cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center space-x-3 mb-3">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent-600/20 flex items-center justify-center">
-              <span className="text-sm font-medium text-accent-600">{index + 1}</span>
+    <div onClick={() => setIsExpanded(!isExpanded)} className="cursor-pointer">
+      <GlassCard hover>
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent-600/20 flex items-center justify-center">
+                <span className="text-sm font-medium text-accent-600">{index + 1}</span>
+              </div>
+              <h3 className="text-lg font-medium text-[var(--text-primary)] tracking-tight">
+                {scenario.title}
+              </h3>
+              <div className="flex-shrink-0 px-2 py-1 rounded-full bg-accent-600/10 text-xs font-medium text-accent-600">
+                {(scenario.probability * 100).toFixed(0)}% probability
+              </div>
             </div>
-            <h3 className="text-lg font-medium text-[var(--text-primary)] tracking-tight">
-              {scenario.title}
-            </h3>
-            <div className="flex-shrink-0 px-2 py-1 rounded-full bg-accent-600/10 text-xs font-medium text-accent-600">
-              {(scenario.probability * 100).toFixed(0)}% probability
-            </div>
-          </div>
 
-          <p className="text-sm text-[var(--text-secondary)] mb-4 font-light leading-relaxed italic">
-            {scenario.core_logic}
-          </p>
-
-          <div className={cn(
-            'glass-panel rounded-lg p-4 transition-all duration-300',
-            isExpanded ? 'max-h-none' : 'max-h-24 overflow-hidden relative'
-          )}>
-            <p className="text-sm text-[var(--text-primary)] font-light leading-relaxed whitespace-pre-wrap">
-              {scenario.narrative}
+            <p className="text-sm text-[var(--text-secondary)] mb-4 font-light leading-relaxed italic">
+              {scenario.core_logic}
             </p>
-            {!isExpanded && (
-              <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[var(--panel)] to-transparent" />
-            )}
-          </div>
-        </div>
 
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsExpanded(!isExpanded);
-          }}
-          className="ml-4 flex-shrink-0 p-2 rounded-lg hover:bg-[var(--surface)] transition-colors"
-          aria-label={isExpanded ? 'Collapse' : 'Expand'}
-        >
-          <svg
-            className={cn(
-              'w-5 h-5 text-[var(--text-tertiary)] transition-transform duration-300',
-              isExpanded && 'rotate-180'
-            )}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+            <div className={cn(
+              'glass-panel rounded-lg p-4 transition-all duration-300',
+              isExpanded ? 'max-h-none' : 'max-h-24 overflow-hidden relative'
+            )}>
+              <p className="text-sm text-[var(--text-primary)] font-light leading-relaxed whitespace-pre-wrap">
+                {scenario.narrative}
+              </p>
+              {!isExpanded && (
+                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[var(--panel)] to-transparent" />
+              )}
+            </div>
+          </div>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
+            }}
+            className="ml-4 flex-shrink-0 p-2 rounded-lg hover:bg-[var(--surface)] transition-colors"
+            aria-label={isExpanded ? 'Collapse' : 'Expand'}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-      </div>
-
-      {isExpanded && (
-        <div className="mt-4 pt-4 border-t border-[var(--border)] space-y-3 animate-fade-in">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-[var(--text-tertiary)]">Strategic Implications</span>
-            <span className="text-[var(--text-secondary)]">Click to collapse</span>
-          </div>
+            <svg
+              className={cn(
+                'w-5 h-5 text-[var(--text-tertiary)] transition-transform duration-300',
+                isExpanded && 'rotate-180'
+              )}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
         </div>
-      )}
-    </GlassCard>
+
+        {isExpanded && (
+          <div className="mt-4 pt-4 border-t border-[var(--border)] space-y-3 animate-fade-in">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-[var(--text-tertiary)]">Strategic Implications</span>
+              <span className="text-[var(--text-secondary)]">Click to collapse</span>
+            </div>
+          </div>
+        )}
+      </GlassCard>
+    </div>
   );
 }
