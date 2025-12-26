@@ -26,6 +26,7 @@ const AGENT_STEPS = [
 export default function NewScenarioPage() {
   const [stage, setStage] = useState<Stage>('idle');
   const [formData, setFormData] = useState<ScenarioGenerationRequest>({
+    company_name: '',
     industry: 'Energy',
     region: 'Global',
     horizon_years: 10,
@@ -75,6 +76,23 @@ export default function NewScenarioPage() {
             {/* Configuration Panel */}
             <GlassCard>
               <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    Company / Organization Name
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.company_name}
+                    onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
+                    placeholder="e.g., Lockheed Martin, Shell Energy, Johnson & Johnson"
+                    className="w-full glass-panel px-4 py-3 rounded-lg text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-accent-500"
+                    required
+                  />
+                  <p className="mt-1.5 text-xs text-[var(--text-tertiary)]">
+                    Scenarios will be tailored to your organization's strategic context
+                  </p>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                     Industry

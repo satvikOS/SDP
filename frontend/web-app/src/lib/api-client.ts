@@ -22,6 +22,7 @@ export interface AgentExecutionResponse {
 }
 
 export interface ScenarioGenerationRequest {
+  company_name: string;
   industry: string;
   region: string;
   horizon_years: number;
