@@ -105,7 +105,7 @@ class ApiClient {
    * Generate complete scenario set (full pipeline)
    */
   async generateScenarios(request: ScenarioGenerationRequest): Promise<ScenarioSet> {
-    const response = await this.client.post('/generate-scenarios', request);
+    const response = await this.client.post('/scenarios/generate', request);
     return response.data;
   }
 

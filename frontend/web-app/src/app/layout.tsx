@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { Sidebar } from '@/components/Sidebar';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'AI Foresight Platform',
-  description: 'AI-Driven Strategic Foresight & Scenario Planning',
+  title: 'AI Foresight Platform - Enterprise Strategic Foresight',
+  description: 'Enterprise-grade AI-powered strategic foresight and scenario planning for government and corporate decision-makers',
 };
 
 export default function RootLayout({
@@ -15,10 +16,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body className={inter.className}>
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
-          {children}
+        <div className="min-h-screen bg-[var(--bg)]">
+          <Sidebar />
+          <div className="lg:pl-72">
+            {children}
+          </div>
         </div>
       </body>
     </html>

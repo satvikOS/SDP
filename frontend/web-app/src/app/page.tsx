@@ -24,47 +24,32 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-[var(--border)]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-lg bg-accent-600 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-lg font-medium text-[var(--text-primary)] tracking-tight">
-                AI Foresight
-              </span>
-            </div>
-
-            {/* Status */}
-            <div className="flex items-center space-x-2">
-              <div className={`w-1.5 h-1.5 rounded-full ${
-                isHealthy ? 'bg-green-500' : isHealthy === false ? 'bg-red-500' : 'bg-yellow-500'
-              }`} />
-              <span className="text-sm text-[var(--text-secondary)]">
-                {isHealthy ? 'Connected' : isHealthy === false ? 'Disconnected' : 'Connecting...'}
-              </span>
-            </div>
+      {/* Main Content */}
+      <main className="pt-16 pb-16">
+        {/* Status Banner */}
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-8">
+          <div className="glass-panel rounded-lg px-4 py-2 inline-flex items-center space-x-2">
+            <div className={`w-1.5 h-1.5 rounded-full ${
+              isHealthy ? 'bg-green-500' : isHealthy === false ? 'bg-red-500' : 'bg-yellow-500'
+            }`} />
+            <span className="text-sm text-[var(--text-secondary)]">
+              {isHealthy ? 'System Online' : isHealthy === false ? 'System Offline' : 'Initializing...'}
+            </span>
           </div>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="pt-24 pb-16">
         {/* Hero */}
         <section className="max-w-4xl mx-auto px-6 lg:px-8 text-center mb-20">
-          <h1 className="text-4xl lg:text-5xl font-light text-[var(--text-primary)] mb-6 tracking-tight">
-            Strategic Foresight
+          <h1 className="text-4xl lg:text-5xl font-light text-[var(--text-primary)] mb-6 tracking-tight leading-tight">
+            Enterprise Strategic Foresight
             <span className="block mt-2 bg-gradient-to-r from-accent-500 to-accent-700 bg-clip-text text-transparent">
-              Powered by AI
+              Powered by Advanced AI
             </span>
           </h1>
 
           <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto mb-12 font-light leading-relaxed">
-            Generate comprehensive scenario sets powered by advanced AI.
-            Synthesize signals, identify drivers, and plan strategic actions with confidence.
+            Navigate uncertainty with confidence. Our AI-powered platform delivers comprehensive scenario analysis,
+            enabling executive teams to make informed strategic decisions in rapidly evolving environments.
           </p>
 
           {/* CTA */}
@@ -85,21 +70,29 @@ export default function Home() {
 
         {/* Features Grid */}
         <section className="max-w-6xl mx-auto px-6 lg:px-8 mb-20">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl font-light text-[var(--text-primary)] mb-3 tracking-tight">
+              Trusted by Leading Organizations
+            </h2>
+            <p className="text-[var(--text-secondary)] font-light">
+              Deliver strategic clarity through rigorous, AI-driven foresight methodologies
+            </p>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FeatureCard
               icon={<TrendingUp className="w-5 h-5" />}
-              title="Signal Synthesis"
-              description="Extract emerging themes from weak signals using advanced AI models"
+              title="Weak Signal Detection"
+              description="Identify emerging trends and strategic opportunities before competitors through systematic environmental scanning and pattern recognition"
             />
             <FeatureCard
               icon={<Target className="w-5 h-5" />}
-              title="Scenario Construction"
-              description="Build plausible futures based on critical uncertainties"
+              title="Multi-Horizon Scenarios"
+              description="Construct rigorous alternative futures grounded in critical uncertainties, enabling resilient strategic planning across time horizons"
             />
             <FeatureCard
               icon={<Zap className="w-5 h-5" />}
-              title="Action Planning"
-              description="Generate robust strategies across multiple scenarios"
+              title="Robust Strategy Development"
+              description="Generate actionable recommendations that perform well across diverse scenarios, reducing strategic risk and enhancing organizational agility"
             />
           </div>
         </section>
@@ -109,10 +102,10 @@ export default function Home() {
           <GlassCard>
             <div className="mb-6">
               <h2 className="text-xl font-medium text-[var(--text-primary)] mb-2 tracking-tight">
-                AI Agent Pipeline
+                Multi-Agent Intelligence Architecture
               </h2>
               <p className="text-sm text-[var(--text-secondary)] font-light">
-                Seven specialized agents working in sequence to generate comprehensive scenarios
+                Seven specialized AI modules orchestrate a comprehensive foresight workflow, ensuring methodological rigor and analytical depth
               </p>
             </div>
 
@@ -135,7 +128,7 @@ export default function Home() {
       <footer className="border-t border-[var(--border)] mt-20">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
           <p className="text-center text-sm text-[var(--text-tertiary)] font-light">
-            Enterprise Strategic Foresight Platform • AI-Powered Scenario Planning
+            Enterprise Strategic Foresight Platform • Trusted by Fortune 500 Companies and Government Agencies
           </p>
         </div>
       </footer>

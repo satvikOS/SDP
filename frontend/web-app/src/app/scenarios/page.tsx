@@ -2,60 +2,58 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { apiClient } from '@/lib/api-client';
-import { formatDate, formatCurrency } from '@/lib/utils';
-import { ArrowLeft, Sparkles, Plus, FileText, TrendingUp } from 'lucide-react';
+import { GlassCard, GlassButton } from '@/components/GlassCard';
+import { Plus, FileText, ArrowLeft, Sparkles } from 'lucide-react';
 
 export default function ScenariosPage() {
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // For now, show empty state
-    // In future: apiClient.listScenarios().then(setScenarios)
+    // Future: Load scenarios from API
     setLoading(false);
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[var(--bg)]">
       {/* Header */}
-      <header className="border-b border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+      <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-[var(--border)]">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
-                <ArrowLeft className="w-6 h-6" />
+              <Link href="/" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+                <ArrowLeft className="w-5 h-5" />
               </Link>
-              <div className="flex items-center space-x-2">
-                <Sparkles className="w-8 h-8 text-primary-600" />
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+              <div className="w-px h-6 bg-[var(--border)]" />
+              <div className="flex items-center space-x-3">
+                <Sparkles className="w-5 h-5 text-accent-600" />
+                <span className="text-base font-medium text-[var(--text-primary)] tracking-tight">
                   Scenario Library
-                </h1>
+                </span>
               </div>
             </div>
-            <Link
-              href="/scenarios/new"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 transition-colors"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              New Scenario
+            <Link href="/scenarios/new">
+              <GlassButton variant="primary">
+                <Plus className="w-4 h-4 mr-2" />
+                New Scenario
+              </GlassButton>
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="pt-24 pb-16 max-w-6xl mx-auto px-6 lg:px-8">
         {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-            <p className="mt-4 text-slate-600 dark:text-slate-400">Loading scenarios...</p>
+          <div className="text-center py-20">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-accent-600 border-t-transparent"></div>
+            <p className="mt-4 text-sm text-[var(--text-secondary)]">Loading scenarios...</p>
           </div>
         ) : scenarios.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {scenarios.map((scenario) => (
-              <ScenarioCard key={scenario.scenario_set_id} scenario={scenario} />
+              <ScenarioCard key={scenario.id} scenario={scenario} />
             ))}
           </div>
         )}
@@ -67,96 +65,32 @@ export default function ScenariosPage() {
 function EmptyState() {
   return (
     <div className="text-center py-20">
-      <FileText className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-        No Scenarios Yet
+      <FileText className="w-16 h-16 text-[var(--text-tertiary)] mx-auto mb-6 opacity-50" />
+      <h2 className="text-2xl font-light text-[var(--text-primary)] mb-3 tracking-tight">
+        Scenario Library Empty
       </h2>
-      <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-md mx-auto">
-        Generate your first scenario set to start exploring alternative futures for your industry.
+      <p className="text-[var(--text-secondary)] mb-8 max-w-md mx-auto font-light">
+        Initiate your first strategic foresight analysis to explore alternative futures and develop robust organizational strategies.
       </p>
-      <Link
-        href="/scenarios/new"
-        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 transition-colors"
-      >
-        <Plus className="w-5 h-5 mr-2" />
-        Generate First Scenario
+      <Link href="/scenarios/new">
+        <GlassButton variant="primary" size="lg">
+          <Plus className="w-4 h-4 mr-2" />
+          Begin Analysis
+        </GlassButton>
       </Link>
-
-      <div className="mt-16 max-w-2xl mx-auto">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-          What you'll get:
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Feature
-            icon={<TrendingUp className="w-5 h-5 text-primary-600" />}
-            title="Signal Analysis"
-            description="Emerging themes and weak signals"
-          />
-          <Feature
-            icon={<FileText className="w-5 h-5 text-primary-600" />}
-            title="4 Scenarios"
-            description="Plausible futures with rich narratives"
-          />
-          <Feature
-            icon={<Sparkles className="w-5 h-5 text-primary-600" />}
-            title="Signposts"
-            description="Early warning indicators to monitor"
-          />
-          <Feature
-            icon={<TrendingUp className="w-5 h-5 text-primary-600" />}
-            title="Action Plan"
-            description="Robust strategies across scenarios"
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Feature({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
-  return (
-    <div className="flex items-start space-x-3 bg-white dark:bg-slate-800 rounded-lg p-4">
-      <div className="mt-0.5">{icon}</div>
-      <div>
-        <h4 className="font-medium text-slate-900 dark:text-white">{title}</h4>
-        <p className="text-sm text-slate-600 dark:text-slate-400">{description}</p>
-      </div>
     </div>
   );
 }
 
 function ScenarioCard({ scenario }: { scenario: any }) {
   return (
-    <Link
-      href={`/scenarios/${scenario.scenario_set_id}`}
-      className="block bg-white dark:bg-slate-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow p-6"
-    >
-      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-        {scenario.industry} - {scenario.region}
+    <GlassCard hover>
+      <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2 tracking-tight">
+        {scenario.title}
       </h3>
-      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-        {scenario.horizon_years} year horizon • {formatDate(scenario.created_at)}
+      <p className="text-sm text-[var(--text-secondary)] font-light">
+        {scenario.description}
       </p>
-      <div className="space-y-2 text-sm">
-        <div className="flex justify-between">
-          <span className="text-slate-600 dark:text-slate-400">Scenarios:</span>
-          <span className="font-medium text-slate-900 dark:text-white">
-            {scenario.scenarios?.length || 0}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-slate-600 dark:text-slate-400">Cost:</span>
-          <span className="font-medium text-slate-900 dark:text-white">
-            {formatCurrency(scenario.total_cost_usd)}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-slate-600 dark:text-slate-400">Quality:</span>
-          <span className="font-medium text-slate-900 dark:text-white">
-            {scenario.quality_report?.overall_quality_score?.toFixed(1) || 'N/A'}/10
-          </span>
-        </div>
-      </div>
-    </Link>
+    </GlassCard>
   );
 }

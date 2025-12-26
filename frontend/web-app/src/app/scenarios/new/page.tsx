@@ -60,25 +60,16 @@ export default function NewScenarioPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-[var(--border)]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center h-16 space-x-4">
-            <Link href="/" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div className="w-px h-6 bg-[var(--border)]" />
-            <div className="flex items-center space-x-3">
-              <Sparkles className="w-5 h-5 text-accent-600" />
-              <span className="text-base font-medium text-[var(--text-primary)] tracking-tight">
-                Generate Scenarios
-              </span>
-            </div>
-          </div>
+      <main className="pt-16 pb-16 max-w-4xl mx-auto px-6 lg:px-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-light text-[var(--text-primary)] mb-3 tracking-tight">
+            Generate Scenario Set
+          </h1>
+          <p className="text-[var(--text-secondary)] font-light">
+            Configure parameters for comprehensive strategic foresight analysis
+          </p>
         </div>
-      </header>
-
-      <main className="pt-24 pb-16 max-w-4xl mx-auto px-6 lg:px-8">
         {stage === 'idle' && (
           <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
             {/* Configuration Panel */}
@@ -141,8 +132,8 @@ export default function NewScenarioPage() {
             {/* Info Panel */}
             <div className="glass-panel rounded-lg p-4 border-l-4 border-accent-600">
               <p className="text-sm text-[var(--text-secondary)] font-light">
-                <span className="font-medium text-[var(--text-primary)]">Pipeline:</span> 7 AI agents will execute sequentially.
-                Expected time: 2-5 minutes. Estimated cost: $0.10-0.30
+                <span className="font-medium text-[var(--text-primary)]">Multi-Agent Analysis:</span> Seven specialized AI modules will execute a comprehensive foresight workflow.
+                Estimated completion: 2-5 minutes. Processing cost: $0.10-0.30 per analysis
               </p>
             </div>
 
@@ -160,10 +151,10 @@ export default function NewScenarioPage() {
               <div className="text-center mb-8">
                 <Loader2 className="w-12 h-12 text-accent-600 animate-spin mx-auto mb-4" />
                 <h2 className="text-xl font-medium text-[var(--text-primary)] mb-2 tracking-tight">
-                  Generating Scenarios
+                  Processing Strategic Analysis
                 </h2>
                 <p className="text-sm text-[var(--text-secondary)] font-light">
-                  Please wait 2-5 minutes while the AI agents analyze your request
+                  Multi-agent intelligence architecture executing comprehensive foresight workflow (2-5 minutes)
                 </p>
               </div>
 
@@ -208,12 +199,12 @@ export default function NewScenarioPage() {
                 <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5" />
                 <div className="flex-1">
                   <h2 className="text-base font-medium text-[var(--text-primary)] mb-2">
-                    Scenarios Generated Successfully
+                    Strategic Analysis Complete
                   </h2>
                   <div className="flex items-center space-x-6 text-sm text-[var(--text-secondary)]">
-                    <span>Time: {formatDuration(result.generation_time_seconds)}</span>
-                    <span>Cost: {formatCurrency(result.total_cost_usd)}</span>
-                    <span>Scenarios: {result.scenarios.length}</span>
+                    <span>Processing Time: {formatDuration(result.generation_time_seconds)}</span>
+                    <span>Analysis Cost: {formatCurrency(result.total_cost_usd)}</span>
+                    <span>Scenarios Developed: {result.scenarios.length}</span>
                   </div>
                 </div>
               </div>
@@ -257,7 +248,7 @@ export default function NewScenarioPage() {
                 <AlertCircle className="w-5 h-5 text-red-500 mt-0.5" />
                 <div>
                   <h2 className="text-base font-medium text-[var(--text-primary)] mb-2">
-                    Generation Failed
+                    Analysis Processing Error
                   </h2>
                   <p className="text-sm text-red-500 font-light">{error}</p>
                 </div>
