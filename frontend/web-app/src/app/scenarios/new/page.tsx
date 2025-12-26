@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { apiClient, type ScenarioGenerationRequest, type ScenarioSet } from '@/lib/api-client';
 import { GlassCard, GlassButton, GlassInput } from '@/components/GlassCard';
-import { formatCurrency, formatDuration } from '@/lib/utils';
+import { formatCurrency, formatDuration, cn } from '@/lib/utils';
 import { ArrowLeft, Sparkles, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const INDUSTRIES = ['Energy', 'Healthcare', 'Finance', 'Technology', 'Defense', 'Manufacturing', 'Retail', 'Agriculture', 'Transportation', 'Telecommunications'];
@@ -30,6 +30,7 @@ export default function NewScenarioPage() {
     industry: 'Energy',
     region: 'Global',
     horizon_years: 10,
+    strategic_context: '',
   });
   const [result, setResult] = useState<ScenarioSet | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -147,6 +148,33 @@ export default function NewScenarioPage() {
               </div>
             </GlassCard>
 
+            {/* Strategic Context - Enterprise Intelligence */}
+            <GlassCard>
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  Strategic Context & Intelligence Briefing
+                  <span className="ml-2 text-xs text-[var(--text-tertiary)] font-normal">(Critical for precision targeting)</span>
+                </label>
+                <textarea
+                  value={formData.strategic_context}
+                  onChange={(e) => setFormData({ ...formData, strategic_context: e.target.value })}
+                  placeholder="Example for Defense: 'We are pursuing AUKUS Pillar 2 co-production agreements in Australia. Current JASSM-ER margins are 18% EBITDA. Key strategic question: Can we maintain margins if forced to transfer 40% of production to Australian facilities with 23% higher labor costs? Also evaluating $2.3B R&D investment in CJADC2 software-defined payloads - need analysis of Government Purpose Rights risk to our IP moat.'&#10;&#10;Example for Energy: 'Evaluating $4.5B green hydrogen electrolyzer facility. Current green H2 costs: $2.80/kg (target: $1.50/kg). Critical decision: Build 2GW facility + 800km pipeline now, or wait for technology maturity? Competitive threat: European players (Linde, Air Liquide) have 18-month head start on offtake contracts. Need quantitative break-even analysis factoring carbon pricing scenarios.'&#10;&#10;Provide: Current strategy, key investments under consideration, margin targets, competitive threats, regulatory constraints, quantitative metrics that matter."
+                  rows={8}
+                  className="w-full glass-panel px-4 py-3 rounded-lg text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-accent-500 resize-none font-light text-sm leading-relaxed"
+                />
+                <div className="mt-2 flex items-start space-x-2 text-xs text-[var(--text-tertiary)]">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <p className="flex-1">
+                    <span className="font-medium text-[var(--text-secondary)]">The more specific, the better.</span> Include: quantitative metrics (margins, costs, timelines), strategic decisions under consideration, competitive dynamics, regulatory constraints, and the specific questions keeping your C-suite up at night. This transforms generic scenarios into Board-level strategic intelligence.
+                  </p>
+                </div>
+              </div>
+            </GlassCard>
+
             {/* Info Panel */}
             <div className="glass-panel rounded-lg p-4 border-l-4 border-accent-600">
               <p className="text-sm text-[var(--text-secondary)] font-light">
@@ -230,19 +258,7 @@ export default function NewScenarioPage() {
 
             {/* Scenarios */}
             {result.scenarios.map((scenario, idx) => (
-              <GlassCard key={idx} hover>
-                <h3 className="text-lg font-medium text-[var(--text-primary)] mb-3 tracking-tight">
-                  {idx + 1}. {scenario.title}
-                </h3>
-                <p className="text-sm text-[var(--text-secondary)] mb-4 font-light leading-relaxed">
-                  {scenario.core_logic}
-                </p>
-                <div className="glass-panel rounded-lg p-4">
-                  <p className="text-sm text-[var(--text-primary)] font-light line-clamp-4">
-                    {scenario.narrative}
-                  </p>
-                </div>
-              </GlassCard>
+              <ScenarioDetailCard key={idx} scenario={scenario} index={idx} />
             ))}
 
             {/* Actions */}
@@ -279,5 +295,76 @@ export default function NewScenarioPage() {
         )}
       </main>
     </div>
+  );
+}
+
+// Expandable Scenario Detail Card Component
+function ScenarioDetailCard({ scenario, index }: { scenario: any; index: number }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <GlassCard hover className="cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center space-x-3 mb-3">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent-600/20 flex items-center justify-center">
+              <span className="text-sm font-medium text-accent-600">{index + 1}</span>
+            </div>
+            <h3 className="text-lg font-medium text-[var(--text-primary)] tracking-tight">
+              {scenario.title}
+            </h3>
+            <div className="flex-shrink-0 px-2 py-1 rounded-full bg-accent-600/10 text-xs font-medium text-accent-600">
+              {(scenario.probability * 100).toFixed(0)}% probability
+            </div>
+          </div>
+
+          <p className="text-sm text-[var(--text-secondary)] mb-4 font-light leading-relaxed italic">
+            {scenario.core_logic}
+          </p>
+
+          <div className={cn(
+            'glass-panel rounded-lg p-4 transition-all duration-300',
+            isExpanded ? 'max-h-none' : 'max-h-24 overflow-hidden relative'
+          )}>
+            <p className="text-sm text-[var(--text-primary)] font-light leading-relaxed whitespace-pre-wrap">
+              {scenario.narrative}
+            </p>
+            {!isExpanded && (
+              <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[var(--panel)] to-transparent" />
+            )}
+          </div>
+        </div>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(!isExpanded);
+          }}
+          className="ml-4 flex-shrink-0 p-2 rounded-lg hover:bg-[var(--surface)] transition-colors"
+          aria-label={isExpanded ? 'Collapse' : 'Expand'}
+        >
+          <svg
+            className={cn(
+              'w-5 h-5 text-[var(--text-tertiary)] transition-transform duration-300',
+              isExpanded && 'rotate-180'
+            )}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+
+      {isExpanded && (
+        <div className="mt-4 pt-4 border-t border-[var(--border)] space-y-3 animate-fade-in">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-[var(--text-tertiary)]">Strategic Implications</span>
+            <span className="text-[var(--text-secondary)]">Click to collapse</span>
+          </div>
+        </div>
+      )}
+    </GlassCard>
   );
 }

@@ -26,6 +26,7 @@ export interface ScenarioGenerationRequest {
   industry: string;
   region: string;
   horizon_years: number;
+  strategic_context?: string;
   signals?: any[];
   evidence?: any[];
   user_constraints?: Record<string, any>;
