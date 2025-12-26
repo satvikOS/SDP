@@ -109,10 +109,16 @@ async def execute_agent(event, context):
         })
 
 
-def _generate_industry_scenarios(company_name: str, industry: str, region: str, horizon_years: int) -> list:
+def _generate_industry_scenarios(company_name: str, industry: str, region: str, horizon_years: int, strategic_context: str = '') -> list:
     """Generate industry-specific scenarios with deep domain expertise."""
 
     target_year = datetime.now().year + horizon_years
+
+    # If strategic context provided, add it as a prefix note to narratives
+    context_note = ''
+    if strategic_context:
+        # Extract key metrics and questions from strategic context for targeting
+        context_note = f"\n\n[Strategic Context Considerations: {strategic_context[:500]}...]"
 
     # Defense/Aerospace industry scenarios
     if industry.lower() in ['defense', 'aerospace', 'defence']:
@@ -280,15 +286,18 @@ def generate_scenario(event, context):
         industry = body.get('industry', 'Energy')
         region = body.get('region', 'Global')
         horizon_years = body.get('horizon_years', 10)
+        strategic_context = body.get('strategic_context', '')
 
         logger.info(f"Generating scenario set for {company_name} - {industry} - {region} - {horizon_years} years")
+        if strategic_context:
+            logger.info(f"Strategic context provided: {strategic_context[:200]}...")
 
         # Generate industry-specific scenarios
         import uuid
         scenario_set_id = str(uuid.uuid4())
 
-        # Generate scenarios based on industry
-        scenarios = _generate_industry_scenarios(company_name, industry, region, horizon_years)
+        # Generate scenarios based on industry and strategic context
+        scenarios = _generate_industry_scenarios(company_name, industry, region, horizon_years, strategic_context)
 
         result = {
             'scenario_set_id': scenario_set_id,
