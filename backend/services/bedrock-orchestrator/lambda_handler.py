@@ -301,14 +301,20 @@ def generate_scenario(event, context):
         scenario_set_id = str(uuid.uuid4())
 
         logger.info("Calling AWS Bedrock AI for scenario generation...")
-        scenarios = bedrock_generator.generate_scenarios(
-            company_name=company_name,
-            industry=industry,
-            region=region,
-            horizon_years=horizon_years,
-            strategic_context=strategic_context
-        )
-        logger.info(f"AI generated {len(scenarios)} scenarios")
+        try:
+            scenarios = bedrock_generator.generate_scenarios(
+                company_name=company_name,
+                industry=industry,
+                region=region,
+                horizon_years=horizon_years,
+                strategic_context=strategic_context
+            )
+            logger.info(f"AI generated {len(scenarios)} scenarios")
+        except Exception as bedrock_error:
+            logger.error(f"Bedrock API failed: {bedrock_error}", exc_info=True)
+            logger.warning("Falling back to template-based scenarios")
+            # Fallback to templates if Bedrock fails
+            scenarios = _generate_industry_scenarios(company_name, industry, region, horizon_years, strategic_context)
 
         result = {
             'scenario_set_id': scenario_set_id,

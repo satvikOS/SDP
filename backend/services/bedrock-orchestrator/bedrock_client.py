@@ -13,6 +13,9 @@ class BedrockScenarioGenerator:
     def __init__(self):
         self.bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
         self.model_id = 'anthropic.claude-3-5-sonnet-20241022-v2:0'
+        # Maximum detail - no latency concerns
+        self.max_tokens = 32000  # Increased for exhaustive detail
+        self.temperature = 0.8  # Higher for creative detailed scenarios
 
     def generate_scenarios(
         self,
@@ -37,8 +40,8 @@ class BedrockScenarioGenerator:
                 accept='application/json',
                 body=json.dumps({
                     'anthropic_version': 'bedrock-2023-05-31',
-                    'max_tokens': 16000,
-                    'temperature': 0.7,
+                    'max_tokens': self.max_tokens,
+                    'temperature': self.temperature,
                     'messages': [
                         {
                             'role': 'user',
@@ -81,35 +84,44 @@ STRATEGIC CONTEXT PROVIDED BY CLIENT:
 You MUST address the specific strategic questions, metrics, and concerns mentioned in this context throughout your scenarios.
 """
 
-        prompt = f"""You are an elite strategic foresight consultant working for {company_name}, a leading {industry} company operating in {region}. You must generate 4 distinct, highly specific strategic scenarios for the next {horizon_years} years.
+        prompt = f"""You are an elite strategic foresight consultant working for {company_name}, a leading {industry} company operating in {region}. You must generate 4 distinct, EXHAUSTIVELY DETAILED strategic scenarios for the next {horizon_years} years.
 {context_section}
 
-CRITICAL REQUIREMENTS:
-1. **Industry Specificity**: Use actual terminology, regulations, technologies, and competitive dynamics specific to the {industry} sector in {region}
-2. **Quantitative Rigor**: Include specific numbers - costs, percentages, timelines, ROI, NPV, market shares, margins
-3. **Strategic Decisions**: Frame each scenario around specific capital allocation decisions {company_name} must make
-4. **Company-Specific**: Reference {company_name} throughout, not generic "companies"
-5. **Actionable Intelligence**: Focus on decisions keeping the C-suite up at night, not academic analysis
+CRITICAL REQUIREMENTS - MAXIMUM DETAIL:
+1. **Industry Specificity**: Use actual terminology, regulations, technologies, and competitive dynamics specific to {industry} in {region}
+2. **Quantitative Rigor**: MANDATORY - Include specific numbers: costs in $ millions/billions, exact percentages, precise timelines, ROI calculations, NPV analysis, market shares, EBITDA margins, capex requirements
+3. **Strategic Decisions**: Frame each scenario around 3-5 specific multi-billion dollar capital allocation decisions {company_name} executives must make
+4. **Company-Specific**: Reference {company_name} throughout. NOT generic "companies" or "organizations"
+5. **Actionable Intelligence**: Board-level decisions with quantified tradeoffs, risk analysis, competitive positioning
+
+EXHAUSTIVE DETAIL REQUIREMENTS (NO BREVITY - MAXIMUM LENGTH):
+- Each narrative must be 800-1200 words minimum
+- Include at least 10 specific quantitative metrics per scenario
+- Name actual competitors, regulations, technologies, geographic locations
+- Provide decision trees with quantified outcomes for each branch
+- Include sensitivity analysis (e.g., "If carbon pricing exceeds $X/tonne, then...")
+- Specify exact timelines for regulatory changes, technology maturity, market shifts
+- Detail supply chain impacts, workforce requirements, M&A implications
 
 For {industry} specifically, incorporate:
-- Relevant regulatory frameworks
-- Industry-specific metrics
-- Competitive dynamics with named competitors where relevant
-- Technology trends reshaping the sector
-- Geopolitical or macroeconomic factors affecting {region}
+- Regulatory frameworks with exact compliance costs
+- Industry KPIs with benchmark data
+- Named competitors with market share data where relevant
+- Emerging technologies with adoption curves and cost trajectories
+- Geopolitical/macroeconomic scenarios with GDP impacts, trade flow changes
 
 OUTPUT FORMAT:
 Return ONLY valid JSON array with exactly 4 scenarios:
 [
   {{
-    "title": "Scenario name",
-    "core_logic": "One sentence driving force (max 150 chars)",
-    "narrative": "Detailed 400-600 word narrative with quantitative details, strategic tradeoffs, and specific decisions {company_name} must make",
+    "title": "Compelling scenario name (7-10 words)",
+    "core_logic": "Detailed driving force explanation (200-250 characters)",
+    "narrative": "EXHAUSTIVE 800-1200 word narrative with maximum quantitative detail. Include: (1) Opening context with current baseline metrics, (2) 3-5 specific strategic decisions {company_name} must make with exact dollar amounts, (3) Competitive dynamics with named players, (4) Regulatory/technology timeline with specific dates, (5) Quantified outcomes for different decision paths with NPV/IRR analysis, (6) Risk factors with probability-weighted scenarios, (7) Implementation roadmap with phase gates and capital requirements. Use specific numbers for EVERYTHING - costs, percentages, timelines, market sizes, growth rates.",
     "probability": 0.XX
   }}
 ]
 
-Generate enterprise-grade scenarios NOW. Return ONLY the JSON array."""
+REMEMBER: Maximum exhaustive detail. No concern for brevity. This is Board-level strategic intelligence worth $100K+ per analysis."""
 
         return prompt
 
