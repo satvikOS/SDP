@@ -63,8 +63,8 @@ export default function Home() {
           </h1>
 
           <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto mb-12 font-light leading-relaxed">
-            Generate comprehensive scenario sets using AWS Bedrock's multi-model AI orchestration.
-            Synthesize signals, identify drivers, and plan strategic actions.
+            Generate comprehensive scenario sets powered by advanced AI.
+            Synthesize signals, identify drivers, and plan strategic actions with confidence.
           </p>
 
           {/* CTA */}
@@ -89,7 +89,7 @@ export default function Home() {
             <FeatureCard
               icon={<TrendingUp className="w-5 h-5" />}
               title="Signal Synthesis"
-              description="Extract emerging themes from weak signals using Claude Sonnet 4.5"
+              description="Extract emerging themes from weak signals using advanced AI models"
             />
             <FeatureCard
               icon={<Target className="w-5 h-5" />}
@@ -135,7 +135,7 @@ export default function Home() {
       <footer className="border-t border-[var(--border)] mt-20">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
           <p className="text-center text-sm text-[var(--text-tertiary)] font-light">
-            Enterprise Strategic Foresight Platform • AWS Bedrock Multi-Model Orchestration
+            Enterprise Strategic Foresight Platform • AI-Powered Scenario Planning
           </p>
         </div>
       </footer>
