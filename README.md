@@ -4,10 +4,10 @@ A fully AI-powered scenario planning platform using Anthropic Claude for automat
 
 ## 🚀 Deployment Status
 
-**Backend:** Deploying to AWS Lambda...
-**Frontend:** Ready for deployment
+**Backend:** ✅ Live at `https://33kvywy84h.execute-api.us-east-1.amazonaws.com`
+**Frontend:** 🚀 Deploying to S3...
 **Branch:** `claude/ai-foresight-platform-yEVtZ`
-**Last Updated:** 2025-12-22
+**Last Updated:** 2025-12-26
 
 ## 🎯 Overview
 
