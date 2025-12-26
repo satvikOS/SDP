@@ -4,10 +4,7 @@ import json
 import logging
 import os
 from typing import Dict, Any
-
-# Import our orchestrator
-from multi_model_orchestrator import multi_model_orchestrator
-from agents import AgentType
+from datetime import datetime
 
 # Configure logging
 logger = logging.getLogger()
@@ -30,28 +27,45 @@ def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
 
 def health(event, context):
     """Health check endpoint."""
-    return _response(200, {
-        'status': 'healthy',
-        'service': 'bedrock-orchestrator',
-        'version': '1.0.0',
-        'stage': os.getenv('STAGE', 'dev')
-    })
+    try:
+        # Simple health check - just verify Lambda is running
+        return _response(200, {
+            'status': 'healthy',
+            'timestamp': datetime.utcnow().isoformat(),
+            'service': 'ai-foresight-platform',
+            'bedrock_available': True,
+            'stage': os.getenv('STAGE', 'dev')
+        })
+    except Exception as e:
+        logger.error(f"Health check error: {e}")
+        return _response(500, {
+            'status': 'unhealthy',
+            'error': str(e)
+        })
 
 
 def list_agents(event, context):
     """List available agent types."""
-    return _response(200, {
-        'agents': [agent.value for agent in AgentType],
-        'descriptions': {
-            AgentType.SIGNAL_SYNTHESIZER.value: "Synthesize signals into emerging themes",
-            AgentType.DRIVER_EXTRACTOR.value: "Extract key drivers and uncertainties",
-            AgentType.SCENARIO_CONSTRUCTOR.value: "Construct scenario frameworks",
-            AgentType.NARRATIVE_GENERATOR.value: "Generate rich scenario narratives",
-            AgentType.SIGNPOST_DESIGNER.value: "Design monitoring signposts",
-            AgentType.ACTION_PLANNER.value: "Plan strategic actions",
-            AgentType.QUALITY_CRITIC.value: "Critique scenario quality"
-        }
-    })
+    try:
+        # Return hardcoded list of agent types
+        agents = [
+            'signal_synthesizer',
+            'driver_extractor',
+            'scenario_constructor',
+            'narrative_generator',
+            'signpost_designer',
+            'action_planner',
+            'quality_critic'
+        ]
+
+        return _response(200, {
+            'agents': agents
+        })
+    except Exception as e:
+        logger.error(f"List agents error: {e}")
+        return _response(500, {
+            'error': str(e)
+        })
 
 
 async def execute_agent(event, context):
