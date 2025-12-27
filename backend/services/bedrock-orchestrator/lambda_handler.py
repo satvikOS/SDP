@@ -116,7 +116,7 @@ REMEMBER: 2000-5000 words per narrative. Board-level intelligence worth $100K+ p
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
-            'max_tokens': 200000,
+            'max_tokens': 60000,  # Opus 4.5 limit is 64000, using 60000 for safety
             'temperature': 0.8,
             'messages': [{'role': 'user', 'content': prompt}]
         }
