@@ -73,6 +73,36 @@ def list_agents(event, context):
         })
 
 
+def execute_agent(event, context):
+    """Execute an agent - placeholder for future multi-agent architecture."""
+    try:
+        return _response(501, {
+            'error': 'Not Implemented',
+            'message': 'Multi-agent execution not yet implemented. Use /scenarios/generate for full scenario generation.'
+        })
+    except Exception as e:
+        logger.error(f"Execute agent error: {e}")
+        return _response(500, {
+            'error': str(e)
+        })
+
+
+def cost_report(event, context):
+    """Get cost tracking report."""
+    try:
+        # Return mock cost report for now
+        return _response(200, {
+            'total_cost_usd': 0.00,
+            'requests_today': 0,
+            'message': 'Cost tracking not yet implemented'
+        })
+    except Exception as e:
+        logger.error(f"Cost report error: {e}")
+        return _response(500, {
+            'error': str(e)
+        })
+
+
 def generate_scenario(event, context):
     """
     Generate complete scenario set using Claude Opus 4.5.
