@@ -115,8 +115,8 @@ class ApiClient {
     const jobId = startResponse.data.job_id;
 
     // Poll for completion
-    const pollInterval = 2000; // 2 seconds
-    const maxAttempts = 300; // 10 minutes max (300 * 2s = 600s)
+    const pollInterval = 3000; // 3 seconds (reduce server load)
+    const maxAttempts = 300; // 15 minutes max (300 * 3s = 900s)
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       await new Promise(resolve => setTimeout(resolve, pollInterval));
@@ -133,7 +133,7 @@ class ApiClient {
       // Status 202 means still processing, continue polling
     }
 
-    throw new Error('Scenario generation timed out after 10 minutes');
+    throw new Error('Scenario generation timed out after 15 minutes');
   }
 
   /**
