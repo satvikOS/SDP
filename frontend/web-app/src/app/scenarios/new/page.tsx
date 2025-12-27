@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { apiClient, type ScenarioGenerationRequest, type ScenarioSet } from '@/lib/api-client';
 import { GlassCard, GlassButton, GlassInput } from '@/components/GlassCard';
+import { CompanyAutocomplete } from '@/components/CompanyAutocomplete';
 import { formatCurrency, formatDuration, cn } from '@/lib/utils';
 import { ArrowLeft, Sparkles, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
@@ -84,16 +85,12 @@ export default function NewScenarioPage() {
                   <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                     Company / Organization Name
                   </label>
-                  <input
-                    type="text"
+                  <CompanyAutocomplete
                     value={formData.company_name}
-                    onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-                    placeholder="e.g., Lockheed Martin, Shell Energy, Johnson & Johnson"
-                    className="w-full glass-panel px-4 py-3 rounded-lg text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-accent-500"
-                    required
+                    onChange={(value) => setFormData({ ...formData, company_name: value })}
                   />
                   <p className="mt-1.5 text-xs text-[var(--text-tertiary)]">
-                    Scenarios will be tailored to your organization's strategic context
+                    Start typing to see suggestions - legal entity names only
                   </p>
                 </div>
 
@@ -128,111 +125,62 @@ export default function NewScenarioPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-4">
-                    Planning Horizon - Granular Timeline
-                    <span className="ml-2 text-xs text-[var(--text-tertiary)] font-normal">(Use sliders or manual input)</span>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">
+                    Planning Horizon
                   </label>
 
-                  {/* Years */}
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs text-[var(--text-secondary)]">Years</label>
+                  <div className="grid grid-cols-4 gap-3">
+                    <div>
+                      <label className="block text-xs text-[var(--text-secondary)] mb-1.5">Years</label>
                       <input
                         type="number"
                         min="0"
                         max="50"
                         value={formData.horizon_years}
                         onChange={(e) => setFormData({ ...formData, horizon_years: parseInt(e.target.value) || 0 })}
-                        className="w-20 glass-panel px-3 py-1.5 rounded text-sm text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-accent-500"
+                        className="w-full glass-panel px-3 py-2 rounded text-sm text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-accent-500"
                       />
                     </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="50"
-                      value={formData.horizon_years}
-                      onChange={(e) => setFormData({ ...formData, horizon_years: parseInt(e.target.value) })}
-                      className="w-full h-2 bg-[var(--border)] rounded-lg appearance-none cursor-pointer accent-accent-600"
-                    />
-                  </div>
-
-                  {/* Months */}
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs text-[var(--text-secondary)]">Months</label>
+                    <div>
+                      <label className="block text-xs text-[var(--text-secondary)] mb-1.5">Months</label>
                       <input
                         type="number"
                         min="0"
                         max="11"
                         value={formData.horizon_months}
                         onChange={(e) => setFormData({ ...formData, horizon_months: parseInt(e.target.value) || 0 })}
-                        className="w-20 glass-panel px-3 py-1.5 rounded text-sm text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-accent-500"
+                        className="w-full glass-panel px-3 py-2 rounded text-sm text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-accent-500"
                       />
                     </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="11"
-                      value={formData.horizon_months}
-                      onChange={(e) => setFormData({ ...formData, horizon_months: parseInt(e.target.value) })}
-                      className="w-full h-2 bg-[var(--border)] rounded-lg appearance-none cursor-pointer accent-accent-600"
-                    />
-                  </div>
-
-                  {/* Weeks */}
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs text-[var(--text-secondary)]">Weeks</label>
+                    <div>
+                      <label className="block text-xs text-[var(--text-secondary)] mb-1.5">Weeks</label>
                       <input
                         type="number"
                         min="0"
                         max="4"
                         value={formData.horizon_weeks}
                         onChange={(e) => setFormData({ ...formData, horizon_weeks: parseInt(e.target.value) || 0 })}
-                        className="w-20 glass-panel px-3 py-1.5 rounded text-sm text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-accent-500"
+                        className="w-full glass-panel px-3 py-2 rounded text-sm text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-accent-500"
                       />
                     </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="4"
-                      value={formData.horizon_weeks}
-                      onChange={(e) => setFormData({ ...formData, horizon_weeks: parseInt(e.target.value) })}
-                      className="w-full h-2 bg-[var(--border)] rounded-lg appearance-none cursor-pointer accent-accent-600"
-                    />
-                  </div>
-
-                  {/* Days */}
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs text-[var(--text-secondary)]">Days</label>
+                    <div>
+                      <label className="block text-xs text-[var(--text-secondary)] mb-1.5">Days</label>
                       <input
                         type="number"
                         min="0"
                         max="6"
                         value={formData.horizon_days}
                         onChange={(e) => setFormData({ ...formData, horizon_days: parseInt(e.target.value) || 0 })}
-                        className="w-20 glass-panel px-3 py-1.5 rounded text-sm text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-accent-500"
+                        className="w-full glass-panel px-3 py-2 rounded text-sm text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-accent-500"
                       />
                     </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="6"
-                      value={formData.horizon_days}
-                      onChange={(e) => setFormData({ ...formData, horizon_days: parseInt(e.target.value) })}
-                      className="w-full h-2 bg-[var(--border)] rounded-lg appearance-none cursor-pointer accent-accent-600"
-                    />
                   </div>
 
-                  {/* Total Display */}
-                  <div className="mt-4 p-3 glass-panel rounded-lg">
-                    <div className="text-center">
-                      <span className="text-xs text-[var(--text-tertiary)]">Total Horizon: </span>
-                      <span className="text-sm font-medium text-accent-600">
-                        {formData.horizon_years}y {formData.horizon_months}m {formData.horizon_weeks}w {formData.horizon_days}d
-                      </span>
-                    </div>
+                  <div className="mt-2 text-center">
+                    <span className="text-xs text-[var(--text-tertiary)]">Total: </span>
+                    <span className="text-sm font-medium text-accent-600">
+                      {formData.horizon_years}y {formData.horizon_months}m {formData.horizon_weeks}w {formData.horizon_days}d
+                    </span>
                   </div>
                 </div>
               </div>
