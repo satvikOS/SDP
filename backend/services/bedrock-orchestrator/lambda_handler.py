@@ -340,51 +340,32 @@ def generate_scenario_async_worker(event, context):
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
-        prompt = f"""You are a strategic foresight consultant. Generate 4 concise, data-driven scenarios for {company_name} ({industry}, {region}) over {horizon_years} years.{context_note}
+        prompt = f"""Generate 2 strategic scenarios for {company_name} ({industry}, {region}) over {horizon_years} years.{context_note}
 
-Requirements:
-- Each scenario: 300-500 words (executive summary style)
-- Focus on structured data for charts/tables/visualizations
-- Include only peer-reviewed sources or authoritative industry reports (APA citations)
-- Provide quantitative data for graphing
+Each scenario: 150-200 words, data-focused, with APA citations.
 
-Return ONLY valid JSON with exactly 4 scenarios:
+Return ONLY valid JSON:
 [
   {{
-    "title": "Scenario Name (5-8 words)",
+    "title": "Scenario Name",
     "probability": 0.XX,
-    "summary": "Executive summary (300-500 words) covering key drivers, strategic implications, and recommended actions for {company_name}",
-    "timeline": [
-      {{"year": 2025, "milestone": "Key event", "impact": "Brief impact"}},
-      {{"year": 2027, "milestone": "Key event", "impact": "Brief impact"}},
-      {{"year": 2030, "milestone": "Key event", "impact": "Brief impact"}}
-    ],
+    "summary": "150-200 word summary for {company_name}",
     "financial_projections": {{
-      "years": [2025, 2026, 2027, 2028, 2029, 2030],
-      "revenue_bn": [X, X, X, X, X, X],
-      "ebitda_margin_pct": [X, X, X, X, X, X],
-      "market_share_pct": [X, X, X, X, X, X]
+      "years": [2025, 2027, 2030],
+      "revenue_bn": [X, X, X],
+      "market_share_pct": [X, X, X]
     }},
-    "competitive_landscape": [
-      {{"company": "Competitor", "market_share_2025": X, "market_share_2030": X, "strategy": "Brief"}}
+    "key_decisions": [
+      {{"decision": "Action", "investment_bn": X, "roi_pct": X}}
     ],
-    "key_metrics": {{
-      "technology_adoption_pct": [X, X, X, X, X, X],
-      "regulatory_cost_bn": [X, X, X, X, X, X]
-    }},
-    "strategic_decisions": [
-      {{"decision": "Action", "timing": "Year", "investment_bn": X, "roi_pct": X}}
-    ],
-    "sources": [
-      "Author, A. (Year). Title. Journal. DOI/URL"
-    ]
+    "sources": ["Author (Year). Title. Journal."]
   }}
 ]"""
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
-            'max_tokens': 30000,  # 4 scenarios × ~500 words × ~1.3 tokens/word ≈ 2600 tokens per scenario
-            'temperature': 0.7,  # Slightly lower for more focused outputs
+            'max_tokens': 8000,  # Much smaller for speed
+            'temperature': 0.7,
             'messages': [{'role': 'user', 'content': prompt}]
         }
 
