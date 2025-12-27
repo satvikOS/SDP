@@ -258,3 +258,266 @@ def test_bedrock(event, context):
             'error_message': error_msg,
             'fix': 'Model access may still be propagating (wait 2-5 minutes) or check IAM permissions'
         })
+
+
+def start_scenario_generation_async(event, context):
+    """Start async scenario generation - returns immediately with job ID."""
+    try:
+        if isinstance(event.get('body'), str):
+            body = json.loads(event['body'])
+        else:
+            body = event.get('body', {})
+
+        # Generate unique job ID
+        job_id = str(uuid.uuid4())
+
+        # Store initial status in DynamoDB
+        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+        table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
+        table = dynamodb.Table(table_name)
+
+        timestamp = int(datetime.utcnow().timestamp())
+
+        table.put_item(Item={
+            'scenarioId': job_id,
+            'createdAt': timestamp,
+            'status': 'processing',
+            'company_name': body.get('company_name', 'Your Organization'),
+            'industry': body.get('industry', 'Energy'),
+            'region': body.get('region', 'Global'),
+            'horizon_years': body.get('horizon_years', 10),
+            'strategic_context': body.get('strategic_context', ''),
+            'updated_at': datetime.utcnow().isoformat() + 'Z'
+        })
+
+        # Invoke Lambda async to process in background
+        lambda_client = boto3.client('lambda', region_name='us-east-1')
+        function_name = os.getenv('AWS_LAMBDA_FUNCTION_NAME', context.function_name)
+        base_name = function_name.rsplit('-', 1)[0]  # Remove stage suffix
+        worker_function = f"{base_name}-generateScenarioAsyncWorker-{os.getenv('STAGE', 'dev')}"
+
+        lambda_client.invoke(
+            FunctionName=worker_function,
+            InvocationType='Event',  # Async invocation
+            Payload=json.dumps({
+                'job_id': job_id,
+                'body': body
+            })
+        )
+
+        logger.info(f"Started async generation with job_id: {job_id}")
+
+        return _response(202, {
+            'job_id': job_id,
+            'status': 'processing',
+            'message': 'Scenario generation started. Poll /scenarios/status/{job_id} for results.',
+            'poll_url': f'/scenarios/status/{job_id}'
+        })
+
+    except Exception as e:
+        logger.error(f"Error starting async generation: {str(e)}", exc_info=True)
+        return _response(500, {
+            'error': 'Failed to start generation',
+            'message': str(e)
+        })
+
+
+def generate_scenario_async_worker(event, context):
+    """Background worker for async scenario generation."""
+    try:
+        job_id = event['job_id']
+        body = event['body']
+
+        company_name = body.get('company_name', 'Your Organization')
+        industry = body.get('industry', 'Energy')
+        region = body.get('region', 'Global')
+        horizon_years = body.get('horizon_years', 10)
+        strategic_context = body.get('strategic_context', '')
+
+        logger.info(f"[Job {job_id}] Generating for {company_name}")
+
+        bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
+        model_id = 'us.anthropic.claude-opus-4-5-20251101-v1:0'
+
+        context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
+
+        prompt = f"""You are an elite strategic foresight consultant for {company_name}, a {industry} company in {region}. Generate 2 EXHAUSTIVELY DETAILED scenarios for {horizon_years} years.{context_note}
+
+CRITICAL: ALL content specific to {company_name}, {industry}, {region} ONLY.
+
+EXHAUSTIVE DETAIL (2000-5000 words per scenario):
+- 25+ quantitative metrics per scenario
+- Named competitors with market shares
+- Specific regulations with costs and dates
+- Technology adoption curves and cost trajectories
+- Decision trees with NPV/IRR for every branch
+- Sensitivity analysis with exact thresholds
+- Supply chain impacts with supplier names
+- Workforce implications with headcount
+- M&A targets with valuations
+
+Return ONLY valid JSON with exactly 2 scenarios:
+[
+  {{
+    "title": "Scenario name (7-10 words)",
+    "core_logic": "Driving forces (200-300 characters)",
+    "narrative": "EXHAUSTIVE 2000-5000 word analysis...",
+    "probability": 0.XX,
+    "financial_projections": {{
+      "years": [2025, 2026, 2027, 2028, 2029],
+      "revenue_bn": [X, X, X, X, X],
+      "ebitda_margin_pct": [X, X, X, X, X],
+      "capex_bn": [X, X, X, X, X]
+    }},
+    "competitive_landscape": [...],
+    "key_decisions": [...]
+  }}
+]"""
+
+        request_body = {
+            'anthropic_version': 'bedrock-2023-05-31',
+            'max_tokens': 60000,
+            'temperature': 0.8,
+            'messages': [{'role': 'user', 'content': prompt}]
+        }
+
+        logger.info(f"[Job {job_id}] Calling Bedrock model: {model_id}")
+        response = bedrock.invoke_model(
+            modelId=model_id,
+            contentType='application/json',
+            accept='application/json',
+            body=json.dumps(request_body)
+        )
+
+        response_body = json.loads(response['body'].read())
+        ai_response = response_body['content'][0]['text']
+
+        start = ai_response.find('[')
+        end = ai_response.rfind(']') + 1
+        scenarios_json = ai_response[start:end]
+        scenarios = json.loads(scenarios_json)
+
+        logger.info(f"[Job {job_id}] Generated {len(scenarios)} scenarios")
+
+        # Store results in DynamoDB
+        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+        table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
+        table = dynamodb.Table(table_name)
+
+        result = {
+            'scenario_set_id': job_id,
+            'company_name': company_name,
+            'industry': industry,
+            'region': region,
+            'horizon_years': horizon_years,
+            'created_at': datetime.utcnow().isoformat() + 'Z',
+            'ai_generated': True,
+            'generation_method': 'Claude Opus 4.5',
+            'scenarios': scenarios,
+            'status': 'completed'
+        }
+
+        # Get the createdAt timestamp for the update
+        get_response = table.get_item(Key={'scenarioId': job_id})
+        created_at = get_response['Item']['createdAt']
+
+        table.update_item(
+            Key={'scenarioId': job_id, 'createdAt': created_at},
+            UpdateExpression='SET #status = :status, #result = :result, #updated_at = :updated_at',
+            ExpressionAttributeNames={
+                '#status': 'status',
+                '#result': 'result',
+                '#updated_at': 'updated_at'
+            },
+            ExpressionAttributeValues={
+                ':status': 'completed',
+                ':result': result,
+                ':updated_at': datetime.utcnow().isoformat() + 'Z'
+            }
+        )
+
+        logger.info(f"[Job {job_id}] Completed successfully")
+
+    except Exception as e:
+        logger.error(f"[Job {job_id if 'job_id' in locals() else 'unknown'}] ERROR: {str(e)}", exc_info=True)
+
+        # Update DynamoDB with error status
+        if 'job_id' in locals():
+            try:
+                dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+                table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
+                table = dynamodb.Table(table_name)
+
+                get_response = table.get_item(Key={'scenarioId': job_id})
+                created_at = get_response['Item']['createdAt']
+
+                table.update_item(
+                    Key={'scenarioId': job_id, 'createdAt': created_at},
+                    UpdateExpression='SET #status = :status, #error = :error, #updated_at = :updated_at',
+                    ExpressionAttributeNames={
+                        '#status': 'status',
+                        '#error': 'error',
+                        '#updated_at': 'updated_at'
+                    },
+                    ExpressionAttributeValues={
+                        ':status': 'failed',
+                        ':error': str(e),
+                        ':updated_at': datetime.utcnow().isoformat() + 'Z'
+                    }
+                )
+            except Exception as update_error:
+                logger.error(f"Failed to update error status: {str(update_error)}")
+
+
+def get_scenario_status(event, context):
+    """Get status and results of async scenario generation."""
+    try:
+        # Get job_id from path parameters
+        job_id = event.get('pathParameters', {}).get('job_id')
+
+        if not job_id:
+            return _response(400, {'error': 'Missing job_id parameter'})
+
+        # Query DynamoDB
+        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+        table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
+        table = dynamodb.Table(table_name)
+
+        response = table.query(
+            KeyConditionExpression='scenarioId = :job_id',
+            ExpressionAttributeValues={':job_id': job_id},
+            Limit=1
+        )
+
+        if not response.get('Items'):
+            return _response(404, {'error': 'Job not found', 'job_id': job_id})
+
+        item = response['Items'][0]
+        status = item['status']
+
+        if status == 'completed':
+            return _response(200, item.get('result', {}))
+        elif status == 'processing':
+            return _response(202, {
+                'status': 'processing',
+                'message': 'Scenario generation in progress',
+                'job_id': job_id
+            })
+        elif status == 'failed':
+            return _response(500, {
+                'status': 'failed',
+                'error': item.get('error', 'Unknown error'),
+                'job_id': job_id
+            })
+        else:
+            return _response(500, {
+                'status': 'unknown',
+                'job_id': job_id
+            })
+
+    except Exception as e:
+        logger.error(f"Error getting scenario status: {str(e)}", exc_info=True)
+        return _response(500, {
+            'error': 'Failed to get status',
+            'message': str(e)
+        })

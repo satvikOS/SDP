@@ -19,6 +19,10 @@ provider:
           Resource: '*'
         - Effect: Allow
           Action:
+            - lambda:InvokeFunction
+          Resource: 'arn:aws:lambda:${self:provider.region}:*:function:*'
+        - Effect: Allow
+          Action:
             - aws-marketplace:ViewSubscriptions
             - aws-marketplace:Subscribe
           Resource: '*'
@@ -142,6 +146,38 @@ functions:
     events:
       - httpApi:
           path: /models/list
+          method: get
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+
+  startScenarioGenerationAsync:
+    handler: backend/services/bedrock-orchestrator/lambda_handler.start_scenario_generation_async
+    timeout: 30
+    memorySize: 512
+    events:
+      - httpApi:
+          path: /scenarios/generate/async
+          method: post
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+
+  generateScenarioAsyncWorker:
+    handler: backend/services/bedrock-orchestrator/lambda_handler.generate_scenario_async_worker
+    timeout: 900
+    memorySize: 3008
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+
+  getScenarioStatus:
+    handler: backend/services/bedrock-orchestrator/lambda_handler.get_scenario_status
+    timeout: 10
+    memorySize: 256
+    events:
+      - httpApi:
+          path: /scenarios/status/{job_id}
           method: get
     package:
       patterns:
