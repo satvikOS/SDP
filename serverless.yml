@@ -15,6 +15,7 @@ provider:
           Action:
             - bedrock:InvokeModel
             - bedrock:InvokeModelWithResponseStream
+            - bedrock:ListFoundationModels
           Resource: '*'
         - Effect: Allow
           Action:
@@ -124,6 +125,18 @@ functions:
     events:
       - httpApi:
           path: /test/bedrock
+          method: get
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+
+  listAvailableModels:
+    handler: backend/services/bedrock-orchestrator/lambda_handler.list_available_models
+    timeout: 30
+    memorySize: 512
+    events:
+      - httpApi:
+          path: /models/list
           method: get
     package:
       patterns:

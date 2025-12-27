@@ -169,18 +169,68 @@ REMEMBER: 2000-5000 words per narrative. Board-level intelligence worth $100K+ p
         })
 
 
+def list_available_models(event, context):
+    """List all available foundation models and inference profiles in Bedrock."""
+    try:
+        bedrock = boto3.client('bedrock', region_name='us-east-1')
+
+        # Get foundation models
+        logger.info("Fetching available foundation models...")
+        models_response = bedrock.list_foundation_models()
+
+        # Filter for Claude Opus 4 models
+        opus_models = []
+        all_anthropic = []
+
+        for model in models_response.get('modelSummaries', []):
+            model_id = model.get('modelId', '')
+            model_name = model.get('modelName', '')
+            provider = model.get('providerName', '')
+
+            if provider == 'Anthropic':
+                all_anthropic.append({
+                    'modelId': model_id,
+                    'modelName': model_name,
+                    'inferenceTypesSupported': model.get('inferenceTypesSupported', [])
+                })
+
+                if 'opus-4' in model_id.lower() or 'opus-4' in model_name.lower():
+                    opus_models.append({
+                        'modelId': model_id,
+                        'modelName': model_name,
+                        'inferenceTypesSupported': model.get('inferenceTypesSupported', [])
+                    })
+
+        return _response(200, {
+            'status': 'SUCCESS',
+            'opus_4_models': opus_models,
+            'all_anthropic_models': all_anthropic,
+            'total_models': len(models_response.get('modelSummaries', []))
+        })
+
+    except Exception as e:
+        error_type = type(e).__name__
+        error_msg = str(e)
+
+        return _response(200, {
+            'status': 'FAILED',
+            'error_type': error_type,
+            'error_message': error_msg
+        })
+
+
 def test_bedrock(event, context):
     """Test Bedrock access with simple request."""
     try:
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
-        
+
         # Try simple test with Opus 4.5
         test_request = {
             'anthropic_version': 'bedrock-2023-05-31',
             'max_tokens': 100,
             'messages': [{'role': 'user', 'content': 'Say hello'}]
         }
-        
+
         logger.info("Testing Bedrock with Claude Opus 4.5...")
         response = bedrock.invoke_model(
             modelId='us.anthropic.claude-opus-4-5-20241101-v2:0',  # Cross-region inference profile
@@ -188,20 +238,20 @@ def test_bedrock(event, context):
             accept='application/json',
             body=json.dumps(test_request)
         )
-        
+
         response_body = json.loads(response['body'].read())
-        
+
         return _response(200, {
             'status': 'SUCCESS',
             'message': 'Claude Opus 4.5 is accessible',
             'model': 'anthropic.claude-opus-4-5-20251101-v1:0',
             'response_preview': response_body['content'][0]['text'][:100]
         })
-        
+
     except Exception as e:
         error_type = type(e).__name__
         error_msg = str(e)
-        
+
         return _response(200, {  # Return 200 so we can see the error
             'status': 'FAILED',
             'error_type': error_type,
