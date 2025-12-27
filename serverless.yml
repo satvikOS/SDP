@@ -19,6 +19,11 @@ provider:
           Resource: '*'
         - Effect: Allow
           Action:
+            - aws-marketplace:ViewSubscriptions
+            - aws-marketplace:Subscribe
+          Resource: '*'
+        - Effect: Allow
+          Action:
             - s3:GetObject
             - s3:PutObject
             - s3:ListBucket
