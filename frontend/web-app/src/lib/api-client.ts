@@ -107,11 +107,33 @@ class ApiClient {
   }
 
   /**
-   * Generate complete scenario set (full pipeline)
+   * Generate complete scenario set (async with polling)
    */
   async generateScenarios(request: ScenarioGenerationRequest): Promise<ScenarioSet> {
-    const response = await this.client.post('/scenarios/generate', request);
-    return response.data;
+    // Start async generation
+    const startResponse = await this.client.post('/scenarios/generate/async', request);
+    const jobId = startResponse.data.job_id;
+
+    // Poll for completion
+    const pollInterval = 2000; // 2 seconds
+    const maxAttempts = 300; // 10 minutes max (300 * 2s = 600s)
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      await new Promise(resolve => setTimeout(resolve, pollInterval));
+
+      const statusResponse = await this.client.get(`/scenarios/status/${jobId}`);
+
+      if (statusResponse.status === 200) {
+        // Completed successfully
+        return statusResponse.data;
+      } else if (statusResponse.status === 500) {
+        // Failed
+        throw new Error(statusResponse.data.error || 'Scenario generation failed');
+      }
+      // Status 202 means still processing, continue polling
+    }
+
+    throw new Error('Scenario generation timed out after 10 minutes');
   }
 
   /**
