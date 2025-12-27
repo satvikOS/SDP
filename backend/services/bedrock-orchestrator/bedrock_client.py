@@ -13,16 +13,15 @@ class BedrockScenarioGenerator:
     def __init__(self):
         self.bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
 
-        # ENTERPRISE MODE: Claude 3 Opus for maximum depth and detail
-        # - Deepest reasoning capability for strategic foresight
-        # - 2-3x more detailed analysis than Sonnet
-        # - Cost: ~$15/MTok vs $3/MTok (irrelevant for $10K-$100K enterprise clients)
-        # - Speed: 2-3x slower (client prefers quality over latency)
-        self.model_id = 'anthropic.claude-3-opus-20240229-v1:0'
+        # ULTIMATE ENTERPRISE MODE: Claude Opus 4.5 - Most powerful model available
+        # - Absolute maximum reasoning depth and strategic foresight capability
+        # - Upwards of 1000s of words with no artificial limits
+        # - Client demands exhaustive detail regardless of cost or latency
+        self.model_id = 'us.anthropic.claude-opus-4-5-v1:0'  # Opus 4.5 in Bedrock
 
-        # Maximum tokens for exhaustive, Board-level strategic analysis
-        self.max_tokens = 32000
-        self.temperature = 0.8  # Higher for nuanced, creative strategic scenarios
+        # NO LIMIT on output - client wants 1000s of words
+        self.max_tokens = 200000  # Maximum possible - no artificial constraints
+        self.temperature = 0.8  # Nuanced strategic scenarios
 
     def generate_scenarios(
         self,
@@ -132,44 +131,101 @@ STRATEGIC CONTEXT PROVIDED BY CLIENT:
 You MUST address the specific strategic questions, metrics, and concerns mentioned in this context throughout your scenarios.
 """
 
-        prompt = f"""You are an elite strategic foresight consultant working for {company_name}, a leading {industry} company operating in {region}. You must generate 4 distinct, EXHAUSTIVELY DETAILED strategic scenarios for the next {horizon_years} years.
+        prompt = f"""You are an elite strategic foresight consultant working exclusively for {company_name}, a {industry} company operating in {region}. Generate 4 EXHAUSTIVELY DETAILED strategic scenarios for the next {horizon_years} years.
 {context_section}
 
-CRITICAL REQUIREMENTS - MAXIMUM DETAIL:
-1. **Industry Specificity**: Use actual terminology, regulations, technologies, and competitive dynamics specific to {industry} in {region}
-2. **Quantitative Rigor**: MANDATORY - Include specific numbers: costs in $ millions/billions, exact percentages, precise timelines, ROI calculations, NPV analysis, market shares, EBITDA margins, capex requirements
-3. **Strategic Decisions**: Frame each scenario around 3-5 specific multi-billion dollar capital allocation decisions {company_name} executives must make
-4. **Company-Specific**: Reference {company_name} throughout. NOT generic "companies" or "organizations"
-5. **Actionable Intelligence**: Board-level decisions with quantified tradeoffs, risk analysis, competitive positioning
+CRITICAL: OUTPUT MUST BE SPECIFIC TO {company_name}, {industry}, {region} ONLY. NO GENERIC CONTENT.
 
-EXHAUSTIVE DETAIL REQUIREMENTS (NO BREVITY - MAXIMUM LENGTH):
-- Each narrative must be 800-1200 words minimum
-- Include at least 10 specific quantitative metrics per scenario
-- Name actual competitors, regulations, technologies, geographic locations
-- Provide decision trees with quantified outcomes for each branch
-- Include sensitivity analysis (e.g., "If carbon pricing exceeds $X/tonne, then...")
-- Specify exact timelines for regulatory changes, technology maturity, market shifts
-- Detail supply chain impacts, workforce requirements, M&A implications
+EXHAUSTIVE DETAIL REQUIREMENTS (UPWARDS OF 1000s OF WORDS - NO LIMIT):
+- Each narrative: 2000-5000 words (NO brevity, exhaustive depth)
+- Minimum 25+ specific quantitative metrics per scenario
+- Named competitors with exact market share data
+- Specific regulations with compliance costs and dates
+- Technologies with adoption curves, cost trajectories, maturity timelines
+- Decision trees with quantified NPV/IRR for every branch
+- Sensitivity analysis with exact thresholds
+- Supply chain impacts with supplier names and geographies
+- Workforce implications with headcount and skill requirements
+- M&A targets with valuation ranges and strategic rationale
 
-For {industry} specifically, incorporate:
-- Regulatory frameworks with exact compliance costs
-- Industry KPIs with benchmark data
-- Named competitors with market share data where relevant
-- Emerging technologies with adoption curves and cost trajectories
-- Geopolitical/macroeconomic scenarios with GDP impacts, trade flow changes
+STRUCTURED DATA FOR VISUALIZATIONS (MANDATORY):
+Include these data structures for rendering charts/graphs:
+1. **Financial Metrics Table**: Annual projections (revenue, EBITDA, FCF, capex)
+2. **Decision Tree Data**: JSON tree structure with nodes, branches, outcomes, probabilities
+3. **Timeline Chart**: Key milestones with dates and dependencies
+4. **Sensitivity Analysis Matrix**: Variables vs outcomes with exact values
+5. **Competitive Positioning**: Market share data for visualization
+6. **Risk Heatmap**: Risk categories with probability and impact scores
 
 OUTPUT FORMAT:
-Return ONLY valid JSON array with exactly 4 scenarios:
+Return ONLY valid JSON with exactly 4 scenarios. Each scenario MUST include structured data for visualizations:
+
 [
   {{
-    "title": "Compelling scenario name (7-10 words)",
-    "core_logic": "Detailed driving force explanation (200-250 characters)",
-    "narrative": "EXHAUSTIVE 800-1200 word narrative with maximum quantitative detail. Include: (1) Opening context with current baseline metrics, (2) 3-5 specific strategic decisions {company_name} must make with exact dollar amounts, (3) Competitive dynamics with named players, (4) Regulatory/technology timeline with specific dates, (5) Quantified outcomes for different decision paths with NPV/IRR analysis, (6) Risk factors with probability-weighted scenarios, (7) Implementation roadmap with phase gates and capital requirements. Use specific numbers for EVERYTHING - costs, percentages, timelines, market sizes, growth rates.",
-    "probability": 0.XX
+    "title": "Scenario name (7-10 words)",
+    "core_logic": "Driving forces (200-300 characters)",
+    "narrative": "EXHAUSTIVE 2000-5000 word Board-level narrative. NO LIMITS ON LENGTH. Include: (1) Current baseline with {company_name}'s exact market position, financials, competitive standing in {industry}/{region}, (2) 5-7 specific multi-billion dollar strategic decisions with exact amounts and tradeoffs, (3) Competitive dynamics naming every major player with market shares and strategic moves, (4) Regulatory timeline with exact dates and compliance costs, (5) Technology roadmap with maturity curves and adoption thresholds, (6) Quantified outcomes for EVERY decision path with full NPV/IRR/payback analysis, (7) Risk scenarios with probability-weighted outcomes, (8) Implementation roadmap with detailed phase gates, capital requirements, resource allocations, (9) Organizational implications with exact headcount, skills, structure changes, (10) M&A opportunities with specific targets and valuations. MAXIMUM DETAIL - this is $100K+ Board-level intelligence.",
+
+    "probability": 0.XX,
+
+    "financial_projections": {{
+      "years": [2025, 2026, 2027, ...],
+      "revenue_bn": [X, X, X, ...],
+      "ebitda_margin_pct": [X, X, X, ...],
+      "capex_bn": [X, X, X, ...],
+      "fcf_bn": [X, X, X, ...]
+    }},
+
+    "decision_tree": {{
+      "root": {{
+        "decision": "Primary strategic choice for {company_name}",
+        "options": [
+          {{
+            "choice": "Option A description",
+            "investment_bn": X,
+            "branches": [
+              {{
+                "outcome": "Outcome description",
+                "probability": 0.X,
+                "npv_bn": X,
+                "irr_pct": X
+              }}
+            ]
+          }}
+        ]
+      }}
+    }},
+
+    "timeline_milestones": [
+      {{"year": 2025, "quarter": "Q2", "event": "Specific milestone for {company_name}", "impact": "Quantified impact"}},
+      ...
+    ],
+
+    "sensitivity_matrix": {{
+      "variables": ["Carbon price $/ton", "Commodity cost index", ...],
+      "scenarios": [
+        {{"variable_values": [X, X, ...], "outcome_npv_bn": X, "outcome_irr_pct": X}},
+        ...
+      ]
+    }},
+
+    "competitive_landscape": [
+      {{"company": "Competitor name", "market_share_pct": X, "strategic_move": "Description"}},
+      ...
+    ],
+
+    "risk_heatmap": [
+      {{"risk": "Specific risk", "probability_pct": X, "impact_bn": X, "mitigation": "Strategy"}},
+      ...
+    ]
   }}
 ]
 
-REMEMBER: Maximum exhaustive detail. No concern for brevity. This is Board-level strategic intelligence worth $100K+ per analysis."""
+REMEMBER:
+- 2000-5000 words per narrative (upwards of 1000s of words total)
+- ALL content specific to {company_name}, {industry}, {region} - NO generic themes
+- Complete structured data for ALL visualizations
+- Board-level intelligence worth $100K+ per analysis"""
 
         return prompt
 
