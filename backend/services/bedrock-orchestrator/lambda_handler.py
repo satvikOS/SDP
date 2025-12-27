@@ -75,7 +75,7 @@ def generate_scenario(event, context):
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
-        prompt = f"""You are an elite strategic foresight consultant for {company_name}, a {industry} company in {region}. Generate 4 EXHAUSTIVELY DETAILED scenarios for {horizon_years} years.{context_note}
+        prompt = f"""You are an elite strategic foresight consultant for {company_name}, a {industry} company in {region}. Generate 2 EXHAUSTIVELY DETAILED scenarios for {horizon_years} years.{context_note}
 
 CRITICAL: ALL content specific to {company_name}, {industry}, {region} ONLY.
 
@@ -90,7 +90,7 @@ EXHAUSTIVE DETAIL (2000-5000 words per scenario):
 - Workforce implications with headcount
 - M&A targets with valuations
 
-Return ONLY valid JSON with exactly 4 scenarios:
+Return ONLY valid JSON with exactly 2 scenarios:
 [
   {{
     "title": "Scenario name (7-10 words)",
