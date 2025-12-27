@@ -8,18 +8,14 @@ provider:
   region: us-east-1
   stage: ${opt:stage, 'dev'}
 
-  # IAM Permissions
   iam:
     role:
       statements:
-        # Bedrock access
         - Effect: Allow
           Action:
             - bedrock:InvokeModel
             - bedrock:InvokeModelWithResponseStream
           Resource: '*'
-
-        # S3 access for data lake
         - Effect: Allow
           Action:
             - s3:GetObject
@@ -28,8 +24,6 @@ provider:
           Resource:
             - arn:aws:s3:::ai-foresight-data-${self:provider.stage}
             - arn:aws:s3:::ai-foresight-data-${self:provider.stage}/*
-
-        # DynamoDB access
         - Effect: Allow
           Action:
             - dynamodb:PutItem
@@ -43,7 +37,6 @@ provider:
             - arn:aws:dynamodb:${self:provider.region}:*:table/ai-foresight-scenarios-${self:provider.stage}
             - arn:aws:dynamodb:${self:provider.region}:*:table/ai-foresight-scenarios-${self:provider.stage}/index/*
 
-  # Environment variables
   environment:
     STAGE: ${self:provider.stage}
     COST_TRACKING_ENABLED: 'true'
@@ -51,12 +44,10 @@ provider:
     ENABLE_MODEL_FALLBACK: 'true'
     LOG_LEVEL: INFO
 
-  # API Gateway configuration
   httpApi:
     cors: true
     metrics: true
 
-# Package configuration
 package:
   individually: true
   patterns:
@@ -66,7 +57,6 @@ package:
     - '!__pycache__/**'
 
 functions:
-  # Health check endpoint
   health:
     handler: backend/services/bedrock-orchestrator/lambda_handler.health
     timeout: 10
@@ -78,9 +68,7 @@ functions:
     package:
       patterns:
         - backend/services/bedrock-orchestrator/**
-        - backend/shared/**
 
-  # List available agents
   listAgents:
     handler: backend/services/bedrock-orchestrator/lambda_handler.list_agents
     timeout: 10
@@ -92,12 +80,10 @@ functions:
     package:
       patterns:
         - backend/services/bedrock-orchestrator/**
-        - backend/shared/**
 
-  # Execute agent (main function)
   executeAgent:
     handler: backend/services/bedrock-orchestrator/lambda_handler.execute_agent
-    timeout: 900  # 15 minutes max
+    timeout: 900
     memorySize: 2048
     events:
       - httpApi:
@@ -106,9 +92,7 @@ functions:
     package:
       patterns:
         - backend/services/bedrock-orchestrator/**
-        - backend/shared/**
 
-  # Get cost report
   costReport:
     handler: backend/services/bedrock-orchestrator/lambda_handler.cost_report
     timeout: 10
@@ -120,88 +104,19 @@ functions:
     package:
       patterns:
         - backend/services/bedrock-orchestrator/**
-        - backend/shared/**
 
-  # Generate scenario (full workflow)
   generateScenario:
     handler: backend/services/bedrock-orchestrator/lambda_handler.generate_scenario
-    timeout: 900  # 15 minutes
-    memorySize: 3008  # Max for better performance
+    timeout: 900
+    memorySize: 3008
     events:
       - httpApi:
           path: /scenarios/generate
-  
-  # Test Bedrock access
-  testBedrock:
-    handler: backend/services/bedrock-orchestrator/lambda_handler.test_bedrock
-    timeout: 30
-    memorySize: 512
-    events:
-      - httpApi:
-          path: /test/bedrock
-          method: get
-    package:
-      patterns:
-        - backend/services/bedrock-orchestrator/**
           method: post
-  
-  # Test Bedrock access
-  testBedrock:
-    handler: backend/services/bedrock-orchestrator/lambda_handler.test_bedrock
-    timeout: 30
-    memorySize: 512
-    events:
-      - httpApi:
-          path: /test/bedrock
-          method: get
     package:
       patterns:
         - backend/services/bedrock-orchestrator/**
-    package:
-  
-  # Test Bedrock access
-  testBedrock:
-    handler: backend/services/bedrock-orchestrator/lambda_handler.test_bedrock
-    timeout: 30
-    memorySize: 512
-    events:
-      - httpApi:
-          path: /test/bedrock
-          method: get
-    package:
-      patterns:
-        - backend/services/bedrock-orchestrator/**
-      patterns:
-  
-  # Test Bedrock access
-  testBedrock:
-    handler: backend/services/bedrock-orchestrator/lambda_handler.test_bedrock
-    timeout: 30
-    memorySize: 512
-    events:
-      - httpApi:
-          path: /test/bedrock
-          method: get
-    package:
-      patterns:
-        - backend/services/bedrock-orchestrator/**
-        - backend/services/bedrock-orchestrator/**
-  
-  # Test Bedrock access
-  testBedrock:
-    handler: backend/services/bedrock-orchestrator/lambda_handler.test_bedrock
-    timeout: 30
-    memorySize: 512
-    events:
-      - httpApi:
-          path: /test/bedrock
-          method: get
-    package:
-      patterns:
-        - backend/services/bedrock-orchestrator/**
-        - backend/shared/**
-  
-  # Test Bedrock access
+
   testBedrock:
     handler: backend/services/bedrock-orchestrator/lambda_handler.test_bedrock
     timeout: 30
@@ -214,10 +129,8 @@ functions:
       patterns:
         - backend/services/bedrock-orchestrator/**
 
-# Resources (infrastructure)
 resources:
   Resources:
-    # S3 Bucket for data lake
     DataLakeBucket:
       Type: AWS::S3::Bucket
       Properties:
@@ -234,12 +147,11 @@ resources:
             - ServerSideEncryptionByDefault:
                 SSEAlgorithm: AES256
 
-    # DynamoDB table for caching (cheaper than ElastiCache for low volume)
     CacheTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ai-foresight-cache-${self:provider.stage}
-        BillingMode: PAY_PER_REQUEST  # Only pay for what you use
+        BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: cacheKey
             AttributeType: S
@@ -250,7 +162,6 @@ resources:
           AttributeName: ttl
           Enabled: true
 
-    # DynamoDB table for scenarios
     ScenariosTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -272,30 +183,12 @@ resources:
             Projection:
               ProjectionType: ALL
 
-  # Outputs
   Outputs:
     ApiEndpoint:
       Description: API Gateway endpoint URL
       Value:
         Fn::Sub: https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com
-
     DataLakeBucket:
       Description: S3 Data Lake Bucket
       Value:
         Ref: DataLakeBucket
-
-# Plugins disabled for initial deployment - will add later
-# plugins:
-#   - serverless-python-requirements
-#   - serverless-offline
-
-# custom:
-#   pythonRequirements:
-#     dockerizePip: true
-#     layer: true
-#     zip: true
-#     slim: true
-#     strip: false
-#     noDeploy:
-#       - boto3
-#       - botocore
