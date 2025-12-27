@@ -340,43 +340,51 @@ def generate_scenario_async_worker(event, context):
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
-        prompt = f"""You are an elite strategic foresight consultant for {company_name}, a {industry} company in {region}. Generate 2 EXHAUSTIVELY DETAILED scenarios for {horizon_years} years.{context_note}
+        prompt = f"""You are a strategic foresight consultant. Generate 4 concise, data-driven scenarios for {company_name} ({industry}, {region}) over {horizon_years} years.{context_note}
 
-CRITICAL: ALL content specific to {company_name}, {industry}, {region} ONLY.
+Requirements:
+- Each scenario: 300-500 words (executive summary style)
+- Focus on structured data for charts/tables/visualizations
+- Include only peer-reviewed sources or authoritative industry reports (APA citations)
+- Provide quantitative data for graphing
 
-EXHAUSTIVE DETAIL (2000-5000 words per scenario):
-- 25+ quantitative metrics per scenario
-- Named competitors with market shares
-- Specific regulations with costs and dates
-- Technology adoption curves and cost trajectories
-- Decision trees with NPV/IRR for every branch
-- Sensitivity analysis with exact thresholds
-- Supply chain impacts with supplier names
-- Workforce implications with headcount
-- M&A targets with valuations
-
-Return ONLY valid JSON with exactly 2 scenarios:
+Return ONLY valid JSON with exactly 4 scenarios:
 [
   {{
-    "title": "Scenario name (7-10 words)",
-    "core_logic": "Driving forces (200-300 characters)",
-    "narrative": "EXHAUSTIVE 2000-5000 word analysis...",
+    "title": "Scenario Name (5-8 words)",
     "probability": 0.XX,
+    "summary": "Executive summary (300-500 words) covering key drivers, strategic implications, and recommended actions for {company_name}",
+    "timeline": [
+      {{"year": 2025, "milestone": "Key event", "impact": "Brief impact"}},
+      {{"year": 2027, "milestone": "Key event", "impact": "Brief impact"}},
+      {{"year": 2030, "milestone": "Key event", "impact": "Brief impact"}}
+    ],
     "financial_projections": {{
-      "years": [2025, 2026, 2027, 2028, 2029],
-      "revenue_bn": [X, X, X, X, X],
-      "ebitda_margin_pct": [X, X, X, X, X],
-      "capex_bn": [X, X, X, X, X]
+      "years": [2025, 2026, 2027, 2028, 2029, 2030],
+      "revenue_bn": [X, X, X, X, X, X],
+      "ebitda_margin_pct": [X, X, X, X, X, X],
+      "market_share_pct": [X, X, X, X, X, X]
     }},
-    "competitive_landscape": [...],
-    "key_decisions": [...]
+    "competitive_landscape": [
+      {{"company": "Competitor", "market_share_2025": X, "market_share_2030": X, "strategy": "Brief"}}
+    ],
+    "key_metrics": {{
+      "technology_adoption_pct": [X, X, X, X, X, X],
+      "regulatory_cost_bn": [X, X, X, X, X, X]
+    }},
+    "strategic_decisions": [
+      {{"decision": "Action", "timing": "Year", "investment_bn": X, "roi_pct": X}}
+    ],
+    "sources": [
+      "Author, A. (Year). Title. Journal. DOI/URL"
+    ]
   }}
 ]"""
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
-            'max_tokens': 60000,
-            'temperature': 0.8,
+            'max_tokens': 30000,  # 4 scenarios × ~500 words × ~1.3 tokens/word ≈ 2600 tokens per scenario
+            'temperature': 0.7,  # Slightly lower for more focused outputs
             'messages': [{'role': 'user', 'content': prompt}]
         }
 
