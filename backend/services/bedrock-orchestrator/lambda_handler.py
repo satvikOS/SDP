@@ -72,7 +72,7 @@ def generate_scenario(event, context):
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
         model_id = 'anthropic.claude-opus-4-5-20251101-v1:0'
 
-        context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nYou MUST address these specific questions throughout." if strategic_context else ""
+        context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
         prompt = f"""You are an elite strategic foresight consultant for {company_name}, a {industry} company in {region}. Generate 4 EXHAUSTIVELY DETAILED scenarios for {horizon_years} years.{context_note}
 
@@ -81,7 +81,7 @@ CRITICAL: ALL content specific to {company_name}, {industry}, {region} ONLY.
 EXHAUSTIVE DETAIL (2000-5000 words per scenario):
 - 25+ quantitative metrics per scenario
 - Named competitors with market shares
-- Specific regulations with costs and dates  
+- Specific regulations with costs and dates
 - Technology adoption curves and cost trajectories
 - Decision trees with NPV/IRR for every branch
 - Sensitivity analysis with exact thresholds
@@ -94,7 +94,7 @@ Return ONLY valid JSON with exactly 4 scenarios:
   {{
     "title": "Scenario name (7-10 words)",
     "core_logic": "Driving forces (200-300 characters)",
-    "narrative": "EXHAUSTIVE 2000-5000 word analysis. Include: (1) {company_name}'s exact market position and financials in {industry}/{region}, (2) 5-7 specific multi-billion dollar strategic decisions with exact tradeoffs, (3) Competitive dynamics naming every major player with market shares, (4) Regulatory timeline with exact dates and compliance costs, (5) Technology roadmap with maturity curves, (6) Quantified NPV/IRR/payback analysis for EVERY decision path, (7) Probability-weighted risk scenarios, (8) Implementation roadmap with phase gates and capital requirements, (9) Organizational implications with headcount and skills, (10) M&A opportunities with specific targets and valuations. MAXIMUM DETAIL.",
+    "narrative": "EXHAUSTIVE 2000-5000 word analysis with: (1) {company_name}'s exact market position in {industry}/{region}, (2) 5-7 specific multi-billion dollar strategic decisions with exact tradeoffs, (3) Competitive dynamics naming every major player with market shares, (4) Regulatory timeline with exact dates and compliance costs, (5) Technology roadmap with maturity curves, (6) Quantified NPV/IRR/payback analysis for EVERY decision path, (7) Probability-weighted risk scenarios, (8) Implementation roadmap with phase gates and capital requirements, (9) Organizational implications with headcount and skills, (10) M&A opportunities with specific targets and valuations. MAXIMUM DETAIL.",
     "probability": 0.XX,
     "financial_projections": {{
       "years": [2025, 2026, 2027, 2028, 2029],
@@ -120,7 +120,7 @@ REMEMBER: 2000-5000 words per narrative. Board-level intelligence worth $100K+ p
             'messages': [{'role': 'user', 'content': prompt}]
         }
 
-        logger.info("Calling Bedrock...")
+        logger.info(f"Calling Bedrock model: {model_id}")
         response = bedrock.invoke_model(
             modelId=model_id,
             contentType='application/json',
@@ -136,7 +136,7 @@ REMEMBER: 2000-5000 words per narrative. Board-level intelligence worth $100K+ p
         scenarios_json = ai_response[start:end]
         scenarios = json.loads(scenarios_json)
 
-        logger.info(f"Generated {len(scenarios)} scenarios")
+        logger.info(f"✓ Generated {len(scenarios)} scenarios")
 
         result = {
             'scenario_set_id': str(uuid.uuid4()),
@@ -154,9 +154,15 @@ REMEMBER: 2000-5000 words per narrative. Board-level intelligence worth $100K+ p
         return _response(200, result)
 
     except Exception as e:
-        logger.error(f"Error: {e}", exc_info=True)
+        error_message = str(e)
+        error_type = type(e).__name__
+        
+        logger.error(f"ERROR ({error_type}): {error_message}", exc_info=True)
+        
+        # Return detailed error for debugging
         return _response(500, {
-            'error': 'Failed to generate scenario',
-            'message': str(e),
-            'details': 'Check Bedrock model access for claude-opus-4-5-20251101-v1:0'
+            'error': 'Bedrock API Error',
+            'error_type': error_type,
+            'message': error_message,
+            'fix': 'Go to AWS Bedrock Console → Model access → Enable Claude Opus 4.5' if 'ResourceNotFoundException' in error_type or 'AccessDeniedException' in error_type else 'Check CloudWatch logs for details'
         })
