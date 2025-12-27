@@ -70,7 +70,8 @@ def generate_scenario(event, context):
         logger.info(f"Generating for {company_name}")
 
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
-        model_id = 'anthropic.claude-opus-4-5-20251101-v1:0'
+        # Use cross-region inference profile for Opus 4.5 (required for on-demand)
+        model_id = 'us.anthropic.claude-opus-4-5-v1:0'
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
@@ -182,7 +183,7 @@ def test_bedrock(event, context):
         
         logger.info("Testing Bedrock with Claude Opus 4.5...")
         response = bedrock.invoke_model(
-            modelId='anthropic.claude-opus-4-5-20251101-v1:0',
+            modelId='us.anthropic.claude-opus-4-5-v1:0',  # Cross-region inference profile
             contentType='application/json',
             accept='application/json',
             body=json.dumps(test_request)
