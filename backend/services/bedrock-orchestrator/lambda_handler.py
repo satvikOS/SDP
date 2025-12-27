@@ -166,3 +166,44 @@ REMEMBER: 2000-5000 words per narrative. Board-level intelligence worth $100K+ p
             'message': error_message,
             'fix': 'Go to AWS Bedrock Console → Model access → Enable Claude Opus 4.5' if 'ResourceNotFoundException' in error_type or 'AccessDeniedException' in error_type else 'Check CloudWatch logs for details'
         })
+
+
+def test_bedrock(event, context):
+    """Test Bedrock access with simple request."""
+    try:
+        bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
+        
+        # Try simple test with Opus 4.5
+        test_request = {
+            'anthropic_version': 'bedrock-2023-05-31',
+            'max_tokens': 100,
+            'messages': [{'role': 'user', 'content': 'Say hello'}]
+        }
+        
+        logger.info("Testing Bedrock with Claude Opus 4.5...")
+        response = bedrock.invoke_model(
+            modelId='anthropic.claude-opus-4-5-20251101-v1:0',
+            contentType='application/json',
+            accept='application/json',
+            body=json.dumps(test_request)
+        )
+        
+        response_body = json.loads(response['body'].read())
+        
+        return _response(200, {
+            'status': 'SUCCESS',
+            'message': 'Claude Opus 4.5 is accessible',
+            'model': 'anthropic.claude-opus-4-5-20251101-v1:0',
+            'response_preview': response_body['content'][0]['text'][:100]
+        })
+        
+    except Exception as e:
+        error_type = type(e).__name__
+        error_msg = str(e)
+        
+        return _response(200, {  # Return 200 so we can see the error
+            'status': 'FAILED',
+            'error_type': error_type,
+            'error_message': error_msg,
+            'fix': 'Model access may still be propagating (wait 2-5 minutes) or check IAM permissions'
+        })

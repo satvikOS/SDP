@@ -130,11 +130,89 @@ functions:
     events:
       - httpApi:
           path: /scenarios/generate
+  
+  # Test Bedrock access
+  testBedrock:
+    handler: backend/services/bedrock-orchestrator/lambda_handler.test_bedrock
+    timeout: 30
+    memorySize: 512
+    events:
+      - httpApi:
+          path: /test/bedrock
+          method: get
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
           method: post
+  
+  # Test Bedrock access
+  testBedrock:
+    handler: backend/services/bedrock-orchestrator/lambda_handler.test_bedrock
+    timeout: 30
+    memorySize: 512
+    events:
+      - httpApi:
+          path: /test/bedrock
+          method: get
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+    package:
+  
+  # Test Bedrock access
+  testBedrock:
+    handler: backend/services/bedrock-orchestrator/lambda_handler.test_bedrock
+    timeout: 30
+    memorySize: 512
+    events:
+      - httpApi:
+          path: /test/bedrock
+          method: get
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+      patterns:
+  
+  # Test Bedrock access
+  testBedrock:
+    handler: backend/services/bedrock-orchestrator/lambda_handler.test_bedrock
+    timeout: 30
+    memorySize: 512
+    events:
+      - httpApi:
+          path: /test/bedrock
+          method: get
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+        - backend/services/bedrock-orchestrator/**
+  
+  # Test Bedrock access
+  testBedrock:
+    handler: backend/services/bedrock-orchestrator/lambda_handler.test_bedrock
+    timeout: 30
+    memorySize: 512
+    events:
+      - httpApi:
+          path: /test/bedrock
+          method: get
     package:
       patterns:
         - backend/services/bedrock-orchestrator/**
         - backend/shared/**
+  
+  # Test Bedrock access
+  testBedrock:
+    handler: backend/services/bedrock-orchestrator/lambda_handler.test_bedrock
+    timeout: 30
+    memorySize: 512
+    events:
+      - httpApi:
+          path: /test/bedrock
+          method: get
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
 
 # Resources (infrastructure)
 resources:
