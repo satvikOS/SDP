@@ -1,4 +1,4 @@
-"""AWS Lambda handlers for Bedrock Orchestrator - All in one file."""
+"""AWS Lambda handlers for Bedrock Orchestrator."""
 
 import json
 import logging
@@ -8,13 +8,11 @@ import uuid
 from typing import Dict, List, Any
 from datetime import datetime
 
-# Configure logging
 logger = logging.getLogger()
 logger.setLevel(os.getenv('LOG_LEVEL', 'INFO'))
 
 
 def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
-    """Create API Gateway response."""
     return {
         'statusCode': status_code,
         'headers': {
@@ -28,71 +26,36 @@ def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def health(event, context):
-    """Health check endpoint."""
     try:
         return _response(200, {
             'status': 'healthy',
             'timestamp': datetime.utcnow().isoformat(),
-            'service': 'ai-foresight-platform',
-            'bedrock_available': True,
             'model': 'claude-opus-4-5',
-            'stage': os.getenv('STAGE', 'dev')
+            'bedrock_available': True
         })
     except Exception as e:
-        logger.error(f"Health check error: {e}")
-        return _response(500, {
-            'status': 'unhealthy',
-            'error': str(e)
-        })
+        logger.error(f"Health error: {e}")
+        return _response(500, {'error': str(e)})
 
 
 def list_agents(event, context):
-    """List available agent types."""
     try:
-        agents = [
-            'signal_synthesizer',
-            'driver_extractor',
-            'scenario_constructor',
-            'narrative_generator',
-            'signpost_designer',
-            'action_planner',
-            'quality_critic'
-        ]
-        return _response(200, {'agents': agents})
+        return _response(200, {'agents': ['scenario_generator']})
     except Exception as e:
         logger.error(f"List agents error: {e}")
         return _response(500, {'error': str(e)})
 
 
 def execute_agent(event, context):
-    """Execute an agent - placeholder."""
-    try:
-        return _response(501, {
-            'error': 'Not Implemented',
-            'message': 'Use /scenarios/generate'
-        })
-    except Exception as e:
-        logger.error(f"Execute agent error: {e}")
-        return _response(500, {'error': str(e)})
+    return _response(501, {'message': 'Use /scenarios/generate'})
 
 
 def cost_report(event, context):
-    """Get cost tracking report."""
-    try:
-        return _response(200, {
-            'total_cost_usd': 0.00,
-            'requests_today': 0,
-            'message': 'Cost tracking not yet implemented'
-        })
-    except Exception as e:
-        logger.error(f"Cost report error: {e}")
-        return _response(500, {'error': str(e)})
+    return _response(200, {'total_cost_usd': 0.00})
 
 
 def generate_scenario(event, context):
-    """Generate scenarios using Claude Opus 4.5."""
     try:
-        # Parse request
         if isinstance(event.get('body'), str):
             body = json.loads(event['body'])
         else:
@@ -104,18 +67,52 @@ def generate_scenario(event, context):
         horizon_years = body.get('horizon_years', 10)
         strategic_context = body.get('strategic_context', '')
 
-        logger.info(f"Generating scenarios for {company_name}")
+        logger.info(f"Generating for {company_name}")
 
-        # Initialize Bedrock client
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
         model_id = 'anthropic.claude-opus-4-5-20251101-v1:0'
 
-        # Build prompt
-        prompt = f"""Generate 4 strategic scenarios for {company_name} ({industry}, {region}, {horizon_years} years).
+        context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nYou MUST address these specific questions throughout." if strategic_context else ""
 
-Return ONLY valid JSON: [{{"title": "...", "core_logic": "...", "narrative": "2000+ word detailed analysis", "probability": 0.XX}}]"""
+        prompt = f"""You are an elite strategic foresight consultant for {company_name}, a {industry} company in {region}. Generate 4 EXHAUSTIVELY DETAILED scenarios for {horizon_years} years.{context_note}
 
-        # Call Bedrock
+CRITICAL: ALL content specific to {company_name}, {industry}, {region} ONLY.
+
+EXHAUSTIVE DETAIL (2000-5000 words per scenario):
+- 25+ quantitative metrics per scenario
+- Named competitors with market shares
+- Specific regulations with costs and dates  
+- Technology adoption curves and cost trajectories
+- Decision trees with NPV/IRR for every branch
+- Sensitivity analysis with exact thresholds
+- Supply chain impacts with supplier names
+- Workforce implications with headcount
+- M&A targets with valuations
+
+Return ONLY valid JSON with exactly 4 scenarios:
+[
+  {{
+    "title": "Scenario name (7-10 words)",
+    "core_logic": "Driving forces (200-300 characters)",
+    "narrative": "EXHAUSTIVE 2000-5000 word analysis. Include: (1) {company_name}'s exact market position and financials in {industry}/{region}, (2) 5-7 specific multi-billion dollar strategic decisions with exact tradeoffs, (3) Competitive dynamics naming every major player with market shares, (4) Regulatory timeline with exact dates and compliance costs, (5) Technology roadmap with maturity curves, (6) Quantified NPV/IRR/payback analysis for EVERY decision path, (7) Probability-weighted risk scenarios, (8) Implementation roadmap with phase gates and capital requirements, (9) Organizational implications with headcount and skills, (10) M&A opportunities with specific targets and valuations. MAXIMUM DETAIL.",
+    "probability": 0.XX,
+    "financial_projections": {{
+      "years": [2025, 2026, 2027, 2028, 2029],
+      "revenue_bn": [X, X, X, X, X],
+      "ebitda_margin_pct": [X, X, X, X, X],
+      "capex_bn": [X, X, X, X, X]
+    }},
+    "competitive_landscape": [
+      {{"company": "Competitor", "market_share_pct": X, "strategic_move": "Description"}}
+    ],
+    "key_decisions": [
+      {{"decision": "Strategic choice", "investment_bn": X, "npv_bn": X, "irr_pct": X}}
+    ]
+  }}
+]
+
+REMEMBER: 2000-5000 words per narrative. Board-level intelligence worth $100K+ per analysis."""
+
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
             'max_tokens': 200000,
@@ -134,7 +131,6 @@ Return ONLY valid JSON: [{{"title": "...", "core_logic": "...", "narrative": "20
         response_body = json.loads(response['body'].read())
         ai_response = response_body['content'][0]['text']
 
-        # Parse scenarios
         start = ai_response.find('[')
         end = ai_response.rfind(']') + 1
         scenarios_json = ai_response[start:end]
@@ -142,7 +138,6 @@ Return ONLY valid JSON: [{{"title": "...", "core_logic": "...", "narrative": "20
 
         logger.info(f"Generated {len(scenarios)} scenarios")
 
-        # Return result
         result = {
             'scenario_set_id': str(uuid.uuid4()),
             'company_name': company_name,
@@ -151,7 +146,7 @@ Return ONLY valid JSON: [{{"title": "...", "core_logic": "...", "narrative": "20
             'horizon_years': horizon_years,
             'created_at': datetime.utcnow().isoformat() + 'Z',
             'ai_generated': True,
-            'generation_method': 'AWS Bedrock - Claude Opus 4.5',
+            'generation_method': 'Claude Opus 4.5',
             'scenarios': scenarios,
             'status': 'completed'
         }
@@ -162,5 +157,6 @@ Return ONLY valid JSON: [{{"title": "...", "core_logic": "...", "narrative": "20
         logger.error(f"Error: {e}", exc_info=True)
         return _response(500, {
             'error': 'Failed to generate scenario',
-            'message': str(e)
+            'message': str(e),
+            'details': 'Check Bedrock model access for claude-opus-4-5-20251101-v1:0'
         })
