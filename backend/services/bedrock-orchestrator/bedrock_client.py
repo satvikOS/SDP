@@ -12,10 +12,17 @@ class BedrockScenarioGenerator:
 
     def __init__(self):
         self.bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
-        self.model_id = 'anthropic.claude-3-5-sonnet-20241022-v2:0'
-        # Maximum detail - no latency concerns
-        self.max_tokens = 32000  # Increased for exhaustive detail
-        self.temperature = 0.8  # Higher for creative detailed scenarios
+
+        # ENTERPRISE MODE: Claude 3 Opus for maximum depth and detail
+        # - Deepest reasoning capability for strategic foresight
+        # - 2-3x more detailed analysis than Sonnet
+        # - Cost: ~$15/MTok vs $3/MTok (irrelevant for $10K-$100K enterprise clients)
+        # - Speed: 2-3x slower (client prefers quality over latency)
+        self.model_id = 'anthropic.claude-3-opus-20240229-v1:0'
+
+        # Maximum tokens for exhaustive, Board-level strategic analysis
+        self.max_tokens = 32000
+        self.temperature = 0.8  # Higher for nuanced, creative strategic scenarios
 
     def generate_scenarios(
         self,
