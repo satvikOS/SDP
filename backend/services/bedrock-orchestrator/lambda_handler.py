@@ -1,18 +1,16 @@
-"""AWS Lambda handlers for Bedrock Orchestrator."""
+"""AWS Lambda handlers for Bedrock Orchestrator - All in one file."""
 
 import json
 import logging
 import os
-from typing import Dict, Any
+import boto3
+import uuid
+from typing import Dict, List, Any
 from datetime import datetime
-from bedrock_client import BedrockScenarioGenerator
 
 # Configure logging
 logger = logging.getLogger()
 logger.setLevel(os.getenv('LOG_LEVEL', 'INFO'))
-
-# Initialize Bedrock client
-bedrock_generator = BedrockScenarioGenerator()
 
 
 def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
@@ -32,7 +30,6 @@ def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
 def health(event, context):
     """Health check endpoint."""
     try:
-        # Simple health check - just verify Lambda is running
         return _response(200, {
             'status': 'healthy',
             'timestamp': datetime.utcnow().isoformat(),
@@ -52,7 +49,6 @@ def health(event, context):
 def list_agents(event, context):
     """List available agent types."""
     try:
-        # Return hardcoded list of agent types
         agents = [
             'signal_synthesizer',
             'driver_extractor',
@@ -62,35 +58,27 @@ def list_agents(event, context):
             'action_planner',
             'quality_critic'
         ]
-
-        return _response(200, {
-            'agents': agents
-        })
+        return _response(200, {'agents': agents})
     except Exception as e:
         logger.error(f"List agents error: {e}")
-        return _response(500, {
-            'error': str(e)
-        })
+        return _response(500, {'error': str(e)})
 
 
 def execute_agent(event, context):
-    """Execute an agent - placeholder for future multi-agent architecture."""
+    """Execute an agent - placeholder."""
     try:
         return _response(501, {
             'error': 'Not Implemented',
-            'message': 'Multi-agent execution not yet implemented. Use /scenarios/generate for full scenario generation.'
+            'message': 'Use /scenarios/generate'
         })
     except Exception as e:
         logger.error(f"Execute agent error: {e}")
-        return _response(500, {
-            'error': str(e)
-        })
+        return _response(500, {'error': str(e)})
 
 
 def cost_report(event, context):
     """Get cost tracking report."""
     try:
-        # Return mock cost report for now
         return _response(200, {
             'total_cost_usd': 0.00,
             'requests_today': 0,
@@ -98,24 +86,11 @@ def cost_report(event, context):
         })
     except Exception as e:
         logger.error(f"Cost report error: {e}")
-        return _response(500, {
-            'error': str(e)
-        })
+        return _response(500, {'error': str(e)})
 
 
 def generate_scenario(event, context):
-    """
-    Generate complete scenario set using Claude Opus 4.5.
-
-    Request body:
-    {
-        "company_name": "Lockheed Martin",
-        "industry": "Defense",
-        "region": "Asia-Pacific",
-        "horizon_years": 5,
-        "strategic_context": "..."
-    }
-    """
+    """Generate scenarios using Claude Opus 4.5."""
     try:
         # Parse request
         if isinstance(event.get('body'), str):
@@ -129,60 +104,63 @@ def generate_scenario(event, context):
         horizon_years = body.get('horizon_years', 10)
         strategic_context = body.get('strategic_context', '')
 
-        logger.info(f"Generating scenario set for {company_name} - {industry} - {region} - {horizon_years} years")
-        if strategic_context:
-            logger.info(f"Strategic context provided: {strategic_context[:200]}...")
+        logger.info(f"Generating scenarios for {company_name}")
 
-        # Generate AI-powered scenarios using AWS Bedrock
-        import uuid
-        scenario_set_id = str(uuid.uuid4())
+        # Initialize Bedrock client
+        bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
+        model_id = 'anthropic.claude-opus-4-5-20251101-v1:0'
 
-        logger.info("Calling AWS Bedrock AI for scenario generation...")
-        logger.info("⚠️  ENTERPRISE MODE: No template fallback - AI only or fail")
-        logger.info("🚀 Claude Opus 4.5 - Maximum exhaustive detail (1000s of words)")
+        # Build prompt
+        prompt = f"""Generate 4 strategic scenarios for {company_name} ({industry}, {region}, {horizon_years} years).
 
-        # ENTERPRISE GRADE: Real AI or nothing. No BS templates.
-        scenarios = bedrock_generator.generate_scenarios(
-            company_name=company_name,
-            industry=industry,
-            region=region,
-            horizon_years=horizon_years,
-            strategic_context=strategic_context
+Return ONLY valid JSON: [{{"title": "...", "core_logic": "...", "narrative": "2000+ word detailed analysis", "probability": 0.XX}}]"""
+
+        # Call Bedrock
+        request_body = {
+            'anthropic_version': 'bedrock-2023-05-31',
+            'max_tokens': 200000,
+            'temperature': 0.8,
+            'messages': [{'role': 'user', 'content': prompt}]
+        }
+
+        logger.info("Calling Bedrock...")
+        response = bedrock.invoke_model(
+            modelId=model_id,
+            contentType='application/json',
+            accept='application/json',
+            body=json.dumps(request_body)
         )
 
-        logger.info(f"✓ AI successfully generated {len(scenarios)} scenarios")
+        response_body = json.loads(response['body'].read())
+        ai_response = response_body['content'][0]['text']
 
-        # ENTERPRISE MODE: Return ONLY company-specific scenarios, no generic content
+        # Parse scenarios
+        start = ai_response.find('[')
+        end = ai_response.rfind(']') + 1
+        scenarios_json = ai_response[start:end]
+        scenarios = json.loads(scenarios_json)
+
+        logger.info(f"Generated {len(scenarios)} scenarios")
+
+        # Return result
         result = {
-            'scenario_set_id': scenario_set_id,
+            'scenario_set_id': str(uuid.uuid4()),
             'company_name': company_name,
             'industry': industry,
             'region': region,
             'horizon_years': horizon_years,
             'created_at': datetime.utcnow().isoformat() + 'Z',
-            'generation_time_seconds': 300,  # Opus 4.5 with exhaustive detail takes longer
             'ai_generated': True,
-            'generation_method': 'AWS Bedrock AI - Claude Opus 4.5 (Ultimate Detail Mode)',
-            'model_config': {
-                'model': 'claude-opus-4-5',
-                'max_tokens': 200000,
-                'temperature': 0.8,
-                'detail_level': 'exhaustive (2000-5000 words per scenario, upwards of 1000s total)',
-                'visualization_data': 'included (charts, graphs, tables, decision trees, timelines)'
-            },
-            'scenarios': scenarios,  # Includes all visualization data structures
-            'total_cost_usd': 12.50,  # Opus 4.5 with 200K max tokens - premium enterprise pricing
-            'status': 'completed',
-            'export_formats_available': ['pdf', 'epub', 'txt']
+            'generation_method': 'AWS Bedrock - Claude Opus 4.5',
+            'scenarios': scenarios,
+            'status': 'completed'
         }
 
-        logger.info(f"Successfully generated scenario set {scenario_set_id}")
         return _response(200, result)
 
     except Exception as e:
-        logger.error(f"Error generating scenario: {e}", exc_info=True)
+        logger.error(f"Error: {e}", exc_info=True)
         return _response(500, {
-            'error': 'Failed to generate scenario - Enterprise AI mode (no fallback)',
-            'message': str(e),
-            'details': 'Check AWS Bedrock model access for Claude Opus 4.5'
+            'error': 'Failed to generate scenario',
+            'message': str(e)
         })
