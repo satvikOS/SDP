@@ -32,37 +32,78 @@ class BedrockScenarioGenerator:
         )
 
         logger.info(f"Calling Bedrock with model: {self.model_id}")
+        logger.info(f"Request params - Company: {company_name}, Industry: {industry}, Region: {region}, Horizon: {horizon_years}y")
 
         try:
+            # Build request payload
+            request_body = {
+                'anthropic_version': 'bedrock-2023-05-31',
+                'max_tokens': self.max_tokens,
+                'temperature': self.temperature,
+                'messages': [
+                    {
+                        'role': 'user',
+                        'content': prompt
+                    }
+                ]
+            }
+
+            logger.info(f"Bedrock request body size: {len(json.dumps(request_body))} bytes")
+
+            # Invoke Bedrock model
             response = self.bedrock.invoke_model(
                 modelId=self.model_id,
                 contentType='application/json',
                 accept='application/json',
-                body=json.dumps({
-                    'anthropic_version': 'bedrock-2023-05-31',
-                    'max_tokens': self.max_tokens,
-                    'temperature': self.temperature,
-                    'messages': [
-                        {
-                            'role': 'user',
-                            'content': prompt
-                        }
-                    ]
-                })
+                body=json.dumps(request_body)
             )
 
+            logger.info("Bedrock API call successful, parsing response...")
+
+            # Parse response
             response_body = json.loads(response['body'].read())
+
+            # Log response structure for debugging
+            logger.info(f"Response keys: {list(response_body.keys())}")
+
+            if 'content' not in response_body:
+                logger.error(f"Unexpected response structure: {response_body}")
+                raise ValueError("Bedrock response missing 'content' field")
+
             ai_response = response_body['content'][0]['text']
 
             logger.info(f"Received Bedrock response: {len(ai_response)} characters")
 
             scenarios = self._parse_scenarios_from_response(ai_response)
 
+            logger.info(f"Successfully parsed {len(scenarios)} scenarios from AI response")
+
             return scenarios
 
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error in Bedrock response: {e}", exc_info=True)
+            raise ValueError(f"Failed to parse Bedrock response JSON: {str(e)}")
+
+        except KeyError as e:
+            logger.error(f"Missing expected key in Bedrock response: {e}", exc_info=True)
+            raise ValueError(f"Malformed Bedrock response structure: {str(e)}")
+
         except Exception as e:
-            logger.error(f"Bedrock API error: {e}", exc_info=True)
-            raise
+            error_type = type(e).__name__
+            error_msg = str(e)
+            logger.error(f"Bedrock API error ({error_type}): {error_msg}", exc_info=True)
+
+            # Check for common error types
+            if 'ValidationException' in error_type:
+                raise ValueError(f"Bedrock validation error: {error_msg}")
+            elif 'AccessDeniedException' in error_type:
+                raise PermissionError(f"Bedrock access denied - check IAM permissions: {error_msg}")
+            elif 'ResourceNotFoundException' in error_type:
+                raise ValueError(f"Bedrock model not found - verify model access: {error_msg}")
+            elif 'ThrottlingException' in error_type:
+                raise RuntimeError(f"Bedrock API throttled - too many requests: {error_msg}")
+            else:
+                raise RuntimeError(f"Bedrock API error: {error_msg}")
 
     def _build_scenario_prompt(
         self,
