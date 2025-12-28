@@ -482,70 +482,6 @@ Name SPECIFIC assets that become CRITICAL:
 
 Use RANGES throughout (not false precision). Cite 8-12 authoritative sources total (inline, APA style). Write for sophisticated board members who understand political economy.",
 
-      "executive_summary_bluf": "BOARDROOM VERSION - Single paragraph (60-80 words) with RECOMMENDATION at end. Format: 'In this world, [what happens]. {company_name} faces [main threat]. Opportunity lies in [main opportunity]. RECOMMENDATION: [specific action required].'",
-
-      "scenario_card": {{
-        "the_world": {{
-          "structural_breaks": [
-            {{"year": "2025-2027", "event": "First break (e.g., 'Taiwan crisis triggers tech decoupling')", "impact": "Reshapes industry structure"}},
-            {{"year": "2028-2030", "event": "Second break", "impact": "Creates new competitive dynamics"}},
-            {{"year": "2031-2033", "event": "Third break", "impact": "Defines long-term equilibrium"}}
-          ],
-          "critical_metrics": {{
-            "gdp_growth": {{"range": "2-4% CAGR", "status": "🔴 Slow|🟡 Moderate|🟢 Strong"}},
-            "market_size": {{"range": "$XXX-YYY billion by 2032", "status": "Current: $XXX billion"}},
-            "cost_of_capital": {{"range": "8-12% WACC", "impact": "High cost environment"}},
-            "regulatory_environment": {{"description": "Market-driven|State-directed|Hybrid", "carbon_price": "$XX-YY/ton"}},
-            "technology_maturity": {{"description": "Incremental|Accelerating|Radical", "key_trend": "Dominant technology/platform"}}
-          }},
-          "competitive_landscape_bullets": [
-            "Top 3 players control XX-YY% share",
-            "Chinese vendors achieve XX-YY% penetration",
-            "Industry EBITDA margins: XX-YY%",
-            "Key competitive basis: [cost|quality|platform|regulation]"
-          ]
-        }},
-
-        "company_impact": {{
-          "overall_verdict": {{
-            "financial_impact": "Revenue: $XXX-YYY million (+/-X%), EBITDA margin: XX-YY% (+/-X pp), ROIC: XX-YY%",
-            "competitive_position": "Strengthens|Weakens|Neutral vs. [named competitors]",
-            "existential_risk_level": "🔴 High|🟡 Medium|🟢 Low",
-            "capital_at_risk": "$XXX-YYY million (XX% of CapEx plan)"
-          }},
-
-          "what_breaks": [
-            {{
-              "asset": "Specific product/plant/business unit",
-              "why_fails": "Reason it becomes uneconomic",
-              "financial_impact": "Revenue loss: $XXX-YYY million, Write-down: $XXX million",
-              "status": "🔴 Critical Threat"
-            }},
-            {{
-              "asset": "Second asset at risk",
-              "why_fails": "Why it fails in this world",
-              "financial_impact": "Quantified impact",
-              "status": "🔴 Critical Threat"
-            }}
-          ],
-
-          "what_survives": [
-            {{
-              "asset": "Specific product/capability/geography",
-              "why_thrives": "Why it becomes critical",
-              "financial_impact": "Revenue growth: $XXX-YYY million, Margin expansion: +X pp",
-              "status": "🟢 Strategic Asset"
-            }},
-            {{
-              "asset": "Second defensive asset",
-              "why_thrives": "Competitive moat created",
-              "financial_impact": "Quantified upside",
-              "status": "🟢 Strategic Asset"
-            }}
-          ]
-        }}
-      }},
-
       "signposts": [
         {{
           "indicator": "Specific measurable leading indicator (e.g., 'WTI-Brent spread narrows below $3/bbl')",
@@ -579,67 +515,6 @@ Use RANGES throughout (not false precision). Cite 8-12 authoritative sources tot
         }}
       ],
 
-      "structural_breaks": [
-        {{"year_range": "2025-2027", "event": "First major discontinuity/regime change", "trigger": "What causes this break", "impact": "How this fundamentally reshapes the industry"}},
-        {{"year_range": "2028-2032", "event": "Second structural break/inflection point", "trigger": "What causes this break", "impact": "How this reshapes the competitive landscape"}},
-        {{"year_range": "2033-2040", "event": "Third structural break (if applicable)", "trigger": "What causes this break", "impact": "Long-term equilibrium that emerges"}}
-      ],
-
-      "industry_economics": {{
-        "market_size_trajectory": "Use RANGES - e.g., 'Industry grows 2-3x to $XXX-YYY billion by 2040'",
-        "profitability_ranges": "Typical EBITDA margins: XX-YY%, ROIC: XX-YY% for incumbents in this world",
-        "capital_intensity": "CAPEX as % of revenue: XX-YY% range",
-        "concentration": "HHI index range: XXX-YYY, implying [fragmented/concentrated] market",
-        "typical_valuation_multiples": "EV/EBITDA ranges: X-Y for leaders, X-Y for challengers"
-      }},
-
-      "decision_framework": {{
-        "required_action_summary": "**IF THIS SCENARIO:** [One sentence]. **THEN {company_name} MUST:** [Kill X, Double Y].",
-
-        "kill_decision": {{
-          "asset": "Specific asset/product/plant (e.g., 'Pacheco Plant Argentina')",
-          "rationale_one_line": "Why uneconomic (15 words max)",
-          "financial_impact": "$XXX-YYY M write-down + $XX M annual savings",
-          "timing": "Execute by [Q/Year]",
-          "status_indicator": "🔴 Execute Immediately|🟡 Prepare Exit|🟢 Monitor"
-        }},
-
-        "double_decision": {{
-          "asset": "Specific asset/product/capability (e.g., 'Ranger production')",
-          "rationale_one_line": "Why becomes profit engine (15 words max)",
-          "financial_impact": "$XXX-YYY M CapEx → $XXX M NPV, XX% IRR, X-year payback",
-          "timing": "Start by [Q/Year]",
-          "status_indicator": "🟢 Fund Immediately|🟡 Prepare Business Case|🔴 Hold"
-        }}
-      }},
-
-      "watchtower_dashboard": [
-        {{
-          "indicator": "Specific metric (e.g., 'BRL/USD volatility')",
-          "current_value": "Current reading (e.g., '18% annually')",
-          "trigger_threshold": "Action level (e.g., '>25%')",
-          "pre_approved_action": "Decision to execute (e.g., 'Hedge 80% of profits')",
-          "decision_window": "When to decide (e.g., 'Within 90 days')",
-          "status": "🟢 Safe|🟡 Monitor|🔴 Approaching Trigger"
-        }},
-        {{
-          "indicator": "Second critical metric",
-          "current_value": "Current data",
-          "trigger_threshold": "Threshold number",
-          "pre_approved_action": "What to execute",
-          "decision_window": "Timeline",
-          "status": "🟢|🟡|🔴"
-        }},
-        {{
-          "indicator": "Third metric (competitive/tech)",
-          "current_value": "Current status",
-          "trigger_threshold": "Trigger level",
-          "pre_approved_action": "Response action",
-          "decision_window": "When",
-          "status": "🟢|🟡|🔴"
-        }}
-      ],
-
       "references": [
         "Include 8-12 high-quality sources in APA format",
         "ONLY: peer-reviewed journals, industry reports from S&P/Moody's/Wood Mackenzie/IEA, government publications, major consultancies, company filings"
@@ -650,36 +525,31 @@ Use RANGES throughout (not false precision). Cite 8-12 authoritative sources tot
 
 GENERATE EXACTLY 4 SCENARIOS - one for each quadrant of the 2x2 matrix.
 
-CRITICAL REQUIREMENTS - BOARDROOM FORMAT CHECKLIST:
-✓ BLUF AT TOP: Executive summary with RECOMMENDATION in first paragraph
-✓ VISUAL HIERARCHY: Use 🔴🟡🟢 status indicators, bold numbers, 3-line max bullets
-✓ DASHBOARD METRICS: Structured data tables, not paragraphs
-✓ WATCHTOWER TABLE: Current value vs. trigger threshold vs. pre-approved action
-✓ SCENARIO CARDS: Condensed bullets, NOT 400-word prose blocks
-✓ ACTIVE VOICE: "Market collapses" NOT "There is a collapse in the market"
-✓ BOLD NUMBERS: Highlight all financial impacts ($XXX-YYY M, XX-YY%, XX% IRR)
-✓ COMPANY-SPECIFIC: Name specific products, plants, business units
-✓ KILL/DOUBLE: One asset to kill + one to double per scenario (15 words each)
-✓ QUANTIFIED EVERYTHING: Revenue, margins, ROIC, CapEx, write-downs (RANGES not precision)
-✓ STRUCTURAL BREAKS: 2-3 discontinuities with years, events, impacts
-✓ COMPETITIVE REALITY: Name specific competitors and their market share
-✓ CITATIONS: 8-12 sources (inline, not list) from S&P/McKinsey/IEA/company filings
-✓ BOARD-READY: Assume reader is 60-year-old CEO on iPad on jet, scanning not reading
+CRITICAL REQUIREMENTS - EXHAUSTIVE ACADEMIC ANALYSIS:
+✓ COMPANY-SPECIFIC: Name {company_name}'s specific products, plants, business units that win/lose
+✓ STRUCTURAL BREAKS: 2-3 discontinuities with years, events, impacts (NOT linear extrapolation)
+✓ RANGES NOT PRECISION: Use "2-3x growth", "$50-80B", "15-25% margin" (NOT "$67.3B")
+✓ QUANTIFIED IMPACT: Revenue ranges, margin ranges, ROIC ranges, CapEx, write-downs for {company_name}
+✓ COMPETITIVE REALITY: Name 3-5 specific competitors, their strategies, market share ranges
+✓ SIGNPOSTS: 5 measurable leading indicators with specific metrics to track
+✓ APA CITATIONS: 8-12 inline citations from authoritative sources (S&P, McKinsey, IEA, World Bank, company filings, academic journals)
+✓ POLITICAL ECONOMY: Acknowledge state champions, regulatory capture, capital constraints, competitive realities
+✓ STRESS TEST: Explicitly identify which {company_name} assets BREAK and which SURVIVE in each world
+✓ DEEP RESEARCH: Use latest 2023-2024 data, cite specific reports/studies, provide context
 
-FORMATTING RULES:
-• Single paragraph = 60-80 words max (BLUF summary)
-• Bullet points = 3 lines max each
-• Every financial claim = Bold number with range
-• Every threat/opportunity = Status indicator (🔴🟡🟢)
-• Every metric = Current value + Trigger threshold
-• Kill/Double decision = 15 words rationale max
+TARGET AUDIENCE: Sophisticated board members and strategy teams who need comprehensive scenario analysis for capital allocation decisions worth billions.
 
-REMEMBER: This is not an analysis. This is a PRE-LOADED DECISION FRAMEWORK. Board members buy with their eyes."""
+NOTE: Boardroom transformation (BLUF format, dashboards, Kill/Double decisions) will be generated separately via BR button - focus here on exhaustive research-backed analysis."""
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
-            'max_tokens': 60000,  # Allow comprehensive output
+            'max_tokens': 64000,  # Maximum for Opus 4.5
             'temperature': 0.7,
+            'top_k': 40,  # Balance between factual grounding and creative scenarios
+            'thinking': {
+                'type': 'enabled',
+                'budget_tokens': 10000  # Extended thinking for complex scenario reasoning
+            },
             'messages': [{'role': 'user', 'content': prompt}]
         }
 
