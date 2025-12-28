@@ -2,17 +2,44 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api-client';
 import { GlassCard, GlassButton } from '@/components/GlassCard';
-import { Plus, FileText, ArrowLeft, Sparkles } from 'lucide-react';
+import { Plus, FileText, ArrowLeft, Sparkles, Loader2, BookOpen, TrendingUp } from 'lucide-react';
+import { formatCurrency, formatDuration, cn } from '@/lib/utils';
+
+interface ScenarioData {
+  scenarioId: string;
+  company_name: string;
+  industry: string;
+  region: string;
+  horizon_years: number;
+  createdAt: number;
+  status: string;
+  result?: any;
+}
 
 export default function ScenariosPage() {
-  const [scenarios, setScenarios] = useState<any[]>([]);
+  const [scenarios, setScenarios] = useState<ScenarioData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Future: Load scenarios from API
-    setLoading(false);
+    loadScenarios();
   }, []);
+
+  const loadScenarios = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.listScenarios();
+      setScenarios(response);
+      setError(null);
+    } catch (err: any) {
+      console.error('Failed to load scenarios:', err);
+      setError(err.message || 'Failed to load scenarios');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
@@ -45,15 +72,22 @@ export default function ScenariosPage() {
       <main className="pt-24 pb-16 max-w-6xl mx-auto px-6 lg:px-8">
         {loading ? (
           <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-accent-600 border-t-transparent"></div>
-            <p className="mt-4 text-sm text-[var(--text-secondary)]">Loading scenarios...</p>
+            <Loader2 className="w-8 h-8 text-accent-600 animate-spin mx-auto mb-4" />
+            <p className="text-sm text-[var(--text-secondary)]">Loading scenarios...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-20">
+            <p className="text-sm text-red-500 mb-4">{error}</p>
+            <GlassButton onClick={loadScenarios} variant="secondary">
+              Retry
+            </GlassButton>
           </div>
         ) : scenarios.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {scenarios.map((scenario) => (
-              <ScenarioCard key={scenario.id} scenario={scenario} />
+              <ScenarioCard key={scenario.scenarioId} scenario={scenario} />
             ))}
           </div>
         )}
@@ -82,15 +116,233 @@ function EmptyState() {
   );
 }
 
-function ScenarioCard({ scenario }: { scenario: any }) {
+function ScenarioCard({ scenario }: { scenario: ScenarioData }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [brLoading, setBrLoading] = useState<{ [key: number]: boolean }>({});
+  const [brFormats, setBrFormats] = useState<{ [key: number]: any }>({});
+
+  const handleBrTransform = async (scenarioData: any, index: number) => {
+    try {
+      setBrLoading({ ...brLoading, [index]: true });
+      const result = await apiClient.transformToBoardroom(
+        scenarioData.narrative,
+        scenario.company_name,
+        scenarioData.title
+      );
+      setBrFormats({ ...brFormats, [index]: result.boardroom_format });
+    } catch (err: any) {
+      console.error('BR transformation failed:', err);
+      alert('Failed to transform to boardroom format: ' + (err.message || 'Unknown error'));
+    } finally {
+      setBrLoading({ ...brLoading, [index]: false });
+    }
+  };
+
+  const result = scenario.result;
+  const createdDate = new Date(scenario.createdAt * 1000).toLocaleDateString();
+
   return (
-    <GlassCard hover>
-      <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2 tracking-tight">
-        {scenario.title}
-      </h3>
-      <p className="text-sm text-[var(--text-secondary)] font-light">
-        {scenario.description}
-      </p>
+    <GlassCard>
+      <div className="cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <div className="flex items-center space-x-3 mb-2">
+              <Sparkles className="w-5 h-5 text-accent-600" />
+              <h3 className="text-lg font-medium text-[var(--text-primary)] tracking-tight">
+                {scenario.company_name} - {scenario.industry}
+              </h3>
+            </div>
+            <div className="flex items-center space-x-4 text-sm text-[var(--text-secondary)]">
+              <span>{scenario.region}</span>
+              <span>•</span>
+              <span>{scenario.horizon_years} year horizon</span>
+              <span>•</span>
+              <span>{createdDate}</span>
+              {result && (
+                <>
+                  <span>•</span>
+                  <span>{result.scenarios?.length || 0} scenarios</span>
+                </>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
+            }}
+            className="flex-shrink-0 p-2 rounded-lg hover:bg-[var(--surface)] transition-colors"
+          >
+            <svg
+              className={cn(
+                'w-5 h-5 text-[var(--text-tertiary)] transition-transform duration-300',
+                isExpanded && 'rotate-180'
+              )}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+
+        {result && (
+          <div className="flex items-center space-x-4 text-xs text-[var(--text-tertiary)]">
+            <span>Cost: {formatCurrency(result.total_cost_usd || 0)}</span>
+            <span>•</span>
+            <span>Time: {formatDuration(result.generation_time_seconds || 0)}</span>
+          </div>
+        )}
+      </div>
+
+      {isExpanded && result?.scenarios && (
+        <div className="mt-6 pt-6 border-t border-[var(--border)] space-y-4">
+          {result.scenarios.map((scenarioData: any, idx: number) => (
+            <div key={idx} className="space-y-3">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent-600/20 flex items-center justify-center">
+                    <span className="text-sm font-medium text-accent-600">{idx + 1}</span>
+                  </div>
+                  <div>
+                    <h4 className="text-base font-medium text-[var(--text-primary)] tracking-tight">
+                      {scenarioData.title}
+                    </h4>
+                    <p className="text-sm text-[var(--text-secondary)] italic mt-1">
+                      {scenarioData.core_logic}
+                    </p>
+                  </div>
+                </div>
+                <GlassButton
+                  variant={brFormats[idx] ? 'secondary' : 'primary'}
+                  size="sm"
+                  onClick={() => handleBrTransform(scenarioData, idx)}
+                  disabled={brLoading[idx]}
+                >
+                  {brLoading[idx] ? (
+                    <>
+                      <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
+                      Transforming...
+                    </>
+                  ) : brFormats[idx] ? (
+                    <>
+                      <TrendingUp className="w-3 h-3 mr-1.5" />
+                      BR Active
+                    </>
+                  ) : (
+                    <>
+                      <TrendingUp className="w-3 h-3 mr-1.5" />
+                      BR Transform
+                    </>
+                  )}
+                </GlassButton>
+              </div>
+
+              {/* Academic Format */}
+              {!brFormats[idx] && (
+                <div className="glass-panel rounded-lg p-4">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <BookOpen className="w-4 h-4 text-accent-600" />
+                    <span className="text-xs font-medium text-[var(--text-secondary)]">ACADEMIC FORMAT</span>
+                  </div>
+                  <p className="text-sm text-[var(--text-primary)] font-light leading-relaxed whitespace-pre-wrap">
+                    {scenarioData.narrative}
+                  </p>
+                </div>
+              )}
+
+              {/* Boardroom Format */}
+              {brFormats[idx] && (
+                <div className="space-y-3">
+                  {/* BLUF */}
+                  <div className="glass-panel rounded-lg p-4 border-l-4 border-accent-600">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <TrendingUp className="w-4 h-4 text-accent-600" />
+                      <span className="text-xs font-medium text-accent-600">BLUF - BOTTOM LINE UP FRONT</span>
+                    </div>
+                    <p className="text-sm text-[var(--text-primary)] font-light leading-relaxed">
+                      {brFormats[idx].executive_summary_bluf}
+                    </p>
+                  </div>
+
+                  {/* Decision Framework */}
+                  {brFormats[idx].decision_framework && (
+                    <div className="glass-panel rounded-lg p-4">
+                      <h5 className="text-xs font-medium text-[var(--text-secondary)] mb-3">KILL / DOUBLE FRAMEWORK</h5>
+                      <p className="text-sm text-[var(--text-primary)] mb-4 font-light">
+                        {brFormats[idx].decision_framework.summary}
+                      </p>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-red-500/10 rounded-lg p-3">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <span className="text-lg">🔴</span>
+                            <span className="text-xs font-medium text-red-500">KILL</span>
+                          </div>
+                          <p className="text-xs text-[var(--text-primary)] font-medium mb-1">
+                            {brFormats[idx].decision_framework.kill?.asset}
+                          </p>
+                          <p className="text-xs text-[var(--text-secondary)] mb-2">
+                            {brFormats[idx].decision_framework.kill?.rationale}
+                          </p>
+                          <p className="text-xs text-[var(--text-tertiary)]">
+                            {brFormats[idx].decision_framework.kill?.impact}
+                          </p>
+                        </div>
+                        <div className="bg-green-500/10 rounded-lg p-3">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <span className="text-lg">🟢</span>
+                            <span className="text-xs font-medium text-green-500">DOUBLE</span>
+                          </div>
+                          <p className="text-xs text-[var(--text-primary)] font-medium mb-1">
+                            {brFormats[idx].decision_framework.double?.asset}
+                          </p>
+                          <p className="text-xs text-[var(--text-secondary)] mb-2">
+                            {brFormats[idx].decision_framework.double?.rationale}
+                          </p>
+                          <p className="text-xs text-[var(--text-tertiary)]">
+                            {brFormats[idx].decision_framework.double?.impact}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Watchtower Dashboard */}
+                  {brFormats[idx].watchtower_dashboard && (
+                    <div className="glass-panel rounded-lg p-4">
+                      <h5 className="text-xs font-medium text-[var(--text-secondary)] mb-3">WATCHTOWER DASHBOARD</h5>
+                      <div className="space-y-2">
+                        {brFormats[idx].watchtower_dashboard.map((item: any, wIdx: number) => (
+                          <div key={wIdx} className="flex items-center justify-between text-xs bg-[var(--surface)] rounded p-2">
+                            <span className="text-[var(--text-primary)] font-medium">{item.indicator}</span>
+                            <span className="text-[var(--text-secondary)]">{item.trigger}</span>
+                            <span className="text-lg">{item.status?.charAt(0) || '🟢'}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Toggle back to Academic */}
+                  <GlassButton
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      const newFormats = { ...brFormats };
+                      delete newFormats[idx];
+                      setBrFormats(newFormats);
+                    }}
+                  >
+                    <BookOpen className="w-3 h-3 mr-1.5" />
+                    View Academic Format
+                  </GlassButton>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </GlassCard>
   );
 }

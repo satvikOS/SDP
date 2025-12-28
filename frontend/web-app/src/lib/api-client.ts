@@ -151,6 +151,18 @@ class ApiClient {
     const response = await this.client.get('/scenarios', { params: filters });
     return response.data.scenarios;
   }
+
+  /**
+   * Transform academic scenario to boardroom format
+   */
+  async transformToBoardroom(narrative: string, company_name: string, scenario_title: string): Promise<any> {
+    const response = await this.client.post('/scenarios/transform/boardroom', {
+      narrative,
+      company_name,
+      scenario_title
+    });
+    return response.data;
+  }
 }
 
 // Export singleton instance

@@ -171,6 +171,18 @@ functions:
       patterns:
         - backend/services/bedrock-orchestrator/**
 
+  transformToBoardroom:
+    handler: backend/services/bedrock-orchestrator/lambda_handler_br_transform.transform_to_boardroom
+    timeout: 180
+    memorySize: 1024
+    events:
+      - httpApi:
+          path: /scenarios/transform/boardroom
+          method: post
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+
   getScenarioStatus:
     handler: backend/services/bedrock-orchestrator/lambda_handler.get_scenario_status
     timeout: 10
@@ -178,6 +190,18 @@ functions:
     events:
       - httpApi:
           path: /scenarios/status/{job_id}
+          method: get
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+
+  listScenarios:
+    handler: backend/services/bedrock-orchestrator/lambda_handler.list_scenarios
+    timeout: 10
+    memorySize: 256
+    events:
+      - httpApi:
+          path: /scenarios
           method: get
     package:
       patterns:

@@ -716,3 +716,44 @@ def get_scenario_status(event, context):
             'error': 'Failed to get status',
             'message': str(e)
         })
+
+
+def list_scenarios(event, context):
+    """List all completed scenarios from DynamoDB."""
+    try:
+        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+        table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
+        table = dynamodb.Table(table_name)
+
+        # Scan for all scenarios (future: add pagination)
+        response = table.scan(
+            FilterExpression='#status = :status',
+            ExpressionAttributeNames={
+                '#status': 'status'
+            },
+            ExpressionAttributeValues={
+                ':status': 'completed'
+            }
+        )
+
+        scenarios = response.get('Items', [])
+
+        # Sort by creation date (newest first)
+        scenarios.sort(key=lambda x: x.get('createdAt', 0), reverse=True)
+
+        # Convert Decimals to floats for JSON serialization
+        scenarios_safe = [_convert_decimal_to_float(scenario) for scenario in scenarios]
+
+        logger.info(f"Retrieved {len(scenarios_safe)} scenarios")
+
+        return _response(200, {
+            'scenarios': scenarios_safe,
+            'count': len(scenarios_safe)
+        })
+
+    except Exception as e:
+        logger.error(f"Error listing scenarios: {str(e)}", exc_info=True)
+        return _response(500, {
+            'error': 'Failed to list scenarios',
+            'message': str(e)
+        })

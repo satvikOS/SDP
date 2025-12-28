@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient, type ScenarioGenerationRequest, type ScenarioSet } from '@/lib/api-client';
 import { GlassCard, GlassButton, GlassInput } from '@/components/GlassCard';
@@ -25,6 +26,7 @@ const AGENT_STEPS = [
 ];
 
 export default function NewScenarioPage() {
+  const router = useRouter();
   const [stage, setStage] = useState<Stage>('idle');
   const [formData, setFormData] = useState<ScenarioGenerationRequest>({
     company_name: '',
@@ -39,6 +41,29 @@ export default function NewScenarioPage() {
   const [result, setResult] = useState<ScenarioSet | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
+  const [redirectCountdown, setRedirectCountdown] = useState<number | null>(null);
+
+  // Auto-redirect to Scenario Library after successful generation
+  useEffect(() => {
+    if (stage === 'success' && result) {
+      setRedirectCountdown(5); // 5 second countdown
+    }
+  }, [stage, result]);
+
+  useEffect(() => {
+    if (redirectCountdown === null) return;
+
+    if (redirectCountdown === 0) {
+      router.push('/scenarios');
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setRedirectCountdown(redirectCountdown - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [redirectCountdown, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -290,6 +315,11 @@ export default function NewScenarioPage() {
                     <span>Analysis Cost: {formatCurrency(result.total_cost_usd)}</span>
                     <span>Scenarios Developed: {result.scenarios.length}</span>
                   </div>
+                  {redirectCountdown !== null && redirectCountdown > 0 && (
+                    <p className="mt-3 text-sm text-accent-600 font-medium">
+                      Redirecting to Scenario Library in {redirectCountdown} seconds...
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
