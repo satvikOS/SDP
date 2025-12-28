@@ -544,7 +544,7 @@ NOTE: Boardroom transformation (BLUF format, dashboards, Kill/Double decisions) 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
             'max_tokens': 64000,  # Maximum for Opus 4.5
-            'temperature': 0.7,
+            'temperature': 1.0,  # Must be 1.0 when thinking is enabled
             'top_k': 40,  # Balance between factual grounding and creative scenarios
             'thinking': {
                 'type': 'enabled',
