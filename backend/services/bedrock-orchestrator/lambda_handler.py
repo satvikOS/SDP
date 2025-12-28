@@ -368,31 +368,103 @@ def generate_scenario_async_worker(event, context):
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
-        prompt = f"""Generate 2 strategic scenarios for {company_name} ({industry}, {region}) over {horizon_years} years.{context_note}
+        prompt = f"""You are an elite strategic foresight consultant. Generate 2 COMPREHENSIVE scenarios for {company_name} ({industry}, {region}) over {horizon_years} years.{context_note}
 
-Each scenario: 150-200 words, data-focused, with APA citations.
+CRITICAL: Each scenario must be 1500-2500 words with detailed narrative, quantitative data, and visualization-ready structures.
 
 Return ONLY valid JSON:
 [
   {{
-    "title": "Scenario Name",
+    "title": "Scenario Name (7-10 words)",
     "probability": 0.XX,
-    "summary": "150-200 word summary for {company_name}",
-    "financial_projections": {{
-      "years": [2025, 2027, 2030],
-      "revenue_bn": [X, X, X],
-      "market_share_pct": [X, X, X]
-    }},
-    "key_decisions": [
-      {{"decision": "Action", "investment_bn": X, "roi_pct": X}}
+    "narrative": "Write a comprehensive 1500-2500 word strategic analysis covering:
+
+**EXECUTIVE SUMMARY** (200 words):
+[Strategic implications for {company_name} in this scenario]
+
+**MARKET DYNAMICS** (400 words):
+- Supply-demand evolution with specific volumes and growth rates
+- Price trajectories with ranges and drivers
+- Competitive landscape shifts with market share changes
+- Regional dynamics and geographic opportunities
+
+**REGULATORY & POLICY ENVIRONMENT** (300 words):
+- Specific regulations with implementation dates and compliance costs
+- Carbon pricing mechanisms and environmental standards
+- Trade policies and their impact on operations
+- Government incentives and penalties
+
+**TECHNOLOGY & INNOVATION** (300 words):
+- Technology adoption curves and maturity timelines
+- Required R&D investments and infrastructure buildout
+- Digital transformation and automation impacts
+- Breakthrough technologies and disruption risks
+
+**FINANCIAL IMPLICATIONS** (300 words):
+- CAPEX requirements by category and timing
+- Revenue streams evolution and margin dynamics
+- Cost structure changes and efficiency gains
+- Valuation impacts and investor perspectives
+
+**STRATEGIC DECISIONS** (200 words):
+- Critical investment choices with NPV and IRR analysis
+- M&A opportunities with target valuations
+- Geographic expansion priorities
+- Portfolio rebalancing and asset optimization",
+
+    "timeline": [
+      {{"year": 2025, "milestone": "Specific event/development", "impact": "Quantified impact on {company_name}"}},
+      {{"year": 2027, "milestone": "Specific event/development", "impact": "Quantified impact"}},
+      {{"year": 2030, "milestone": "Specific event/development", "impact": "Quantified impact"}},
+      {{"year": 2035, "milestone": "Specific event/development", "impact": "Quantified impact"}},
+      {{"year": 2037, "milestone": "Specific event/development", "impact": "Quantified impact"}}
     ],
-    "sources": ["Author (Year). Title. Journal."]
+
+    "financial_projections": {{
+      "years": [2025, 2027, 2030, 2033, 2035, 2037],
+      "revenue_bn": [X, X, X, X, X, X],
+      "ebitda_margin_pct": [X, X, X, X, X, X],
+      "capex_bn": [X, X, X, X, X, X],
+      "free_cash_flow_bn": [X, X, X, X, X, X],
+      "market_share_pct": [X, X, X, X, X, X]
+    }},
+
+    "competitive_landscape": [
+      {{"company": "Competitor name", "market_share_2025": X, "market_share_2037": X, "strategy": "Key strategy", "threat_level": "High/Medium/Low"}},
+      {{"company": "Competitor name", "market_share_2025": X, "market_share_2037": X, "strategy": "Key strategy", "threat_level": "High/Medium/Low"}},
+      {{"company": "Competitor name", "market_share_2025": X, "market_share_2037": X, "strategy": "Key strategy", "threat_level": "High/Medium/Low"}}
+    ],
+
+    "key_metrics": {{
+      "production_volume_units": [X, X, X, X, X, X],
+      "renewable_capacity_gw": [X, X, X, X, X, X],
+      "carbon_intensity": [X, X, X, X, X, X],
+      "employee_count": [X, X, X, X, X, X]
+    }},
+
+    "key_decisions": [
+      {{"decision": "Strategic choice", "timing": "Year", "investment_bn": X, "npv_bn": X, "irr_pct": X, "risk_level": "High/Medium/Low"}},
+      {{"decision": "Strategic choice", "timing": "Year", "investment_bn": X, "npv_bn": X, "irr_pct": X, "risk_level": "High/Medium/Low"}},
+      {{"decision": "Strategic choice", "timing": "Year", "investment_bn": X, "npv_bn": X, "irr_pct": X, "risk_level": "High/Medium/Low"}}
+    ],
+
+    "risks": [
+      {{"risk": "Risk factor", "probability": "High/Medium/Low", "impact_bn": X, "mitigation": "Strategy"}},
+      {{"risk": "Risk factor", "probability": "High/Medium/Low", "impact_bn": X, "mitigation": "Strategy"}}
+    ],
+
+    "sources": [
+      "Author, A. (Year). Title. Journal/Publisher. DOI/URL",
+      "Organization. (Year). Report. URL"
+    ]
   }}
-]"""
+]
+
+USE ONLY peer-reviewed sources and authoritative industry reports. Provide specific, quantitative data throughout."""
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
-            'max_tokens': 8000,  # Much smaller for speed
+            'max_tokens': 60000,  # Allow comprehensive output
             'temperature': 0.7,
             'messages': [{'role': 'user', 'content': prompt}]
         }
