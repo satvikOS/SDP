@@ -392,171 +392,201 @@ def generate_scenario_async_worker(event, context):
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
-        prompt = f"""You are the Chief Paranoia Officer for {company_name}, responsible for Scenario Development Planning. Your job is NOT to predict the future—it's to ensure {company_name} SURVIVES the futures it didn't predict.
+        prompt = f"""You are the Chief Strategy Officer for {company_name}, tasked with building scenarios that reveal ASYMMETRIC STRATEGIC ADVANTAGES, not just trend extrapolation.
 
-This is a STRESS TEST, not a strategy document. You will build 4 scenario worlds and run {company_name} through each one to find what breaks and what survives.
+Your job: Build 4 futures where {company_name} must make IRREVERSIBLE CAPITAL ALLOCATION decisions worth billions. Focus on FIRST PRINCIPLES and PHYSICS, not policy speculation.
 
-YOUR MISSION: Build a 2x2 scenario matrix for {region} {industry} over {horizon_years} years, then STRESS TEST {company_name}'s current strategy against each scenario.{context_note}
+**CRITICAL FRAMING:**
+- THINK IN DECADES: Over {horizon_years} years, what FUNDAMENTALLY changes about how value is created in {industry}?
+- THINK IN PHYSICS: What are the IMMUTABLE constraints (energy, compute, biology, materials science)?
+- THINK IN ECOSYSTEMS: What creates IRREVERSIBLE LOCK-IN (standards, switching costs, network effects)?
+- THINK IN DUAL-USE: Blur artificial boundaries—commercial/defense, consumer/industrial are the SAME technology base
 
-CRITICAL CONTEXT ABOUT {company_name}:
-Before you start, you MUST understand {company_name}'s specific business model in {region} {industry}:
-- What are their PROFIT ENGINES? (specific products, segments, geographies that drive 60%+ of operating profit)
-- What are their STRATEGIC ASSETS? (specific plants, technologies, partnerships, brands)
-- What are their EXISTENTIAL VULNERABILITIES? (dependencies on specific suppliers, regulations, customer segments)
+**BEFORE YOU START - RESEARCH {company_name}:**
+You MUST understand their business model. Use available knowledge about:
+1. **Profit Engines**: Which 2-3 products/segments generate 60%+ of operating profit?
+2. **Strategic Moats**: What makes them defensible? (patents, ecosystems, scale economies, regulatory barriers)
+3. **Hidden Leverage**: What assets do they have that competitors DON'T? (manufacturing know-how, customer data, platform position)
+4. **Existential Dependencies**: What do they NEED that they don't control? (suppliers, standards, regulations)
 
-STEP 1: IDENTIFY CRITICAL UNCERTAINTIES (for {company_name}, not the industry)
-Identify the 2 most critical uncertainties that will determine {company_name}'s survival in {region} {industry}:
-1. HIGH IMPACT on {company_name}'s profit engines
-2. HIGH UNCERTAINTY: Genuinely unknowable
-3. INDEPENDENT: The two axes should be orthogonal
+---
 
-Example framework:
-- Axis X: [Uncertainty that affects {company_name}'s market access/cost structure]
-- Axis Y: [Uncertainty that affects {company_name}'s product competitiveness]
+**STEP 1: IDENTIFY THE VALUE SHIFT**
 
-STEP 2: BUILD 4 SCENARIO WORLDS + STRATEGIC RESPONSES
-For each quadrant, you will provide:
-A) EXTERNAL ENVIRONMENT (outside-in): What the world looks like (800-1000 words)
-B) STRATEGIC IMPLICATIONS FOR {company_name} (inside-out): What breaks, what survives (600-800 words)
+What fundamentally changes about value creation in {industry} over {horizon_years} years?
 
-METHODOLOGY REQUIREMENTS:
-✓ COMPANY-SPECIFIC: Name {company_name}'s specific assets/products that win/lose
-✓ STRUCTURAL BREAKS: Include discontinuities
-✓ RANGES NOT PRECISION: Use "2-3x growth" not "$67.3B"
-✓ TRIGGER POINTS: Specific numerical tripwires that force action
-✓ KILL/DOUBLE FRAMEWORK: What asset to kill, what to double
-✓ QUANTIFIED: Specific CapEx, revenue, margin impacts
-✓ RESEARCH-BACKED: 8-12 citations per scenario
+Examples of VALUE SHIFTS (not trend extrapolation):
+- Defense 2040: Value shifts from KINETIC (tanks) → COMPUTE (AI swarms). A weapon system flips from 90% hardware/10% software to 10% hardware/90% intelligence.
+- Energy 2040: Value shifts from EXTRACTION (oil wells) → ORCHESTRATION (grid management). Electrons become software-defined.
+- Healthcare 2040: Value shifts from TREATMENT (drugs) → PREDICTION (genomic risk models). Medicine becomes information arbitrage.
 
-Each scenario: 1500-1800 words total (800-1000 external + 600-800 strategic response).
+**Your value shift for {industry}:** [Identify in 2-3 sentences the PHYSICS or TECHNOLOGY constraint that forces this shift]
 
-Return ONLY valid JSON:
+---
+
+**STEP 2: BUILD THE 2x2 MATRIX**
+
+Choose 2 uncertainties that CREATE ASYMMETRIC ADVANTAGES for different players:
+
+**Axis X**: [Uncertainty that determines WHO CAPTURES VALUE]
+- Examples: "Platform consolidation vs. Fragmentation", "Vertical integration vs. Horizontal specialization"
+
+**Axis Y**: [Uncertainty that determines HOW MUCH VALUE EXISTS]
+- Examples: "Exponential technology advance vs. Plateau", "Global integration vs. Regional blocs"
+
+**CRITICAL**: These must be ORTHOGONAL and GENUINELY UNKNOWABLE (not "optimistic vs. pessimistic")
+
+---
+
+**STEP 3: BUILD 4 SCENARIOS**
+
+For EACH scenario, answer these questions:
+
+**PART A: THE EXTERNAL WORLD (800-1000 words)**
+
+1. **Structural Breaks (150-200 words)**:
+   - What 2-3 DISCONTINUITIES create this world? (Not linear extrapolation—identify PHASE TRANSITIONS)
+   - What TRIGGERS the shift? (Technology threshold? Geopolitical crisis? Economic tipping point?)
+   - Cite 2-3 sources on historical precedents or technology trajectories
+
+2. **Geopolitical & Macro (250-300 words)**:
+   - What power structures enable or constrain value creation?
+   - GDP growth RANGES, cost of capital RANGES by risk profile
+   - Capital flow patterns: Who can access capital? At what cost?
+   - Currency dynamics, trade architectures
+   - Cite IMF, BIS, World Bank, geopolitical research (3-4 sources)
+
+3. **Industry Physics & Dynamics (250-300 words)**:
+   - Market size RANGES (use multipliers: "2-3x larger", not "$67.3B")
+   - Where does MARGIN concentrate? (Design? Manufacturing? Distribution? Data?)
+   - Concentration metrics: HHI ranges, winner-take-most vs. fragmented
+   - Customer behavior: What shifts willingness-to-pay? (Performance? Security? Convenience?)
+   - Technology constraints: What are the PHYSICS limits? (Power efficiency, latency, material properties)
+   - Cite industry research, technology roadmaps (3-4 sources)
+
+4. **Competitive Landscape (300-400 words)**:
+   - Name 3-5 specific competitors and their STRATEGIC POSITIONS (not just market share)
+   - Who has ECOSYSTEM LOCK-IN? (Switching costs, installed base, standards ownership)
+   - Who has PHYSICS ADVANTAGES? (Manufacturing scale, energy efficiency, compute density)
+   - Profitability RANGES by player archetype (EBITDA %, ROIC %)
+   - Regulatory dynamics: Market-driven vs. State-directed
+   - Cite company filings, analyst reports, policy databases (3-4 sources)
+
+**PART B: STRATEGIC IMPLICATIONS FOR {company_name} (600-800 words)**
+
+5. **What BREAKS (250-300 words)**:
+   - Name SPECIFIC products/assets that become OBSOLETE or UNECONOMIC
+   - Why do they break? (Technology shift? Regulatory change? Value migration?)
+   - Quantify: Revenue loss RANGES, margin compression, asset write-downs
+   - Identify STRANDED CAPITAL: How much current CapEx loses value?
+   - Cite industry benchmarks (2-3 sources)
+
+6. **What SURVIVES & THRIVES (250-300 words)**:
+   - Name SPECIFIC capabilities that create ASYMMETRIC ADVANTAGE
+   - What makes them defensible? (Ecosystem lock-in? Physics advantages? Regulatory moats?)
+   - Quantify: Revenue growth RANGES, margin expansion, market share gains
+   - Identify HIDDEN OPTIONALITY: What becomes unexpectedly valuable?
+   - Cite growth projections, competitive analysis (2-3 sources)
+
+7. **Strategic Verdict (100-200 words)**:
+   - Financial impact: Revenue RANGES, EBITDA margin RANGES, ROIC RANGES
+   - Competitive position: Name specific competitors—who does {company_name} surpass? Who surpasses them?
+   - Capital allocation: What % of CURRENT strategy becomes obsolete? What NEW capabilities require investment?
+   - Strategic positioning: Leader? Challenger? Platform? Component supplier?
+
+---
+
+**MANDATORY STRATEGIC PRINCIPLES:**
+
+1. **PHYSICS OVER POLICY**: If you mention regulation, explain the PHYSICS that forces it (e.g., "Power-constrained warfare favors compute-efficient chips")
+
+2. **ECOSYSTEM EFFECTS**: Identify IRREVERSIBLE LOCK-IN (e.g., "90% of defense AI code uses CUDA—rewriting costs $20B and 5 years")
+
+3. **EXPONENTIAL DYNAMICS**: Where do DOUBLINGS occur? (Compute, energy density, data generation)
+
+4. **VALUE MIGRATION**: Don't just extrapolate current margins—identify where MARGIN POOLS MOVE (e.g., from hardware to software subscriptions)
+
+5. **DUAL-USE THINKING**: Blur boundaries. "Defense" and "Commercial" use the SAME chip—model as unified TAM with different regulatory overlays
+
+6. **LICENSING/PLATFORM OPTIONS**: Don't assume {company_name} must own everything. Can they LICENSE IP? Become a PLATFORM? (e.g., "Can't sell chips? Sell the blueprint at 95% margin")
+
+7. **POWER LAW THINKING**: Identify if this is a winner-take-most market (network effects, standards) or fragmented (local preference, regulation)
+
+---
+
+**OUTPUT FORMAT:**
+
+Return ONLY valid JSON with this structure:
+
 {{
   "matrix_framework": {{
     "axis_x": {{
-      "name": "Critical Uncertainty 1 Name",
-      "left_pole": "Left extreme (e.g., Fragmentation)",
-      "right_pole": "Right extreme (e.g., Integration)",
-      "description": "Why this uncertainty matters and why it's unknowable"
+      "name": "Critical Uncertainty 1",
+      "left_pole": "Left extreme",
+      "right_pole": "Right extreme",
+      "description": "Why this determines WHO CAPTURES VALUE"
     }},
     "axis_y": {{
-      "name": "Critical Uncertainty 2 Name",
-      "bottom_pole": "Bottom extreme (e.g., Incremental change)",
-      "top_pole": "Top extreme (e.g., Radical disruption)",
-      "description": "Why this uncertainty matters and why it's unknowable"
+      "name": "Critical Uncertainty 2",
+      "bottom_pole": "Bottom extreme",
+      "top_pole": "Top extreme",
+      "description": "Why this determines HOW MUCH VALUE EXISTS"
     }}
   }},
   "scenarios": [
     {{
-      "title": "Scenario Name (5-7 words, active voice)",
-      "tagline": "One-sentence summary (e.g., 'Regional champions in walled gardens')",
+      "title": "Scenario Name (5-7 words, reveals the strategic insight)",
+      "tagline": "One-sentence STRATEGIC thesis (not description)",
+      "core_logic": "2-3 sentence explanation of the PHYSICS or ECONOMICS that make this world stable",
+      "probability": 0.15-0.35,
       "quadrant": "Bottom-Left|Bottom-Right|Top-Left|Top-Right",
 
-      "narrative": "FULL ACADEMIC VERSION (1500-1800 words with 8-12 in-text APA citations):
+      "narrative": "FULL STRATEGIC ANALYSIS (1500-1800 words with 8-12 APA citations):
 
-**SCENARIO LOGIC & STRUCTURAL BREAKS** (150-200 words):
-What are the 2-3 STRUCTURAL BREAKS that create this world? Explain the pathway from today to this future with specific triggers and branch points. Use ranges for timeframes. (Cite 2-3 sources)
+[Follow structure above: Structural Breaks → Geopolitical/Macro → Industry Physics → Competitive Landscape → What Breaks → What Survives → Verdict]
 
-**PART A: THE EXTERNAL WORLD** (800-1000 words, 5-7 citations)
+Use RANGES not precision. Focus on PHYSICS and ECOSYSTEMS over POLICY SPECULATION. Identify ASYMMETRIC ADVANTAGES.
+Cite authoritative sources (company filings, central banks, think tanks, technology roadmaps, academic research).
 
-**Geopolitical & Macro Environment** (250-300 words):
-- Power structures, trade architectures, technology sovereignty regimes (cite IR/think tank research)
-- GDP growth RANGES, inflation, currency volatility, cost of capital RANGES by region/sector (cite IMF, World Bank, central banks)
-- Capital flows, FDI patterns, financing availability (cite UNCTAD, BIS)
-
-**Industry Structure & Market Dynamics** (250-300 words):
-- Market size trajectory using RANGES (e.g., 'grows 2-3x to $XXX-YYY billion') (cite industry research)
-- Concentration: HHI ranges, number of major players, degree of commoditization (cite competitive analysis)
-- Value chain: where margin pools concentrate, vertical integration vs specialization (cite value chain studies)
-- Customer behavior, willingness-to-pay dynamics (cite consumer/B2B research)
-
-**Regulatory, Technology & Competitive Landscape** (300-400 words):
-- Regulatory regime: market-driven vs state-directed, carbon pricing RANGES, key policies (cite policy databases)
-- Technology maturity: which tech crossed adoption thresholds, platform dynamics, R&D intensity (cite tech research)
-- Competitive dynamics: name 3-5 major players, market share ranges, profitability RANGES (EBITDA, ROIC) by player type, who wins/loses and why (cite company filings, industry analysis)
-
-**PART B: STRATEGIC IMPLICATIONS FOR {company_name}** (600-800 words, 3-5 citations)
-
-**What Breaks for {company_name}** (250-300 words):
-Name SPECIFIC assets/products/business units that FAIL in this world:
-- Which products/segments lose money and why
-- Which plants/facilities become uneconomic
-- Which partnerships/technologies become obsolete
-- Quantify with RANGES: Revenue loss, margin compression, asset write-downs (cite benchmarks, analyst reports)
-
-**What Survives for {company_name}** (250-300 words):
-Name SPECIFIC assets that become CRITICAL:
-- Which products/segments dominate and why
-- Which capabilities create defensible moats
-- Which geographies/customer segments thrive
-- Quantify with RANGES: Revenue growth, margin expansion, market share gains (cite growth projections, competitive analysis)
-
-**The Verdict for {company_name}** (100-200 words):
-- Overall financial impact: Revenue RANGES, EBITDA margin RANGES, ROIC RANGES
-- Competitive position: Strengthens or weakens vs. named specific competitors
-- Capital destruction risk: How much of current CapEx becomes stranded (cite capital allocation data)
-- Strategic positioning: Market leader, challenger, or niche player in this world
-
-Use RANGES throughout (not false precision). Cite 8-12 authoritative sources total (inline, APA style). Write for sophisticated board members who understand political economy.",
+Target audience: Board members making $10B+ irreversible capital allocation decisions.",
 
       "signposts": [
         {{
-          "indicator": "Specific measurable leading indicator (e.g., 'WTI-Brent spread narrows below $3/bbl')",
-          "timeframe": "When to monitor (e.g., '2025-2027')",
-          "significance": "What this signals about which scenario is unfolding",
-          "data_source": "Where to track this (e.g., 'Bloomberg commodity data, monthly')"
+          "indicator": "MEASURABLE leading indicator with specific threshold (e.g., 'AI training compute costs drop below $X per PFLOP')",
+          "timeframe": "Monitoring window",
+          "significance": "What this reveals about value migration or technology trajectories",
+          "data_source": "Specific data source"
         }},
-        {{
-          "indicator": "Regulatory/policy signpost (e.g., 'EU passes Carbon Border Adjustment Mechanism phase 2')",
-          "timeframe": "When to monitor",
-          "significance": "What this signals",
-          "data_source": "Where to track this"
-        }},
-        {{
-          "indicator": "Technology adoption signpost (e.g., 'EV sales exceed 30% of new vehicle sales in China')",
-          "timeframe": "When to monitor",
-          "significance": "What this signals",
-          "data_source": "Where to track this"
-        }},
-        {{
-          "indicator": "Competitive dynamics signpost (e.g., 'Top 3 players control >60% market share')",
-          "timeframe": "When to monitor",
-          "significance": "What this signals",
-          "data_source": "Where to track this"
-        }},
-        {{
-          "indicator": "Geopolitical signpost (e.g., 'US-China FDI flows drop below $X billion annually')",
-          "timeframe": "When to monitor",
-          "significance": "What this signals",
-          "data_source": "Where to track this"
-        }}
+        // ... 4-5 signposts covering: technology thresholds, regulatory shifts, competitive dynamics, customer behavior, capital flows
       ],
 
       "references": [
-        "Include 8-12 high-quality sources in APA format",
-        "ONLY: peer-reviewed journals, industry reports from S&P/Moody's/Wood Mackenzie/IEA, government publications, major consultancies, company filings"
+        "Source 1 (Author, Year, Title, Institution)",
+        // ... 8-12 references in APA style
       ]
     }}
+    // ... 4 scenarios total
   ]
 }}
 
-GENERATE EXACTLY 4 SCENARIOS - one for each quadrant of the 2x2 matrix.
+---
 
-CRITICAL REQUIREMENTS - EXHAUSTIVE ACADEMIC ANALYSIS:
-✓ COMPANY-SPECIFIC: Name {company_name}'s specific products, plants, business units that win/lose
-✓ STRUCTURAL BREAKS: 2-3 discontinuities with years, events, impacts (NOT linear extrapolation)
-✓ RANGES NOT PRECISION: Use "2-3x growth", "$50-80B", "15-25% margin" (NOT "$67.3B")
-✓ QUANTIFIED IMPACT: Revenue ranges, margin ranges, ROIC ranges, CapEx, write-downs for {company_name}
-✓ COMPETITIVE REALITY: Name 3-5 specific competitors, their strategies, market share ranges
-✓ SIGNPOSTS: 5 measurable leading indicators with specific metrics to track
-✓ APA CITATIONS: 8-12 inline citations from authoritative sources (S&P, McKinsey, IEA, World Bank, company filings, academic journals)
-✓ POLITICAL ECONOMY: Acknowledge state champions, regulatory capture, capital constraints, competitive realities
-✓ STRESS TEST: Explicitly identify which {company_name} assets BREAK and which SURVIVE in each world
-✓ DEEP RESEARCH: Use latest 2023-2024 data, cite specific reports/studies, provide context
+**FINAL CHECKS BEFORE SUBMITTING:**
 
-TARGET AUDIENCE: Sophisticated board members and strategy teams who need comprehensive scenario analysis for capital allocation decisions worth billions.
+1. ✓ Did you identify a VALUE SHIFT (what fundamentally changes about value creation)?
+2. ✓ Did you use PHYSICS/TECHNOLOGY constraints (not just policy speculation)?
+3. ✓ Did you identify ECOSYSTEM LOCK-IN and switching costs?
+4. ✓ Did you model EXPONENTIAL DYNAMICS (not linear extrapolation)?
+5. ✓ Did you use DUAL-USE thinking (blur artificial boundaries)?
+6. ✓ Did you identify LICENSING/PLATFORM strategies (not just direct sales)?
+7. ✓ Did you quantify with RANGES (not false precision)?
+8. ✓ Did you name SPECIFIC assets/competitors (not generic categories)?
+9. ✓ Did you cite 8-12 AUTHORITATIVE sources per scenario?
+10. ✓ Did you focus on ASYMMETRIC ADVANTAGES (what makes {company_name} unique)?
 
-NOTE: Boardroom transformation (BLUF format, dashboards, Kill/Double decisions) will be generated separately via BR button - focus here on exhaustive research-backed analysis."""
+{context_note}
+
+BUILD THE SCENARIOS NOW."""
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
