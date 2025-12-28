@@ -375,149 +375,207 @@ def generate_scenario_async_worker(event, context):
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
-        prompt = f"""You are an elite McKinsey/BCG-level strategic foresight consultant with 20+ years experience in {industry}. Generate 2 EXHAUSTIVE, RESEARCH-BACKED scenarios for {company_name} in {region} over {horizon_years} years.{context_note}
+        prompt = f"""You are an elite Shell/Royal Dutch Shell Scenario Planning consultant with 30+ years experience building rigorous 2x2 scenario matrices for {industry}. This is a SCENARIO DEVELOPMENT PROCESS, not a strategy document.
 
-CRITICAL REQUIREMENTS:
-• Each scenario: 3000-4000 words of deeply researched narrative
-• Use ONLY authoritative sources: peer-reviewed journals, industry reports from S&P/Moody's/Wood Mackenzie/IEA, government publications, major consultancies
-• Include 15-25 in-text APA citations per scenario
-• Account for: geopolitical realities, competitive dynamics, regulatory complexities, technology disruptions, capital constraints
-• Be realistic about political economy - acknowledge state champions, local content requirements, regulatory capture
-• Provide specific quantitative data with sources
-• Include comprehensive references section
+YOUR MISSION: Build a 2x2 scenario matrix that describes 4 DISTINCT EXTERNAL FUTURES for {region} {industry} over {horizon_years} years. These scenarios are OUTSIDE-IN (what the world does to {company_name}), NOT inside-out (what {company_name} does).{context_note}
+
+STEP 1: IDENTIFY CRITICAL UNCERTAINTIES
+First, identify the 2 most critical uncertainties that will shape {region} {industry} over {horizon_years} years. These must be:
+1. HIGH IMPACT: Will fundamentally reshape the industry structure
+2. HIGH UNCERTAINTY: Genuinely unknowable, not just "fast vs slow"
+3. INDEPENDENT: The two axes should be orthogonal (not correlated)
+
+Example framework for {industry} in {region}:
+- Axis X (Horizontal): [Uncertainty 1 - e.g., "Degree of Global Economic Integration" ranging from "Fragmentation/Regionalization" to "Deep Integration/Globalization"]
+- Axis Y (Vertical): [Uncertainty 2 - e.g., "Technology Disruption Pace" ranging from "Incremental Evolution" to "Radical Disruption"]
+
+STEP 2: BUILD 4 SCENARIO WORLDS
+Generate 4 scenarios, one for each quadrant. Each scenario describes a COMPLETE EXTERNAL ENVIRONMENT (geopolitical, economic, regulatory, technological, competitive).
+
+CRITICAL METHODOLOGY REQUIREMENTS:
+✓ STRUCTURAL BREAKS: Include discontinuities, inflection points, regime changes (NOT linear extrapolation)
+✓ RANGES & RATIOS: Use "2-3x growth" or "$50-80B market size" (NOT false precision like "$67.3B")
+✓ OUTSIDE-IN: Describe what the WORLD looks like (NOT what {company_name} should do)
+✓ SIGNPOSTS: Provide 5-7 leading indicators per scenario to track which world is unfolding
+✓ WIND TUNNEL TEST: Define no-regrets moves, big bets, and trigger points
+✓ RESEARCH-BACKED: 15-25 APA citations per scenario from authoritative sources only
+
+Each scenario: 3000-4000 words of deeply researched narrative.
 
 Return ONLY valid JSON:
-[
-  {{
-    "title": "Scenario Name (7-10 words reflecting core logic)",
-    "probability": 0.XX,
-    "narrative": "Write an exhaustive 3000-4000 word strategic analysis with in-text APA citations:
-
-**EXECUTIVE SUMMARY** (300 words):
-[Strategic implications for {company_name}. Address: What are the 3-5 critical strategic choices? What is the fundamental bet this scenario requires? What are the irreversible commitments? What is the downside protection?]
-
-**GEOPOLITICAL & MACROECONOMIC CONTEXT** (500 words):
-- Regional political economy and power dynamics (cite specific governance indicators, World Bank/IMF forecasts)
-- Macroeconomic trajectories: GDP growth, inflation, currency stability (cite central bank data, economic forecasts)
-- Trade flows and investment patterns (cite UNCTAD, regional trade data)
-- Sovereign wealth fund strategies and capital allocation (cite SWF Institute data)
-- Geopolitical risks: sanctions, conflicts, regime stability (cite risk indices, political science research)
-
-**MARKET DYNAMICS** (600 words):
-- Supply-demand fundamentals with specific volumes, growth rates, and elasticities (cite industry reports, market research)
-- Price formation mechanisms and historical volatility patterns (cite commodity data, pricing indices)
-- Competitive landscape with named players, market shares, strategic positioning (cite company filings, industry analysis)
-- Value chain evolution and margin pools by segment (cite value chain research, profitability studies)
-- Customer behavior shifts and willingness-to-pay dynamics (cite consumer research, demand studies)
-- Regional arbitrage opportunities and barriers to entry (cite competitive analysis)
-
-**REGULATORY & POLICY ENVIRONMENT** (500 words):
-- Specific regulations with bill numbers, implementation dates, compliance costs, enforcement track record (cite regulatory filings, legal databases)
-- Carbon pricing mechanisms with price trajectories and coverage (cite emissions trading data, climate policy research)
-- Local content requirements, licensing regimes, foreign ownership restrictions (cite regulatory codes, legal analysis)
-- Tax policy including rates, incentives, transfer pricing considerations (cite tax codes, international tax databases)
-- Trade agreements and their commercial implications (cite trade policy research)
-- Government procurement rules and state champion favoritism (cite public procurement data)
-
-**TECHNOLOGY & INNOVATION** (500 words):
-- Technology S-curves and adoption timelines with historical analogues (cite technology diffusion research)
-- R&D intensity requirements and innovation ecosystem maturity (cite R&D statistics, patent data)
-- Digital infrastructure availability and costs (cite telecom data, infrastructure reports)
-- Cybersecurity threats and required defensive investments (cite security indices, threat intelligence)
-- Automation potential by function with displacement estimates (cite labor economics research, AI capability research)
-- Breakthrough technology risks with probability-weighted scenarios (cite technology forecasting research)
-
-**COMPETITIVE DYNAMICS** (600 words):
-- Named competitors with specific strategies, capabilities, financial resources (cite company filings, competitive intelligence)
-- Likely competitive responses to {company_name}'s moves (game theoretic analysis)
-- Barriers to competitive advantage and sustainability (cite competitive strategy research)
-- Alliances and ecosystem dynamics (cite partnership research, network effects studies)
-- Regulatory/political advantages held by local champions (cite political economy research)
-- Margin pressure from commoditization and disruption (cite pricing research, disruption literature)
-
-**FINANCIAL IMPLICATIONS** (600 words):
-- CAPEX requirements by category, year, with IRR hurdles and capital intensity benchmarks (cite capital markets data, industry benchmarks)
-- Revenue build with addressable market, penetration rates, pricing (cite market sizing research, penetration curves)
-- Cost structure evolution with operating leverage and scale economies (cite cost accounting research, economies of scale studies)
-- Working capital implications and cash conversion cycles (cite financial analysis, working capital benchmarks)
-- Valuation impacts with multiple ranges and comparable analysis (cite valuation research, trading multiples)
-- Shareholder value creation hurdles vs. cost of capital (cite financial economics research)
-
-**STRATEGIC DECISIONS & CAPITAL ALLOCATION** (400 words):
-- Specific investment decisions with timing, sizing, NPV/IRR/payback, sensitivity to key assumptions (cite capital budgeting research)
-- M&A targets with rationale, valuation ranges, integration risks (cite M&A research, deal databases)
-- Build vs. buy vs. partner analysis for key capabilities (cite transaction cost economics)
-- Geographic sequencing and market entry modes (cite international business research)
-- Portfolio rebalancing and capital redeployment (cite portfolio management research)
-- Optionality and staged investment approach (cite real options research)
-
-**RISKS & MITIGATION** (300 words):
-- Specific risk factors with probability estimates, impact quantification, early warning indicators (cite risk management research)
-- Scenario stress testing and break-even analysis (cite scenario planning research)
-- Hedging strategies and insurance mechanisms (cite derivatives research, insurance economics)
-- Contingency planning and strategic flexibility (cite strategic management research)",
-
-    "timeline": [
-      {{"year": 2025, "milestone": "Specific event with geopolitical/regulatory trigger", "impact": "Quantified financial impact on {company_name} with citation"}},
-      {{"year": 2028, "milestone": "Technology or competitive inflection point", "impact": "Market share/margin impact with source"}},
-      {{"year": 2032, "milestone": "Regulatory or market structure change", "impact": "Strategic implication with citation"}},
-      {{"year": 2037, "milestone": "Major capital deployment or harvest decision", "impact": "NPV/IRR impact with analytical source"}},
-      {{"year": 2040, "milestone": "End-state market position", "impact": "Valuation impact vs. alternatives"}}
-    ],
-
-    "financial_projections": {{
-      "years": [2025, 2028, 2032, 2035, 2037, 2040],
-      "revenue_bn": [X, X, X, X, X, X],
-      "ebitda_margin_pct": [X, X, X, X, X, X],
-      "roic_pct": [X, X, X, X, X, X],
-      "capex_bn": [X, X, X, X, X, X],
-      "free_cash_flow_bn": [X, X, X, X, X, X],
-      "market_share_pct": [X, X, X, X, X, X],
-      "ev_ebitda_multiple": [X, X, X, X, X, X]
+{{
+  "matrix_framework": {{
+    "axis_x": {{
+      "name": "Critical Uncertainty 1 Name",
+      "left_pole": "Left extreme (e.g., Fragmentation)",
+      "right_pole": "Right extreme (e.g., Integration)",
+      "description": "Why this uncertainty matters and why it's unknowable"
     }},
+    "axis_y": {{
+      "name": "Critical Uncertainty 2 Name",
+      "bottom_pole": "Bottom extreme (e.g., Incremental change)",
+      "top_pole": "Top extreme (e.g., Radical disruption)",
+      "description": "Why this uncertainty matters and why it's unknowable"
+    }}
+  }},
+  "scenarios": [
+    {{
+      "title": "Scenario Name (7-10 words)",
+      "quadrant": "Bottom-Left|Bottom-Right|Top-Left|Top-Right",
+      "quadrant_description": "This scenario combines [Axis X pole] + [Axis Y pole]",
+      "probability": "Do NOT assign probabilities - all scenarios are plausible",
+      "narrative": "Write an exhaustive 3000-4000 word OUTSIDE-IN description of this external world with in-text APA citations:
 
-    "competitive_landscape": [
-      {{"company": "Specific competitor name", "market_share_2025": X, "market_share_2040": X, "strategy": "Detailed positioning", "competitive_advantage": "Source of advantage", "threat_level": "High/Medium/Low", "likely_response": "Expected competitive reaction"}},
-      {{"company": "Specific competitor name", "market_share_2025": X, "market_share_2040": X, "strategy": "Detailed positioning", "competitive_advantage": "Source of advantage", "threat_level": "High/Medium/Low", "likely_response": "Expected competitive reaction"}},
-      {{"company": "Specific competitor name", "market_share_2025": X, "market_share_2040": X, "strategy": "Detailed positioning", "competitive_advantage": "Source of advantage", "threat_level": "High/Medium/Low", "likely_response": "Expected competitive reaction"}}
-    ],
+**SCENARIO LOGIC & STRUCTURAL BREAKS** (400 words):
+[Explain the fundamental logic of this scenario. What are the 2-3 STRUCTURAL BREAKS or INFLECTION POINTS that distinguish this world from today? NOT linear extrapolation - identify DISCONTINUITIES (regime changes, technology S-curve jumps, geopolitical shocks, regulatory watersheds). Explain the pathway from today to this future, including critical branch points and the specific triggers that pushed the world down this path vs. alternative scenarios.]
 
-    "key_metrics": {{
-      "operational_metric_1": [X, X, X, X, X, X],
-      "operational_metric_2": [X, X, X, X, X, X],
-      "efficiency_metric": [X, X, X, X, X, X],
-      "sustainability_metric": [X, X, X, X, X, X]
-    }},
+**GEOPOLITICAL & MACROECONOMIC WORLD** (600 words):
+[Describe the EXTERNAL geopolitical and economic environment in this scenario - NOT what {company_name} should do about it]
+- Global/regional governance structures and power distribution (cite IR research, think tank analysis)
+- Trade architectures: degree of openness, regional blocs, technology/data sovereignty regimes (cite trade policy research)
+- Macroeconomic regime: growth patterns (use RANGES like "2-4% CAGR" not "2.7%"), inflation/interest rate environment, currency dynamics (cite IMF, central bank research)
+- Capital flows and investment patterns: where capital goes, cost of capital ranges by region/sector (cite BIS, World Bank data)
+- Geopolitical flashpoints and their economic spillovers (cite security studies, geopolitical risk research)
 
-    "key_decisions": [
-      {{"decision": "Specific strategic choice", "timing": "Year", "investment_bn": X, "npv_bn": X, "irr_pct": X, "payback_years": X, "risk_level": "High/Medium/Low", "key_assumptions": "Critical assumptions", "decision_rule": "Trigger conditions"}},
-      {{"decision": "Specific strategic choice", "timing": "Year", "investment_bn": X, "npv_bn": X, "irr_pct": X, "payback_years": X, "risk_level": "High/Medium/Low", "key_assumptions": "Critical assumptions", "decision_rule": "Trigger conditions"}},
-      {{"decision": "Specific strategic choice", "timing": "Year", "investment_bn": X, "npv_bn": X, "irr_pct": X, "payback_years": X, "risk_level": "High/Medium/Low", "key_assumptions": "Critical assumptions", "decision_rule": "Trigger conditions"}}
-    ],
+**INDUSTRY STRUCTURE & MARKET DYNAMICS** (600 words):
+[Describe how the {industry} industry is STRUCTURED in this world - NOT specific company strategies]
+- Market size and growth trajectory (use RANGES: "industry grows 2-3x" not "reaches $127.3B") (cite industry research)
+- Concentration vs. fragmentation: how many players, what's the HHI range, degree of commoditization (cite competitive structure research)
+- Value chain configuration: vertical integration vs. specialization, where margin pools concentrate (cite value chain analysis)
+- Competitive basis: cost leadership, differentiation, network effects, regulatory moats (cite competitive strategy research)
+- Customer behavior and demand drivers in this world (cite consumer research, behavioral economics)
+- Barriers to entry/exit and capital intensity (cite industrial organization research)
 
-    "risks": [
-      {{"risk": "Specific risk factor with geopolitical/regulatory detail", "probability": "X%", "impact_bn": X, "timeframe": "Years", "early_warning_indicators": "Specific metrics to monitor", "mitigation": "Detailed mitigation strategy with cost"}},
-      {{"risk": "Specific risk factor with competitive/technology detail", "probability": "X%", "impact_bn": X, "timeframe": "Years", "early_warning_indicators": "Specific metrics to monitor", "mitigation": "Detailed mitigation strategy with cost"}}
-    ],
+**REGULATORY & POLICY REGIME** (500 words):
+[Describe the REGULATORY ENVIRONMENT that exists in this world - NOT compliance strategies]
+- Governance approach: market-driven vs. state-directed, degree of regulatory capture, enforcement effectiveness (cite political economy research)
+- Industry-specific regulations: licensing, safety, environmental standards that DEFINE this scenario (cite regulatory research)
+- Carbon/climate policy: pricing mechanisms (if any), ranges of carbon prices ($X-Y/ton), sectoral coverage (cite climate policy research)
+- Trade policy: tariff levels, non-tariff barriers, local content requirements, foreign ownership caps (cite trade policy databases)
+- Industrial policy: subsidies, state champions, strategic sector designation, government procurement preferences (cite industrial policy research)
+- Tax regime: corporate rates (ranges), R&D incentives, capital allowances (cite tax policy databases)
 
-    "references": [
-      "International Energy Agency. (2024). World Energy Outlook 2024. IEA Publications. https://www.iea.org/reports/world-energy-outlook-2024",
-      "McKinsey & Company. (2023). Global Energy Perspective 2023. McKinsey Energy Insights.",
-      "Wood Mackenzie. (2024). [Specific Industry Report Title]. Wood Mackenzie Research.",
-      "World Bank. (2024). [Specific Country/Region Economic Report]. World Bank Publications.",
-      "[15-25 total high-quality sources in APA format]"
-    ]
-  }}
-]
+**TECHNOLOGY LANDSCAPE** (500 words):
+[Describe the STATE OF TECHNOLOGY in this world - NOT innovation strategies]
+- Technology maturity: which technologies have crossed adoption thresholds, which are stuck in the 'trough of disillusionment' (cite technology lifecycle research)
+- Dominant technical standards and platform dynamics: who controls key platforms, degree of interoperability (cite platform economics research)
+- R&D intensity norms and innovation locus: where innovation happens (incumbents, startups, universities, state labs) (cite innovation research)
+- Infrastructure availability: digital, physical, energy - use RANGES for costs and penetration rates (cite infrastructure research)
+- Technology access regimes: open vs. proprietary, export controls, technology sovereignty (cite technology policy research)
+- Skill availability and labor market dynamics for technical talent (cite labor economics research)
 
-MANDATORY QUALITY STANDARDS:
-• Every quantitative claim must cite a source
-• Use recent data (2023-2024) wherever possible
-• Acknowledge political economy constraints (state champions, regulatory capture, local content requirements)
-• Be realistic about competitive dynamics - don't assume easy market share gains
-• Account for capital constraints and hurdle rates
-• Include downside scenarios and risk mitigation
-• Write at Board/C-suite level - assume sophisticated financial readers"""
+**COMPETITIVE LANDSCAPE** (600 words):
+[Describe WHO the major players are and HOW they compete in this world - describe the environment, NOT {company_name}'s strategy]
+- Industry leaders: name 3-5 dominant players, their core capabilities, relative market positions (cite industry analysis, company filings)
+- Competitive dynamics: price competition intensity, degree of product differentiation, customer switching costs (cite competitive strategy research)
+- New entrant activity: are new players entering, from where (adjacent industries, new geographies, digital natives), what advantages do they have (cite disruption research)
+- Ecosystem and alliance structures: who partners with whom, what's the logic (cite network research, alliance databases)
+- State champions and political economy: which players have regulatory advantages, government backing, protected home markets (cite political economy research)
+- Profitability distribution: are margins concentrated or dispersed, RANGES for ROIC/margins by player type (cite financial analysis)
+
+**FINANCIAL ENVIRONMENT** (400 words):
+[Describe the FINANCIAL CONTEXT that exists in this world - cost of capital, valuation regimes, investor expectations]
+- Cost of capital: ranges for WACC by industry/region in this scenario, debt availability and pricing (cite capital markets research)
+- Valuation regimes: what multiples (ranges) do public markets assign to this industry, growth vs. value orientation (cite equity research, valuation studies)
+- Investment requirements: typical CAPEX intensity (as % of sales or absolute ranges), payback expectations (cite industry benchmarking)
+- Cash flow dynamics: working capital intensity, cash conversion patterns (cite financial analysis)
+- Investor time horizons and risk appetites in this world (cite behavioral finance research)
+- M&A market: deal activity levels, valuation multiples (ranges), strategic vs. financial buyers (cite M&A databases)
+
+**CRITICAL UNCERTAINTIES WITHIN THIS SCENARIO** (300 words):
+[Even within this scenario, what remains uncertain? What are the second-order unknowables that could push this world in different directions?]",
+
+      "signposts": [
+        {{
+          "indicator": "Specific measurable leading indicator (e.g., 'WTI-Brent spread narrows below $3/bbl')",
+          "timeframe": "When to monitor (e.g., '2025-2027')",
+          "significance": "What this signals about which scenario is unfolding",
+          "data_source": "Where to track this (e.g., 'Bloomberg commodity data, monthly')"
+        }},
+        {{
+          "indicator": "Regulatory/policy signpost (e.g., 'EU passes Carbon Border Adjustment Mechanism phase 2')",
+          "timeframe": "When to monitor",
+          "significance": "What this signals",
+          "data_source": "Where to track this"
+        }},
+        {{
+          "indicator": "Technology adoption signpost (e.g., 'EV sales exceed 30% of new vehicle sales in China')",
+          "timeframe": "When to monitor",
+          "significance": "What this signals",
+          "data_source": "Where to track this"
+        }},
+        {{
+          "indicator": "Competitive dynamics signpost (e.g., 'Top 3 players control >60% market share')",
+          "timeframe": "When to monitor",
+          "significance": "What this signals",
+          "data_source": "Where to track this"
+        }},
+        {{
+          "indicator": "Geopolitical signpost (e.g., 'US-China FDI flows drop below $X billion annually')",
+          "timeframe": "When to monitor",
+          "significance": "What this signals",
+          "data_source": "Where to track this"
+        }}
+      ],
+
+      "structural_breaks": [
+        {{"year_range": "2025-2027", "event": "First major discontinuity/regime change", "trigger": "What causes this break", "impact": "How this fundamentally reshapes the industry"}},
+        {{"year_range": "2028-2032", "event": "Second structural break/inflection point", "trigger": "What causes this break", "impact": "How this reshapes the competitive landscape"}},
+        {{"year_range": "2033-2040", "event": "Third structural break (if applicable)", "trigger": "What causes this break", "impact": "Long-term equilibrium that emerges"}}
+      ],
+
+      "industry_economics": {{
+        "market_size_trajectory": "Use RANGES - e.g., 'Industry grows 2-3x to $XXX-YYY billion by 2040'",
+        "profitability_ranges": "Typical EBITDA margins: XX-YY%, ROIC: XX-YY% for incumbents in this world",
+        "capital_intensity": "CAPEX as % of revenue: XX-YY% range",
+        "concentration": "HHI index range: XXX-YYY, implying [fragmented/concentrated] market",
+        "typical_valuation_multiples": "EV/EBITDA ranges: X-Y for leaders, X-Y for challengers"
+      }},
+
+      "wind_tunnel_test": {{
+        "no_regrets_moves": [
+          {{"move": "Action that makes sense in ALL scenarios (e.g., 'Build data analytics capabilities')", "rationale": "Why this is valuable regardless of which world unfolds", "investment_range": "Typical investment size range"}},
+          {{"move": "Another no-regrets action", "rationale": "Why robust across scenarios", "investment_range": "Cost range"}},
+          {{"move": "Third no-regrets move", "rationale": "Cross-scenario value", "investment_range": "Investment required"}}
+        ],
+        "big_bets_for_this_scenario": [
+          {{"bet": "Action that WINS BIG in this scenario but fails in others (e.g., 'Acquire offshore wind portfolio')", "rationale": "Why this bet pays off specifically in this world", "investment_range": "Required capital commitment range", "npv_range_if_correct": "Value creation if this scenario unfolds", "downside_if_wrong": "Loss if different scenario unfolds"}},
+          {{"bet": "Second big bet specific to this scenario", "rationale": "Why this works here", "investment_range": "Capital required", "npv_range_if_correct": "Upside", "downside_if_wrong": "Downside in other scenarios"}},
+          {{"bet": "Third scenario-specific bet", "rationale": "Why tailored to this world", "investment_range": "Investment", "npv_range_if_correct": "Upside", "downside_if_wrong": "Downside"}}
+        ],
+        "trigger_points": [
+          {{"trigger": "Specific observable event that would trigger strategic pivot (e.g., 'Carbon price exceeds $100/ton in EU')", "action": "What decision this triggers", "timing": "When to decide", "reversibility": "Can this be undone? At what cost?"}},
+          {{"trigger": "Second trigger condition", "action": "Required strategic response", "timing": "Decision window", "reversibility": "Reversibility and switching costs"}},
+          {{"trigger": "Third trigger point", "action": "Strategic action", "timing": "When", "reversibility": "Reversibility"}}
+        ],
+        "hedging_options": [
+          {{"option": "How to maintain strategic flexibility (e.g., 'Modular CAPEX staged over 3 phases')", "cost": "Cost of maintaining optionality", "value": "Value of flexibility in uncertain environment"}}
+        ]
+      }},
+
+      "references": [
+        "International Energy Agency. (2024). World Energy Outlook 2024. IEA Publications. https://www.iea.org/reports/world-energy-outlook-2024",
+        "McKinsey & Company. (2023). Global Energy Perspective 2023. McKinsey Energy Insights.",
+        "Wood Mackenzie. (2024). [Specific Industry Report Title]. Wood Mackenzie Research.",
+        "World Bank. (2024). [Specific Country/Region Economic Report]. World Bank Publications.",
+        "[Include 15-25 total high-quality sources in APA format - ONLY peer-reviewed journals, industry reports from S&P/Moody's/Wood Mackenzie/IEA, government publications, major consultancies]"
+      ]
+    }}
+  ]
+}}
+
+GENERATE EXACTLY 4 SCENARIOS - one for each quadrant of the 2x2 matrix.
+
+MANDATORY METHODOLOGY REQUIREMENTS:
+✓ OUTSIDE-IN: Describe the EXTERNAL WORLD, not {company_name}'s strategy
+✓ 2x2 MATRIX: Four distinct scenarios based on critical uncertainties, not binary best/worst case
+✓ STRUCTURAL BREAKS: Include discontinuities and inflection points, NOT linear extrapolation
+✓ RANGES NOT PRECISION: Use "2-3x growth" or "$50-80B market" NOT "$67.3B"
+✓ SIGNPOSTS: 5-7 measurable leading indicators per scenario
+✓ WIND TUNNEL TEST: Define no-regrets moves, big bets, trigger points for each scenario
+✓ RESEARCH-BACKED: 15-25 APA citations per scenario from authoritative sources ONLY
+✓ REALISTIC: Acknowledge state champions, regulatory capture, competitive realities, capital constraints
+✓ BOARD-LEVEL: Write for sophisticated C-suite/board readers who understand political economy"""
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
@@ -537,20 +595,26 @@ MANDATORY QUALITY STANDARDS:
         response_body = json.loads(response['body'].read())
         ai_response = response_body['content'][0]['text']
 
-        start = ai_response.find('[')
-        end = ai_response.rfind(']') + 1
-        scenarios_json = ai_response[start:end]
-        scenarios = json.loads(scenarios_json)
+        # Parse the new structure which is a JSON object with matrix_framework and scenarios
+        start = ai_response.find('{')
+        end = ai_response.rfind('}') + 1
+        result_json = ai_response[start:end]
+        parsed_result = json.loads(result_json)
 
-        logger.info(f"[Job {job_id}] Generated {len(scenarios)} scenarios")
+        matrix_framework = parsed_result.get('matrix_framework', {})
+        scenarios = parsed_result.get('scenarios', [])
+
+        logger.info(f"[Job {job_id}] Generated {len(scenarios)} scenarios with 2x2 matrix framework")
+        logger.info(f"[Job {job_id}] Axis X: {matrix_framework.get('axis_x', {}).get('name', 'N/A')}")
+        logger.info(f"[Job {job_id}] Axis Y: {matrix_framework.get('axis_y', {}).get('name', 'N/A')}")
 
         # Calculate generation time
         generation_time = (datetime.utcnow() - start_time).total_seconds()
 
         # Estimate cost (rough approximation for Claude Opus 4.5)
-        # Input: ~1000 tokens, Output: ~2000 tokens per scenario
-        input_tokens = 1000
-        output_tokens = len(scenarios) * 2000
+        # Input: ~2000 tokens (longer prompt), Output: ~15000 tokens (4 comprehensive scenarios)
+        input_tokens = 2000
+        output_tokens = 15000  # 4 scenarios × ~3750 tokens each
         cost_per_1k_input = 0.015  # $15/MTok
         cost_per_1k_output = 0.075  # $75/MTok
         estimated_cost = (input_tokens / 1000 * cost_per_1k_input) + (output_tokens / 1000 * cost_per_1k_output)
@@ -569,16 +633,19 @@ MANDATORY QUALITY STANDARDS:
             'created_at': start_time.isoformat() + 'Z',
             'generation_time_seconds': generation_time,
             'ai_generated': True,
-            'generation_method': 'Claude Opus 4.5',
+            'generation_method': 'Claude Opus 4.5 - 2x2 Matrix Scenario Planning',
+
+            # 2x2 Matrix Framework
+            'matrix_framework': matrix_framework,
             'scenarios': scenarios,
             'status': 'completed',
 
             # Additional fields for UI compatibility
             'themes': [],
-            'drivers': [],
-            'uncertainties': [],
+            'drivers': [matrix_framework.get('axis_x', {}), matrix_framework.get('axis_y', {})],  # Store axes as drivers
+            'uncertainties': [matrix_framework.get('axis_x', {}), matrix_framework.get('axis_y', {})],
             'action_plan': {},
-            'quality_report': {},
+            'quality_report': {'scenario_methodology': '2x2 matrix with outside-in perspective'},
             'models_used': {'claude-opus-4-5': 1},
             'total_cost_usd': estimated_cost
         }
