@@ -25,7 +25,21 @@ def _convert_floats_to_decimal(obj):
         return obj
 
 
+def _convert_decimal_to_float(obj):
+    """Convert all Decimal values to float for JSON serialization."""
+    if isinstance(obj, list):
+        return [_convert_decimal_to_float(item) for item in obj]
+    elif isinstance(obj, dict):
+        return {key: _convert_decimal_to_float(value) for key, value in obj.items()}
+    elif isinstance(obj, Decimal):
+        return float(obj)
+    else:
+        return obj
+
+
 def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
+    # Convert any Decimal values to float before JSON serialization
+    body_safe = _convert_decimal_to_float(body)
     return {
         'statusCode': status_code,
         'headers': {
@@ -34,7 +48,7 @@ def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
             'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
         },
-        'body': json.dumps(body)
+        'body': json.dumps(body_safe)
     }
 
 
