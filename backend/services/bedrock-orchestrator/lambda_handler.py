@@ -435,7 +435,54 @@ Return ONLY valid JSON:
       "tagline": "One-sentence summary (e.g., 'Regional champions in walled gardens')",
       "quadrant": "Bottom-Left|Bottom-Right|Top-Left|Top-Right",
 
-      "executive_summary_bluf": "Single paragraph (60-80 words) with RECOMMENDATION at end. Format: 'In this world, [what happens]. {company_name} faces [main threat]. Opportunity lies in [main opportunity]. RECOMMENDATION: [specific action required].'",
+      "narrative": "FULL ACADEMIC VERSION (1500-1800 words with 8-12 in-text APA citations):
+
+**SCENARIO LOGIC & STRUCTURAL BREAKS** (150-200 words):
+What are the 2-3 STRUCTURAL BREAKS that create this world? Explain the pathway from today to this future with specific triggers and branch points. Use ranges for timeframes. (Cite 2-3 sources)
+
+**PART A: THE EXTERNAL WORLD** (800-1000 words, 5-7 citations)
+
+**Geopolitical & Macro Environment** (250-300 words):
+- Power structures, trade architectures, technology sovereignty regimes (cite IR/think tank research)
+- GDP growth RANGES, inflation, currency volatility, cost of capital RANGES by region/sector (cite IMF, World Bank, central banks)
+- Capital flows, FDI patterns, financing availability (cite UNCTAD, BIS)
+
+**Industry Structure & Market Dynamics** (250-300 words):
+- Market size trajectory using RANGES (e.g., 'grows 2-3x to $XXX-YYY billion') (cite industry research)
+- Concentration: HHI ranges, number of major players, degree of commoditization (cite competitive analysis)
+- Value chain: where margin pools concentrate, vertical integration vs specialization (cite value chain studies)
+- Customer behavior, willingness-to-pay dynamics (cite consumer/B2B research)
+
+**Regulatory, Technology & Competitive Landscape** (300-400 words):
+- Regulatory regime: market-driven vs state-directed, carbon pricing RANGES, key policies (cite policy databases)
+- Technology maturity: which tech crossed adoption thresholds, platform dynamics, R&D intensity (cite tech research)
+- Competitive dynamics: name 3-5 major players, market share ranges, profitability RANGES (EBITDA, ROIC) by player type, who wins/loses and why (cite company filings, industry analysis)
+
+**PART B: STRATEGIC IMPLICATIONS FOR {company_name}** (600-800 words, 3-5 citations)
+
+**What Breaks for {company_name}** (250-300 words):
+Name SPECIFIC assets/products/business units that FAIL in this world:
+- Which products/segments lose money and why
+- Which plants/facilities become uneconomic
+- Which partnerships/technologies become obsolete
+- Quantify with RANGES: Revenue loss, margin compression, asset write-downs (cite benchmarks, analyst reports)
+
+**What Survives for {company_name}** (250-300 words):
+Name SPECIFIC assets that become CRITICAL:
+- Which products/segments dominate and why
+- Which capabilities create defensible moats
+- Which geographies/customer segments thrive
+- Quantify with RANGES: Revenue growth, margin expansion, market share gains (cite growth projections, competitive analysis)
+
+**The Verdict for {company_name}** (100-200 words):
+- Overall financial impact: Revenue RANGES, EBITDA margin RANGES, ROIC RANGES
+- Competitive position: Strengthens or weakens vs. named specific competitors
+- Capital destruction risk: How much of current CapEx becomes stranded (cite capital allocation data)
+- Strategic positioning: Market leader, challenger, or niche player in this world
+
+Use RANGES throughout (not false precision). Cite 8-12 authoritative sources total (inline, APA style). Write for sophisticated board members who understand political economy.",
+
+      "executive_summary_bluf": "BOARDROOM VERSION - Single paragraph (60-80 words) with RECOMMENDATION at end. Format: 'In this world, [what happens]. {company_name} faces [main threat]. Opportunity lies in [main opportunity]. RECOMMENDATION: [specific action required].'",
 
       "scenario_card": {{
         "the_world": {{
