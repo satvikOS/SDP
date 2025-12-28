@@ -545,7 +545,7 @@ NOTE: Boardroom transformation (BLUF format, dashboards, Kill/Double decisions) 
             'anthropic_version': 'bedrock-2023-05-31',
             'max_tokens': 64000,  # Maximum for Opus 4.5
             'temperature': 1.0,  # Must be 1.0 when thinking is enabled
-            'top_k': 40,  # Balance between factual grounding and creative scenarios
+            # top_k is not allowed when thinking is enabled
             'thinking': {
                 'type': 'enabled',
                 'budget_tokens': 10000  # Extended thinking for complex scenario reasoning
