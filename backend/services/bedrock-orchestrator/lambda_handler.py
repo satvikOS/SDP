@@ -375,32 +375,43 @@ def generate_scenario_async_worker(event, context):
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
-        prompt = f"""You are an elite Shell/Royal Dutch Shell Scenario Planning consultant with 30+ years experience building rigorous 2x2 scenario matrices for {industry}. This is a SCENARIO DEVELOPMENT PROCESS, not a strategy document.
+        prompt = f"""You are the Chief Paranoia Officer for {company_name}, responsible for Scenario Development Planning. Your job is NOT to predict the future—it's to ensure {company_name} SURVIVES the futures it didn't predict.
 
-YOUR MISSION: Build a 2x2 scenario matrix that describes 4 DISTINCT EXTERNAL FUTURES for {region} {industry} over {horizon_years} years. These scenarios are OUTSIDE-IN (what the world does to {company_name}), NOT inside-out (what {company_name} does).{context_note}
+This is a STRESS TEST, not a strategy document. You will build 4 scenario worlds and run {company_name} through each one to find what breaks and what survives.
 
-STEP 1: IDENTIFY CRITICAL UNCERTAINTIES
-First, identify the 2 most critical uncertainties that will shape {region} {industry} over {horizon_years} years. These must be:
-1. HIGH IMPACT: Will fundamentally reshape the industry structure
-2. HIGH UNCERTAINTY: Genuinely unknowable, not just "fast vs slow"
-3. INDEPENDENT: The two axes should be orthogonal (not correlated)
+YOUR MISSION: Build a 2x2 scenario matrix for {region} {industry} over {horizon_years} years, then STRESS TEST {company_name}'s current strategy against each scenario.{context_note}
 
-Example framework for {industry} in {region}:
-- Axis X (Horizontal): [Uncertainty 1 - e.g., "Degree of Global Economic Integration" ranging from "Fragmentation/Regionalization" to "Deep Integration/Globalization"]
-- Axis Y (Vertical): [Uncertainty 2 - e.g., "Technology Disruption Pace" ranging from "Incremental Evolution" to "Radical Disruption"]
+CRITICAL CONTEXT ABOUT {company_name}:
+Before you start, you MUST understand {company_name}'s specific business model in {region} {industry}:
+- What are their PROFIT ENGINES? (specific products, segments, geographies that drive 60%+ of operating profit)
+- What are their STRATEGIC ASSETS? (specific plants, technologies, partnerships, brands)
+- What are their EXISTENTIAL VULNERABILITIES? (dependencies on specific suppliers, regulations, customer segments)
 
-STEP 2: BUILD 4 SCENARIO WORLDS
-Generate 4 scenarios, one for each quadrant. Each scenario describes a COMPLETE EXTERNAL ENVIRONMENT (geopolitical, economic, regulatory, technological, competitive).
+STEP 1: IDENTIFY CRITICAL UNCERTAINTIES (for {company_name}, not the industry)
+Identify the 2 most critical uncertainties that will determine {company_name}'s survival in {region} {industry}:
+1. HIGH IMPACT on {company_name}'s profit engines
+2. HIGH UNCERTAINTY: Genuinely unknowable
+3. INDEPENDENT: The two axes should be orthogonal
 
-CRITICAL METHODOLOGY REQUIREMENTS:
-✓ STRUCTURAL BREAKS: Include discontinuities, inflection points, regime changes (NOT linear extrapolation)
-✓ RANGES & RATIOS: Use "2-3x growth" or "$50-80B market size" (NOT false precision like "$67.3B")
-✓ OUTSIDE-IN: Describe what the WORLD looks like (NOT what {company_name} should do)
-✓ SIGNPOSTS: Provide 5-7 leading indicators per scenario to track which world is unfolding
-✓ WIND TUNNEL TEST: Define no-regrets moves, big bets, and trigger points
-✓ RESEARCH-BACKED: 10-15 APA citations per scenario from authoritative sources only
+Example framework:
+- Axis X: [Uncertainty that affects {company_name}'s market access/cost structure]
+- Axis Y: [Uncertainty that affects {company_name}'s product competitiveness]
 
-Each scenario: 1500-2000 words of tightly researched narrative (STRICT LIMIT - we need 4 scenarios × 2000 words max = 8000 words total to complete within time constraints).
+STEP 2: BUILD 4 SCENARIO WORLDS + STRATEGIC RESPONSES
+For each quadrant, you will provide:
+A) EXTERNAL ENVIRONMENT (outside-in): What the world looks like (800-1000 words)
+B) STRATEGIC IMPLICATIONS FOR {company_name} (inside-out): What breaks, what survives (600-800 words)
+
+METHODOLOGY REQUIREMENTS:
+✓ COMPANY-SPECIFIC: Name {company_name}'s specific assets/products that win/lose
+✓ STRUCTURAL BREAKS: Include discontinuities
+✓ RANGES NOT PRECISION: Use "2-3x growth" not "$67.3B"
+✓ TRIGGER POINTS: Specific numerical tripwires that force action
+✓ KILL/DOUBLE FRAMEWORK: What asset to kill, what to double
+✓ QUANTIFIED: Specific CapEx, revenue, margin impacts
+✓ RESEARCH-BACKED: 8-12 citations per scenario
+
+Each scenario: 1500-1800 words total (800-1000 external + 600-800 strategic response).
 
 Return ONLY valid JSON:
 {{
@@ -424,43 +435,41 @@ Return ONLY valid JSON:
       "quadrant": "Bottom-Left|Bottom-Right|Top-Left|Top-Right",
       "quadrant_description": "This scenario combines [Axis X pole] + [Axis Y pole]",
       "probability": "Do NOT assign probabilities - all scenarios are plausible",
-      "narrative": "Write a tightly researched 1500-2000 word OUTSIDE-IN description of this external world with 10-15 in-text APA citations:
+      "narrative": "PART A: EXTERNAL ENVIRONMENT (800-1000 words with 8-12 citations)
 
-**SCENARIO LOGIC & STRUCTURAL BREAKS** (200 words):
-[What are the 2-3 STRUCTURAL BREAKS that distinguish this world? Identify DISCONTINUITIES - regime changes, technology jumps, geopolitical shocks. Explain the pathway from today to this future.]
+**SCENARIO LOGIC & STRUCTURAL BREAKS** (150 words):
+What are the 2-3 STRUCTURAL BREAKS that create this world? (regime changes, technology jumps, geopolitical shocks)
 
-**GEOPOLITICAL & MACROECONOMIC WORLD** (300 words):
-- Global/regional governance structures and power distribution (cite sources)
-- Trade architectures: openness, regional blocs, tech sovereignty (cite sources)
-- Macro regime: growth patterns (RANGES like "2-4% CAGR"), inflation/rates, currency (cite sources)
-- Capital flows and cost of capital ranges by region/sector (cite sources)
+**THE WORLD IN THIS SCENARIO** (650-850 words):
+- Geopolitical regime: power structures, trade architectures (cite sources)
+- Macro environment: growth RANGES, inflation, cost of capital RANGES (cite sources)
+- Industry structure: market size RANGES, concentration, profitability RANGES (cite sources)
+- Regulatory regime: governance approach, key policies, carbon pricing RANGES (cite sources)
+- Technology landscape: maturity curves, dominant players (cite sources)
+- Competitive dynamics: who wins, who loses, margin RANGES (cite sources)
 
-**INDUSTRY STRUCTURE & MARKET DYNAMICS** (300 words):
-- Market size/growth (use RANGES: "industry grows 2-3x") (cite sources)
-- Concentration: number of players, HHI range, commoditization degree (cite sources)
-- Value chain: integration vs. specialization, margin pools (cite sources)
-- Competitive basis: cost, differentiation, network effects, regulatory moats (cite sources)
-- Customer behavior and demand drivers (cite sources)
+---
 
-**REGULATORY & POLICY REGIME** (250 words):
-- Governance: market-driven vs. state-directed, regulatory capture, enforcement (cite sources)
-- Industry regulations: licensing, safety, environmental standards (cite sources)
-- Carbon/climate: pricing ranges ($X-Y/ton), coverage (cite sources)
-- Trade/industrial policy: tariffs, local content, state champions (cite sources)
+PART B: STRATEGIC IMPLICATIONS FOR {company_name} (600-800 words)
 
-**TECHNOLOGY & COMPETITIVE LANDSCAPE** (450 words):
-- Technology maturity: which tech crossed thresholds, platform dynamics (cite sources)
-- R&D intensity and innovation locus: incumbents vs. startups vs. state (cite sources)
-- Industry leaders: name 3-5 players, capabilities, positions (cite sources)
-- Competitive dynamics: price intensity, differentiation, new entrants (cite sources)
-- State champions: regulatory advantages, government backing (cite sources)
-- Profitability: ROIC/margin RANGES by player type (cite sources)
+**WHAT BREAKS** (250-300 words):
+Which of {company_name}'s current assets/strategies FAIL in this world?
+- Specific products/segments that lose money
+- Specific plants/facilities that become uneconomic
+- Specific partnerships/technologies that become obsolete
+- Quantify: Revenue loss RANGES, margin compression, stranded asset write-downs
 
-**FINANCIAL ENVIRONMENT & UNCERTAINTIES** (300 words):
-- Cost of capital: WACC ranges, debt pricing (cite sources)
-- Valuation: multiple ranges, growth vs. value (cite sources)
-- Investment: CAPEX intensity ranges, payback expectations (cite sources)
-- Second-order uncertainties within this scenario that remain unknowable",
+**WHAT SURVIVES** (250-300 words):
+Which of {company_name}'s assets become CRITICAL in this world?
+- Specific products/segments that dominate
+- Specific capabilities that create moats
+- Specific geographies/customer segments that thrive
+- Quantify: Revenue growth RANGES, margin expansion, market share gains
+
+**THE VERDICT** (100-200 words):
+- Overall financial impact on {company_name}: Revenue RANGES, EBITDA margin RANGES, ROIC RANGES
+- Competitive position: Does {company_name} strengthen or weaken vs. named competitors?
+- Capital destruction risk: How much of current CapEx plan becomes stranded?",
 
       "signposts": [
         {{
@@ -509,33 +518,52 @@ Return ONLY valid JSON:
         "typical_valuation_multiples": "EV/EBITDA ranges: X-Y for leaders, X-Y for challengers"
       }},
 
-      "wind_tunnel_test": {{
-        "no_regrets_moves": [
-          {{"move": "Action that makes sense in ALL scenarios (e.g., 'Build data analytics capabilities')", "rationale": "Why this is valuable regardless of which world unfolds", "investment_range": "Typical investment size range"}},
-          {{"move": "Another no-regrets action", "rationale": "Why robust across scenarios", "investment_range": "Cost range"}},
-          {{"move": "Third no-regrets move", "rationale": "Cross-scenario value", "investment_range": "Investment required"}}
-        ],
-        "big_bets_for_this_scenario": [
-          {{"bet": "Action that WINS BIG in this scenario but fails in others (e.g., 'Acquire offshore wind portfolio')", "rationale": "Why this bet pays off specifically in this world", "investment_range": "Required capital commitment range", "npv_range_if_correct": "Value creation if this scenario unfolds", "downside_if_wrong": "Loss if different scenario unfolds"}},
-          {{"bet": "Second big bet specific to this scenario", "rationale": "Why this works here", "investment_range": "Capital required", "npv_range_if_correct": "Upside", "downside_if_wrong": "Downside in other scenarios"}},
-          {{"bet": "Third scenario-specific bet", "rationale": "Why tailored to this world", "investment_range": "Investment", "npv_range_if_correct": "Upside", "downside_if_wrong": "Downside"}}
-        ],
+      "strategic_response_summary": {{
+        "kill_decision": {{
+          "asset_to_kill": "SPECIFIC asset/product/plant that {company_name} must exit in this scenario (e.g., 'Close Pacheco Plant Argentina', 'Exit Mach-E sedan segment')",
+          "rationale": "Why this asset becomes uneconomic in this world",
+          "financial_impact": "One-time cost range ($XXX-YYY million write-down, severance, etc.)",
+          "timeline": "When to execute (year)",
+          "risk_if_not_killed": "Cost of keeping zombie asset alive"
+        }},
+        "double_decision": {{
+          "asset_to_double": "SPECIFIC asset/product/capability that {company_name} must scale 2-3x in this scenario (e.g., 'Double Ranger production capacity at Pacheco', 'Triple Ford Pro telematics deployment')",
+          "rationale": "Why this asset becomes the profit engine in this world",
+          "financial_impact": "Required investment range ($XXX-YYY million CapEx) and expected return (NPV range, payback period)",
+          "timeline": "When to invest (year)",
+          "risk_if_not_doubled": "Market share loss, competitor capture"
+        }},
         "trigger_points": [
-          {{"trigger": "Specific observable event that would trigger strategic pivot (e.g., 'Carbon price exceeds $100/ton in EU')", "action": "What decision this triggers", "timing": "When to decide", "reversibility": "Can this be undone? At what cost?"}},
-          {{"trigger": "Second trigger condition", "action": "Required strategic response", "timing": "Decision window", "reversibility": "Reversibility and switching costs"}},
-          {{"trigger": "Third trigger point", "action": "Strategic action", "timing": "When", "reversibility": "Reversibility"}}
+          {{
+            "metric": "Specific measurable trigger (e.g., 'Brazilian Real volatility exceeds 25% annually')",
+            "threshold": "Numerical threshold that forces action (e.g., '>25%', '<$X/unit', '>XX% market share')",
+            "action": "Pre-approved decision to execute (e.g., 'Shut down Plant X', 'Accelerate Product Y launch')",
+            "timing": "Decision window (e.g., 'Q1 2027', 'Within 90 days of trigger')",
+            "status": "Current value relative to threshold (e.g., 'Currently 18%, safe' or 'Currently 23%, approaching trigger')"
+          }},
+          {{
+            "metric": "Second critical trigger for {company_name}",
+            "threshold": "Numerical threshold",
+            "action": "Pre-approved action",
+            "timing": "When to decide",
+            "status": "Current position"
+          }},
+          {{
+            "metric": "Third trigger (competitive/technology)",
+            "threshold": "Numerical threshold",
+            "action": "Pre-approved response",
+            "timing": "Decision window",
+            "status": "Current monitoring data"
+          }}
         ],
-        "hedging_options": [
-          {{"option": "How to maintain strategic flexibility (e.g., 'Modular CAPEX staged over 3 phases')", "cost": "Cost of maintaining optionality", "value": "Value of flexibility in uncertain environment"}}
+        "no_regrets_moves_across_all_scenarios": [
+          {{"move": "Action that {company_name} should take regardless of which scenario unfolds (e.g., 'Standardize on modular EV platform', 'Build predictive maintenance capabilities for Ford Pro')", "investment_range": "$XXX-YYY million", "rationale": "Why this creates value in all 4 scenarios"}}
         ]
       }},
 
       "references": [
-        "International Energy Agency. (2024). World Energy Outlook 2024. IEA Publications. https://www.iea.org/reports/world-energy-outlook-2024",
-        "McKinsey & Company. (2023). Global Energy Perspective 2023. McKinsey Energy Insights.",
-        "Wood Mackenzie. (2024). [Specific Industry Report Title]. Wood Mackenzie Research.",
-        "World Bank. (2024). [Specific Country/Region Economic Report]. World Bank Publications.",
-        "[Include 15-25 total high-quality sources in APA format - ONLY peer-reviewed journals, industry reports from S&P/Moody's/Wood Mackenzie/IEA, government publications, major consultancies]"
+        "Include 8-12 high-quality sources in APA format",
+        "ONLY: peer-reviewed journals, industry reports from S&P/Moody's/Wood Mackenzie/IEA, government publications, major consultancies, company filings"
       ]
     }}
   ]
@@ -543,16 +571,19 @@ Return ONLY valid JSON:
 
 GENERATE EXACTLY 4 SCENARIOS - one for each quadrant of the 2x2 matrix.
 
-MANDATORY METHODOLOGY REQUIREMENTS:
-✓ OUTSIDE-IN: Describe the EXTERNAL WORLD, not {company_name}'s strategy
-✓ 2x2 MATRIX: Four distinct scenarios based on critical uncertainties, not binary best/worst case
-✓ STRUCTURAL BREAKS: Include discontinuities and inflection points, NOT linear extrapolation
-✓ RANGES NOT PRECISION: Use "2-3x growth" or "$50-80B market" NOT "$67.3B"
-✓ SIGNPOSTS: 5-7 measurable leading indicators per scenario
-✓ WIND TUNNEL TEST: Define no-regrets moves, big bets, trigger points for each scenario
-✓ RESEARCH-BACKED: 15-25 APA citations per scenario from authoritative sources ONLY
-✓ REALISTIC: Acknowledge state champions, regulatory capture, competitive realities, capital constraints
-✓ BOARD-LEVEL: Write for sophisticated C-suite/board readers who understand political economy"""
+CRITICAL REQUIREMENTS - THE "CHIEF PARANOIA OFFICER" CHECKLIST:
+✓ COMPANY-SPECIFIC: Name {company_name}'s specific products, plants, business units that win/lose
+✓ KILL/DOUBLE: For each scenario, define ONE asset to kill and ONE asset to double
+✓ QUANTIFIED TRIGGERS: Numerical thresholds that force pre-approved actions (e.g., "If metric X > threshold Y, then execute decision Z")
+✓ FINANCIAL IMPACT: Revenue ranges, margin ranges, ROIC ranges, CapEx requirements, write-down costs
+✓ STRUCTURAL BREAKS: 2-3 discontinuities, NOT linear extrapolation
+✓ RANGES NOT PRECISION: "2-3x growth", "$50-80B", "15-25% margin" NOT "$67.3B"
+✓ COMPETITIVE REALITY: Name specific competitors that threaten {company_name}
+✓ SIGNPOSTS: 5 measurable leading indicators with current status
+✓ RESEARCH-BACKED: 8-12 citations from authoritative sources
+✓ CEO-READY: Write for someone making multi-billion dollar asset allocation decisions
+
+REMEMBER: You are not predicting the future. You are stress-testing {company_name}'s survival."""
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
