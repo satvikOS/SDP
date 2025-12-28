@@ -350,6 +350,7 @@ def start_scenario_generation_async(event, context):
 
 def generate_scenario_async_worker(event, context):
     """Background worker for async scenario generation."""
+    start_time = datetime.utcnow()
     try:
         job_id = event['job_id']
         body = event['body']
@@ -414,6 +415,17 @@ Return ONLY valid JSON:
 
         logger.info(f"[Job {job_id}] Generated {len(scenarios)} scenarios")
 
+        # Calculate generation time
+        generation_time = (datetime.utcnow() - start_time).total_seconds()
+
+        # Estimate cost (rough approximation for Claude Opus 4.5)
+        # Input: ~1000 tokens, Output: ~2000 tokens per scenario
+        input_tokens = 1000
+        output_tokens = len(scenarios) * 2000
+        cost_per_1k_input = 0.015  # $15/MTok
+        cost_per_1k_output = 0.075  # $75/MTok
+        estimated_cost = (input_tokens / 1000 * cost_per_1k_input) + (output_tokens / 1000 * cost_per_1k_output)
+
         # Store results in DynamoDB
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
         table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
@@ -425,11 +437,21 @@ Return ONLY valid JSON:
             'industry': industry,
             'region': region,
             'horizon_years': horizon_years,
-            'created_at': datetime.utcnow().isoformat() + 'Z',
+            'created_at': start_time.isoformat() + 'Z',
+            'generation_time_seconds': generation_time,
             'ai_generated': True,
             'generation_method': 'Claude Opus 4.5',
             'scenarios': scenarios,
-            'status': 'completed'
+            'status': 'completed',
+
+            # Additional fields for UI compatibility
+            'themes': [],
+            'drivers': [],
+            'uncertainties': [],
+            'action_plan': {},
+            'quality_report': {},
+            'models_used': {'claude-opus-4-5': 1},
+            'total_cost_usd': estimated_cost
         }
 
         # Convert floats to Decimal for DynamoDB compatibility
