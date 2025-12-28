@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api-client';
 import { GlassCard, GlassButton } from '@/components/GlassCard';
-import { Sparkles, ArrowRight, Zap, TrendingUp, Target, CheckCircle2 } from 'lucide-react';
+import { Sparkles, ArrowRight, Zap, TrendingUp, Target, CheckCircle2, BarChart3 } from 'lucide-react';
 
 export default function Home() {
   const [isHealthy, setIsHealthy] = useState<boolean | null>(null);
@@ -53,7 +53,7 @@ export default function Home() {
           </p>
 
           {/* CTA */}
-          <div className="flex items-center justify-center space-x-4">
+          <div className="flex items-center justify-center flex-wrap gap-4">
             <Link href="/scenarios/new">
               <GlassButton variant="primary" size="lg">
                 <span>Generate Scenarios</span>
@@ -63,6 +63,12 @@ export default function Home() {
             <Link href="/scenarios">
               <GlassButton variant="secondary" size="lg">
                 View Library
+              </GlassButton>
+            </Link>
+            <Link href="/analytics">
+              <GlassButton variant="secondary" size="lg">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                Analytics
               </GlassButton>
             </Link>
           </div>

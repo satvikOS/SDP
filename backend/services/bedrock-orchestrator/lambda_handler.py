@@ -757,3 +757,99 @@ def list_scenarios(event, context):
             'error': 'Failed to list scenarios',
             'message': str(e)
         })
+
+
+def get_analytics(event, context):
+    """Get analytics for scenario generation system."""
+    try:
+        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+        table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
+        table = dynamodb.Table(table_name)
+
+        # Scan all scenarios (completed and failed)
+        response = table.scan()
+        all_scenarios = response.get('Items', [])
+
+        completed = [s for s in all_scenarios if s.get('status') == 'completed']
+        failed = [s for s in all_scenarios if s.get('status') == 'failed']
+        processing = [s for s in all_scenarios if s.get('status') == 'processing']
+
+        # Calculate aggregate metrics
+        total_scenarios = len(completed)
+        total_cost = sum([s.get('result', {}).get('total_cost_usd', 0) for s in completed])
+        total_time = sum([s.get('result', {}).get('generation_time_seconds', 0) for s in completed])
+
+        avg_cost = total_cost / total_scenarios if total_scenarios > 0 else 0
+        avg_time = total_time / total_scenarios if total_scenarios > 0 else 0
+
+        # Industry distribution
+        industry_dist = {}
+        for s in completed:
+            industry = s.get('industry', 'Unknown')
+            industry_dist[industry] = industry_dist.get(industry, 0) + 1
+
+        # Region distribution
+        region_dist = {}
+        for s in completed:
+            region = s.get('region', 'Unknown')
+            region_dist[region] = region_dist.get(region, 0) + 1
+
+        # Time horizon distribution
+        horizon_dist = {}
+        for s in completed:
+            horizon = s.get('horizon_years', 0)
+            horizon_dist[str(horizon)] = horizon_dist.get(str(horizon), 0) + 1
+
+        # Recent activity (last 30 days)
+        from datetime import datetime, timedelta
+        thirty_days_ago = int((datetime.utcnow() - timedelta(days=30)).timestamp())
+        recent_scenarios = [s for s in completed if s.get('createdAt', 0) >= thirty_days_ago]
+
+        # Cost trend (group by day for last 30 days)
+        cost_by_day = {}
+        for s in recent_scenarios:
+            created_date = datetime.fromtimestamp(s.get('createdAt', 0)).strftime('%Y-%m-%d')
+            cost = s.get('result', {}).get('total_cost_usd', 0)
+            cost_by_day[created_date] = cost_by_day.get(created_date, 0) + cost
+
+        # Most active companies
+        company_counts = {}
+        for s in completed:
+            company = s.get('company_name', 'Unknown')
+            company_counts[company] = company_counts.get(company, 0) + 1
+
+        top_companies = sorted(company_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+
+        analytics = {
+            'overview': {
+                'total_scenarios': total_scenarios,
+                'total_cost_usd': float(total_cost),
+                'total_time_seconds': float(total_time),
+                'avg_cost_per_scenario': float(avg_cost),
+                'avg_time_per_scenario': float(avg_time),
+                'failed_scenarios': len(failed),
+                'processing_scenarios': len(processing),
+                'success_rate': (total_scenarios / len(all_scenarios) * 100) if len(all_scenarios) > 0 else 0
+            },
+            'distributions': {
+                'by_industry': industry_dist,
+                'by_region': region_dist,
+                'by_horizon': horizon_dist
+            },
+            'trends': {
+                'cost_by_day': cost_by_day,
+                'scenarios_last_30_days': len(recent_scenarios)
+            },
+            'top_companies': [{'name': name, 'count': count} for name, count in top_companies]
+        }
+
+        logger.info(f"Analytics generated: {total_scenarios} scenarios analyzed")
+
+        return _response(200, analytics)
+
+    except Exception as e:
+        logger.error(f"Error generating analytics: {str(e)}", exc_info=True)
+        return _response(500, {
+            'error': 'Failed to generate analytics',
+            'message': str(e)
+        })

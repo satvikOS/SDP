@@ -163,6 +163,14 @@ class ApiClient {
     });
     return response.data;
   }
+
+  /**
+   * Get analytics for scenario generation system
+   */
+  async getAnalytics(): Promise<any> {
+    const response = await this.client.get('/analytics');
+    return response.data;
+  }
 }
 
 // Export singleton instance

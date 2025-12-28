@@ -207,6 +207,18 @@ functions:
       patterns:
         - backend/services/bedrock-orchestrator/**
 
+  getAnalytics:
+    handler: backend/services/bedrock-orchestrator/lambda_handler.get_analytics
+    timeout: 30
+    memorySize: 512
+    events:
+      - httpApi:
+          path: /analytics
+          method: get
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+
 resources:
   Resources:
     DataLakeBucket:
