@@ -158,7 +158,17 @@ REMEMBER: 2000-5000 words per narrative. Board-level intelligence worth $100K+ p
         )
 
         response_body = json.loads(response['body'].read())
-        ai_response = response_body['content'][0]['text']
+
+        # Safely extract text content (handles both normal and thinking-enabled responses)
+        ai_response = None
+        for block in response_body.get('content', []):
+            if block.get('type') == 'text':
+                ai_response = block.get('text')
+                break
+
+        if not ai_response:
+            # Fallback for old response format
+            ai_response = response_body['content'][0]['text']
 
         start = ai_response.find('[')
         end = ai_response.rfind(']') + 1
@@ -269,11 +279,18 @@ def test_bedrock(event, context):
 
         response_body = json.loads(response['body'].read())
 
+        # Safely extract text for preview
+        preview_text = "N/A"
+        for block in response_body.get('content', []):
+            if block.get('type') == 'text':
+                preview_text = block.get('text', '')[:100]
+                break
+
         return _response(200, {
             'status': 'SUCCESS',
             'message': 'Claude Opus 4.5 is accessible',
             'model': 'anthropic.claude-opus-4-5-20251101-v1:0',
-            'response_preview': response_body['content'][0]['text'][:100]
+            'response_preview': preview_text
         })
 
     except Exception as e:
@@ -562,7 +579,17 @@ NOTE: Boardroom transformation (BLUF format, dashboards, Kill/Double decisions) 
         )
 
         response_body = json.loads(response['body'].read())
-        ai_response = response_body['content'][0]['text']
+
+        # When thinking is enabled, response contains multiple content blocks
+        # Find the text block (thinking blocks are type='thinking', text blocks are type='text')
+        ai_response = None
+        for block in response_body.get('content', []):
+            if block.get('type') == 'text':
+                ai_response = block.get('text')
+                break
+
+        if not ai_response:
+            raise ValueError("No text content found in response")
 
         # Parse the new structure which is a JSON object with matrix_framework and scenarios
         start = ai_response.find('{')
