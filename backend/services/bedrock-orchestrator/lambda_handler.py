@@ -7,9 +7,22 @@ import boto3
 import uuid
 from typing import Dict, List, Any
 from datetime import datetime
+from decimal import Decimal
 
 logger = logging.getLogger()
 logger.setLevel(os.getenv('LOG_LEVEL', 'INFO'))
+
+
+def _convert_floats_to_decimal(obj):
+    """Convert all float values to Decimal for DynamoDB compatibility."""
+    if isinstance(obj, list):
+        return [_convert_floats_to_decimal(item) for item in obj]
+    elif isinstance(obj, dict):
+        return {key: _convert_floats_to_decimal(value) for key, value in obj.items()}
+    elif isinstance(obj, float):
+        return Decimal(str(obj))
+    else:
+        return obj
 
 
 def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
@@ -405,6 +418,9 @@ Return ONLY valid JSON:
             'status': 'completed'
         }
 
+        # Convert floats to Decimal for DynamoDB compatibility
+        result_for_dynamodb = _convert_floats_to_decimal(result)
+
         # Update with correct key (scenarioId only, no createdAt in main table key)
         table.update_item(
             Key={'scenarioId': job_id},
@@ -416,7 +432,7 @@ Return ONLY valid JSON:
             },
             ExpressionAttributeValues={
                 ':status': 'completed',
-                ':result': result,
+                ':result': result_for_dynamodb,
                 ':updated_at': datetime.utcnow().isoformat() + 'Z'
             }
         )
