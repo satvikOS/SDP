@@ -398,9 +398,9 @@ CRITICAL METHODOLOGY REQUIREMENTS:
 ✓ OUTSIDE-IN: Describe what the WORLD looks like (NOT what {company_name} should do)
 ✓ SIGNPOSTS: Provide 5-7 leading indicators per scenario to track which world is unfolding
 ✓ WIND TUNNEL TEST: Define no-regrets moves, big bets, and trigger points
-✓ RESEARCH-BACKED: 15-25 APA citations per scenario from authoritative sources only
+✓ RESEARCH-BACKED: 10-15 APA citations per scenario from authoritative sources only
 
-Each scenario: 3000-4000 words of deeply researched narrative.
+Each scenario: 1500-2000 words of tightly researched narrative (STRICT LIMIT - we need 4 scenarios × 2000 words max = 8000 words total to complete within time constraints).
 
 Return ONLY valid JSON:
 {{
@@ -424,66 +424,43 @@ Return ONLY valid JSON:
       "quadrant": "Bottom-Left|Bottom-Right|Top-Left|Top-Right",
       "quadrant_description": "This scenario combines [Axis X pole] + [Axis Y pole]",
       "probability": "Do NOT assign probabilities - all scenarios are plausible",
-      "narrative": "Write an exhaustive 3000-4000 word OUTSIDE-IN description of this external world with in-text APA citations:
+      "narrative": "Write a tightly researched 1500-2000 word OUTSIDE-IN description of this external world with 10-15 in-text APA citations:
 
-**SCENARIO LOGIC & STRUCTURAL BREAKS** (400 words):
-[Explain the fundamental logic of this scenario. What are the 2-3 STRUCTURAL BREAKS or INFLECTION POINTS that distinguish this world from today? NOT linear extrapolation - identify DISCONTINUITIES (regime changes, technology S-curve jumps, geopolitical shocks, regulatory watersheds). Explain the pathway from today to this future, including critical branch points and the specific triggers that pushed the world down this path vs. alternative scenarios.]
+**SCENARIO LOGIC & STRUCTURAL BREAKS** (200 words):
+[What are the 2-3 STRUCTURAL BREAKS that distinguish this world? Identify DISCONTINUITIES - regime changes, technology jumps, geopolitical shocks. Explain the pathway from today to this future.]
 
-**GEOPOLITICAL & MACROECONOMIC WORLD** (600 words):
-[Describe the EXTERNAL geopolitical and economic environment in this scenario - NOT what {company_name} should do about it]
-- Global/regional governance structures and power distribution (cite IR research, think tank analysis)
-- Trade architectures: degree of openness, regional blocs, technology/data sovereignty regimes (cite trade policy research)
-- Macroeconomic regime: growth patterns (use RANGES like "2-4% CAGR" not "2.7%"), inflation/interest rate environment, currency dynamics (cite IMF, central bank research)
-- Capital flows and investment patterns: where capital goes, cost of capital ranges by region/sector (cite BIS, World Bank data)
-- Geopolitical flashpoints and their economic spillovers (cite security studies, geopolitical risk research)
+**GEOPOLITICAL & MACROECONOMIC WORLD** (300 words):
+- Global/regional governance structures and power distribution (cite sources)
+- Trade architectures: openness, regional blocs, tech sovereignty (cite sources)
+- Macro regime: growth patterns (RANGES like "2-4% CAGR"), inflation/rates, currency (cite sources)
+- Capital flows and cost of capital ranges by region/sector (cite sources)
 
-**INDUSTRY STRUCTURE & MARKET DYNAMICS** (600 words):
-[Describe how the {industry} industry is STRUCTURED in this world - NOT specific company strategies]
-- Market size and growth trajectory (use RANGES: "industry grows 2-3x" not "reaches $127.3B") (cite industry research)
-- Concentration vs. fragmentation: how many players, what's the HHI range, degree of commoditization (cite competitive structure research)
-- Value chain configuration: vertical integration vs. specialization, where margin pools concentrate (cite value chain analysis)
-- Competitive basis: cost leadership, differentiation, network effects, regulatory moats (cite competitive strategy research)
-- Customer behavior and demand drivers in this world (cite consumer research, behavioral economics)
-- Barriers to entry/exit and capital intensity (cite industrial organization research)
+**INDUSTRY STRUCTURE & MARKET DYNAMICS** (300 words):
+- Market size/growth (use RANGES: "industry grows 2-3x") (cite sources)
+- Concentration: number of players, HHI range, commoditization degree (cite sources)
+- Value chain: integration vs. specialization, margin pools (cite sources)
+- Competitive basis: cost, differentiation, network effects, regulatory moats (cite sources)
+- Customer behavior and demand drivers (cite sources)
 
-**REGULATORY & POLICY REGIME** (500 words):
-[Describe the REGULATORY ENVIRONMENT that exists in this world - NOT compliance strategies]
-- Governance approach: market-driven vs. state-directed, degree of regulatory capture, enforcement effectiveness (cite political economy research)
-- Industry-specific regulations: licensing, safety, environmental standards that DEFINE this scenario (cite regulatory research)
-- Carbon/climate policy: pricing mechanisms (if any), ranges of carbon prices ($X-Y/ton), sectoral coverage (cite climate policy research)
-- Trade policy: tariff levels, non-tariff barriers, local content requirements, foreign ownership caps (cite trade policy databases)
-- Industrial policy: subsidies, state champions, strategic sector designation, government procurement preferences (cite industrial policy research)
-- Tax regime: corporate rates (ranges), R&D incentives, capital allowances (cite tax policy databases)
+**REGULATORY & POLICY REGIME** (250 words):
+- Governance: market-driven vs. state-directed, regulatory capture, enforcement (cite sources)
+- Industry regulations: licensing, safety, environmental standards (cite sources)
+- Carbon/climate: pricing ranges ($X-Y/ton), coverage (cite sources)
+- Trade/industrial policy: tariffs, local content, state champions (cite sources)
 
-**TECHNOLOGY LANDSCAPE** (500 words):
-[Describe the STATE OF TECHNOLOGY in this world - NOT innovation strategies]
-- Technology maturity: which technologies have crossed adoption thresholds, which are stuck in the 'trough of disillusionment' (cite technology lifecycle research)
-- Dominant technical standards and platform dynamics: who controls key platforms, degree of interoperability (cite platform economics research)
-- R&D intensity norms and innovation locus: where innovation happens (incumbents, startups, universities, state labs) (cite innovation research)
-- Infrastructure availability: digital, physical, energy - use RANGES for costs and penetration rates (cite infrastructure research)
-- Technology access regimes: open vs. proprietary, export controls, technology sovereignty (cite technology policy research)
-- Skill availability and labor market dynamics for technical talent (cite labor economics research)
+**TECHNOLOGY & COMPETITIVE LANDSCAPE** (450 words):
+- Technology maturity: which tech crossed thresholds, platform dynamics (cite sources)
+- R&D intensity and innovation locus: incumbents vs. startups vs. state (cite sources)
+- Industry leaders: name 3-5 players, capabilities, positions (cite sources)
+- Competitive dynamics: price intensity, differentiation, new entrants (cite sources)
+- State champions: regulatory advantages, government backing (cite sources)
+- Profitability: ROIC/margin RANGES by player type (cite sources)
 
-**COMPETITIVE LANDSCAPE** (600 words):
-[Describe WHO the major players are and HOW they compete in this world - describe the environment, NOT {company_name}'s strategy]
-- Industry leaders: name 3-5 dominant players, their core capabilities, relative market positions (cite industry analysis, company filings)
-- Competitive dynamics: price competition intensity, degree of product differentiation, customer switching costs (cite competitive strategy research)
-- New entrant activity: are new players entering, from where (adjacent industries, new geographies, digital natives), what advantages do they have (cite disruption research)
-- Ecosystem and alliance structures: who partners with whom, what's the logic (cite network research, alliance databases)
-- State champions and political economy: which players have regulatory advantages, government backing, protected home markets (cite political economy research)
-- Profitability distribution: are margins concentrated or dispersed, RANGES for ROIC/margins by player type (cite financial analysis)
-
-**FINANCIAL ENVIRONMENT** (400 words):
-[Describe the FINANCIAL CONTEXT that exists in this world - cost of capital, valuation regimes, investor expectations]
-- Cost of capital: ranges for WACC by industry/region in this scenario, debt availability and pricing (cite capital markets research)
-- Valuation regimes: what multiples (ranges) do public markets assign to this industry, growth vs. value orientation (cite equity research, valuation studies)
-- Investment requirements: typical CAPEX intensity (as % of sales or absolute ranges), payback expectations (cite industry benchmarking)
-- Cash flow dynamics: working capital intensity, cash conversion patterns (cite financial analysis)
-- Investor time horizons and risk appetites in this world (cite behavioral finance research)
-- M&A market: deal activity levels, valuation multiples (ranges), strategic vs. financial buyers (cite M&A databases)
-
-**CRITICAL UNCERTAINTIES WITHIN THIS SCENARIO** (300 words):
-[Even within this scenario, what remains uncertain? What are the second-order unknowables that could push this world in different directions?]",
+**FINANCIAL ENVIRONMENT & UNCERTAINTIES** (300 words):
+- Cost of capital: WACC ranges, debt pricing (cite sources)
+- Valuation: multiple ranges, growth vs. value (cite sources)
+- Investment: CAPEX intensity ranges, payback expectations (cite sources)
+- Second-order uncertainties within this scenario that remain unknowable",
 
       "signposts": [
         {{
