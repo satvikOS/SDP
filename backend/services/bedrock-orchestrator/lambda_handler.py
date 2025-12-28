@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import boto3
+from botocore.config import Config
 import uuid
 from typing import Dict, List, Any
 from datetime import datetime
@@ -363,7 +364,13 @@ def generate_scenario_async_worker(event, context):
 
         logger.info(f"[Job {job_id}] Generating for {company_name}")
 
-        bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
+        # Configure boto3 with extended timeout for long-running Claude Opus 4.5 requests
+        boto_config = Config(
+            read_timeout=600,  # 10 minutes for comprehensive scenario generation
+            connect_timeout=10,
+            retries={'max_attempts': 2}
+        )
+        bedrock = boto3.client('bedrock-runtime', region_name='us-east-1', config=boto_config)
         model_id = 'us.anthropic.claude-opus-4-5-20251101-v1:0'
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
