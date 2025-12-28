@@ -145,9 +145,9 @@ class ApiClient {
   }
 
   /**
-   * List scenarios (future implementation)
+   * List scenarios
    */
-  async listScenarios(filters?: Record<string, any>): Promise<ScenarioSet[]> {
+  async listScenarios(filters?: Record<string, any>): Promise<any[]> {
     const response = await this.client.get('/scenarios', { params: filters });
     return response.data.scenarios;
   }
