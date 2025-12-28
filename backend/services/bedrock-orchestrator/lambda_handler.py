@@ -405,12 +405,9 @@ Return ONLY valid JSON:
             'status': 'completed'
         }
 
-        # Get the createdAt timestamp for the update
-        get_response = table.get_item(Key={'scenarioId': job_id})
-        created_at = get_response['Item']['createdAt']
-
+        # Update with correct key (scenarioId only, no createdAt in main table key)
         table.update_item(
-            Key={'scenarioId': job_id, 'createdAt': created_at},
+            Key={'scenarioId': job_id},
             UpdateExpression='SET #status = :status, #result = :result, #updated_at = :updated_at',
             ExpressionAttributeNames={
                 '#status': 'status',
@@ -436,11 +433,8 @@ Return ONLY valid JSON:
                 table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
                 table = dynamodb.Table(table_name)
 
-                get_response = table.get_item(Key={'scenarioId': job_id})
-                created_at = get_response['Item']['createdAt']
-
                 table.update_item(
-                    Key={'scenarioId': job_id, 'createdAt': created_at},
+                    Key={'scenarioId': job_id},
                     UpdateExpression='SET #status = :status, #error = :error, #updated_at = :updated_at',
                     ExpressionAttributeNames={
                         '#status': 'status',
@@ -466,22 +460,18 @@ def get_scenario_status(event, context):
         if not job_id:
             return _response(400, {'error': 'Missing job_id parameter'})
 
-        # Query DynamoDB
+        # Get item from DynamoDB
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
         table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
         table = dynamodb.Table(table_name)
 
-        response = table.query(
-            KeyConditionExpression='scenarioId = :job_id',
-            ExpressionAttributeValues={':job_id': job_id},
-            Limit=1
-        )
+        response = table.get_item(Key={'scenarioId': job_id})
 
-        if not response.get('Items'):
+        if 'Item' not in response:
             return _response(404, {'error': 'Job not found', 'job_id': job_id})
 
-        item = response['Items'][0]
-        status = item['status']
+        item = response['Item']
+        status = item.get('status', 'unknown')
 
         if status == 'completed':
             return _response(200, item.get('result', {}))
