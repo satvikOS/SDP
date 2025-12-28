@@ -431,45 +431,73 @@ Return ONLY valid JSON:
   }},
   "scenarios": [
     {{
-      "title": "Scenario Name (7-10 words)",
+      "title": "Scenario Name (5-7 words, active voice)",
+      "tagline": "One-sentence summary (e.g., 'Regional champions in walled gardens')",
       "quadrant": "Bottom-Left|Bottom-Right|Top-Left|Top-Right",
-      "quadrant_description": "This scenario combines [Axis X pole] + [Axis Y pole]",
-      "probability": "Do NOT assign probabilities - all scenarios are plausible",
-      "narrative": "PART A: EXTERNAL ENVIRONMENT (800-1000 words with 8-12 citations)
 
-**SCENARIO LOGIC & STRUCTURAL BREAKS** (150 words):
-What are the 2-3 STRUCTURAL BREAKS that create this world? (regime changes, technology jumps, geopolitical shocks)
+      "executive_summary_bluf": "Single paragraph (60-80 words) with RECOMMENDATION at end. Format: 'In this world, [what happens]. {company_name} faces [main threat]. Opportunity lies in [main opportunity]. RECOMMENDATION: [specific action required].'",
 
-**THE WORLD IN THIS SCENARIO** (650-850 words):
-- Geopolitical regime: power structures, trade architectures (cite sources)
-- Macro environment: growth RANGES, inflation, cost of capital RANGES (cite sources)
-- Industry structure: market size RANGES, concentration, profitability RANGES (cite sources)
-- Regulatory regime: governance approach, key policies, carbon pricing RANGES (cite sources)
-- Technology landscape: maturity curves, dominant players (cite sources)
-- Competitive dynamics: who wins, who loses, margin RANGES (cite sources)
+      "scenario_card": {{
+        "the_world": {{
+          "structural_breaks": [
+            {{"year": "2025-2027", "event": "First break (e.g., 'Taiwan crisis triggers tech decoupling')", "impact": "Reshapes industry structure"}},
+            {{"year": "2028-2030", "event": "Second break", "impact": "Creates new competitive dynamics"}},
+            {{"year": "2031-2033", "event": "Third break", "impact": "Defines long-term equilibrium"}}
+          ],
+          "critical_metrics": {{
+            "gdp_growth": {{"range": "2-4% CAGR", "status": "🔴 Slow|🟡 Moderate|🟢 Strong"}},
+            "market_size": {{"range": "$XXX-YYY billion by 2032", "status": "Current: $XXX billion"}},
+            "cost_of_capital": {{"range": "8-12% WACC", "impact": "High cost environment"}},
+            "regulatory_environment": {{"description": "Market-driven|State-directed|Hybrid", "carbon_price": "$XX-YY/ton"}},
+            "technology_maturity": {{"description": "Incremental|Accelerating|Radical", "key_trend": "Dominant technology/platform"}}
+          }},
+          "competitive_landscape_bullets": [
+            "Top 3 players control XX-YY% share",
+            "Chinese vendors achieve XX-YY% penetration",
+            "Industry EBITDA margins: XX-YY%",
+            "Key competitive basis: [cost|quality|platform|regulation]"
+          ]
+        }},
 
----
+        "company_impact": {{
+          "overall_verdict": {{
+            "financial_impact": "Revenue: $XXX-YYY million (+/-X%), EBITDA margin: XX-YY% (+/-X pp), ROIC: XX-YY%",
+            "competitive_position": "Strengthens|Weakens|Neutral vs. [named competitors]",
+            "existential_risk_level": "🔴 High|🟡 Medium|🟢 Low",
+            "capital_at_risk": "$XXX-YYY million (XX% of CapEx plan)"
+          }},
 
-PART B: STRATEGIC IMPLICATIONS FOR {company_name} (600-800 words)
+          "what_breaks": [
+            {{
+              "asset": "Specific product/plant/business unit",
+              "why_fails": "Reason it becomes uneconomic",
+              "financial_impact": "Revenue loss: $XXX-YYY million, Write-down: $XXX million",
+              "status": "🔴 Critical Threat"
+            }},
+            {{
+              "asset": "Second asset at risk",
+              "why_fails": "Why it fails in this world",
+              "financial_impact": "Quantified impact",
+              "status": "🔴 Critical Threat"
+            }}
+          ],
 
-**WHAT BREAKS** (250-300 words):
-Which of {company_name}'s current assets/strategies FAIL in this world?
-- Specific products/segments that lose money
-- Specific plants/facilities that become uneconomic
-- Specific partnerships/technologies that become obsolete
-- Quantify: Revenue loss RANGES, margin compression, stranded asset write-downs
-
-**WHAT SURVIVES** (250-300 words):
-Which of {company_name}'s assets become CRITICAL in this world?
-- Specific products/segments that dominate
-- Specific capabilities that create moats
-- Specific geographies/customer segments that thrive
-- Quantify: Revenue growth RANGES, margin expansion, market share gains
-
-**THE VERDICT** (100-200 words):
-- Overall financial impact on {company_name}: Revenue RANGES, EBITDA margin RANGES, ROIC RANGES
-- Competitive position: Does {company_name} strengthen or weaken vs. named competitors?
-- Capital destruction risk: How much of current CapEx plan becomes stranded?",
+          "what_survives": [
+            {{
+              "asset": "Specific product/capability/geography",
+              "why_thrives": "Why it becomes critical",
+              "financial_impact": "Revenue growth: $XXX-YYY million, Margin expansion: +X pp",
+              "status": "🟢 Strategic Asset"
+            }},
+            {{
+              "asset": "Second defensive asset",
+              "why_thrives": "Competitive moat created",
+              "financial_impact": "Quantified upside",
+              "status": "🟢 Strategic Asset"
+            }}
+          ]
+        }}
+      }},
 
       "signposts": [
         {{
@@ -518,48 +546,52 @@ Which of {company_name}'s assets become CRITICAL in this world?
         "typical_valuation_multiples": "EV/EBITDA ranges: X-Y for leaders, X-Y for challengers"
       }},
 
-      "strategic_response_summary": {{
+      "decision_framework": {{
+        "required_action_summary": "**IF THIS SCENARIO:** [One sentence]. **THEN {company_name} MUST:** [Kill X, Double Y].",
+
         "kill_decision": {{
-          "asset_to_kill": "SPECIFIC asset/product/plant that {company_name} must exit in this scenario (e.g., 'Close Pacheco Plant Argentina', 'Exit Mach-E sedan segment')",
-          "rationale": "Why this asset becomes uneconomic in this world",
-          "financial_impact": "One-time cost range ($XXX-YYY million write-down, severance, etc.)",
-          "timeline": "When to execute (year)",
-          "risk_if_not_killed": "Cost of keeping zombie asset alive"
+          "asset": "Specific asset/product/plant (e.g., 'Pacheco Plant Argentina')",
+          "rationale_one_line": "Why uneconomic (15 words max)",
+          "financial_impact": "$XXX-YYY M write-down + $XX M annual savings",
+          "timing": "Execute by [Q/Year]",
+          "status_indicator": "🔴 Execute Immediately|🟡 Prepare Exit|🟢 Monitor"
         }},
+
         "double_decision": {{
-          "asset_to_double": "SPECIFIC asset/product/capability that {company_name} must scale 2-3x in this scenario (e.g., 'Double Ranger production capacity at Pacheco', 'Triple Ford Pro telematics deployment')",
-          "rationale": "Why this asset becomes the profit engine in this world",
-          "financial_impact": "Required investment range ($XXX-YYY million CapEx) and expected return (NPV range, payback period)",
-          "timeline": "When to invest (year)",
-          "risk_if_not_doubled": "Market share loss, competitor capture"
-        }},
-        "trigger_points": [
-          {{
-            "metric": "Specific measurable trigger (e.g., 'Brazilian Real volatility exceeds 25% annually')",
-            "threshold": "Numerical threshold that forces action (e.g., '>25%', '<$X/unit', '>XX% market share')",
-            "action": "Pre-approved decision to execute (e.g., 'Shut down Plant X', 'Accelerate Product Y launch')",
-            "timing": "Decision window (e.g., 'Q1 2027', 'Within 90 days of trigger')",
-            "status": "Current value relative to threshold (e.g., 'Currently 18%, safe' or 'Currently 23%, approaching trigger')"
-          }},
-          {{
-            "metric": "Second critical trigger for {company_name}",
-            "threshold": "Numerical threshold",
-            "action": "Pre-approved action",
-            "timing": "When to decide",
-            "status": "Current position"
-          }},
-          {{
-            "metric": "Third trigger (competitive/technology)",
-            "threshold": "Numerical threshold",
-            "action": "Pre-approved response",
-            "timing": "Decision window",
-            "status": "Current monitoring data"
-          }}
-        ],
-        "no_regrets_moves_across_all_scenarios": [
-          {{"move": "Action that {company_name} should take regardless of which scenario unfolds (e.g., 'Standardize on modular EV platform', 'Build predictive maintenance capabilities for Ford Pro')", "investment_range": "$XXX-YYY million", "rationale": "Why this creates value in all 4 scenarios"}}
-        ]
+          "asset": "Specific asset/product/capability (e.g., 'Ranger production')",
+          "rationale_one_line": "Why becomes profit engine (15 words max)",
+          "financial_impact": "$XXX-YYY M CapEx → $XXX M NPV, XX% IRR, X-year payback",
+          "timing": "Start by [Q/Year]",
+          "status_indicator": "🟢 Fund Immediately|🟡 Prepare Business Case|🔴 Hold"
+        }}
       }},
+
+      "watchtower_dashboard": [
+        {{
+          "indicator": "Specific metric (e.g., 'BRL/USD volatility')",
+          "current_value": "Current reading (e.g., '18% annually')",
+          "trigger_threshold": "Action level (e.g., '>25%')",
+          "pre_approved_action": "Decision to execute (e.g., 'Hedge 80% of profits')",
+          "decision_window": "When to decide (e.g., 'Within 90 days')",
+          "status": "🟢 Safe|🟡 Monitor|🔴 Approaching Trigger"
+        }},
+        {{
+          "indicator": "Second critical metric",
+          "current_value": "Current data",
+          "trigger_threshold": "Threshold number",
+          "pre_approved_action": "What to execute",
+          "decision_window": "Timeline",
+          "status": "🟢|🟡|🔴"
+        }},
+        {{
+          "indicator": "Third metric (competitive/tech)",
+          "current_value": "Current status",
+          "trigger_threshold": "Trigger level",
+          "pre_approved_action": "Response action",
+          "decision_window": "When",
+          "status": "🟢|🟡|🔴"
+        }}
+      ],
 
       "references": [
         "Include 8-12 high-quality sources in APA format",
@@ -571,19 +603,31 @@ Which of {company_name}'s assets become CRITICAL in this world?
 
 GENERATE EXACTLY 4 SCENARIOS - one for each quadrant of the 2x2 matrix.
 
-CRITICAL REQUIREMENTS - THE "CHIEF PARANOIA OFFICER" CHECKLIST:
-✓ COMPANY-SPECIFIC: Name {company_name}'s specific products, plants, business units that win/lose
-✓ KILL/DOUBLE: For each scenario, define ONE asset to kill and ONE asset to double
-✓ QUANTIFIED TRIGGERS: Numerical thresholds that force pre-approved actions (e.g., "If metric X > threshold Y, then execute decision Z")
-✓ FINANCIAL IMPACT: Revenue ranges, margin ranges, ROIC ranges, CapEx requirements, write-down costs
-✓ STRUCTURAL BREAKS: 2-3 discontinuities, NOT linear extrapolation
-✓ RANGES NOT PRECISION: "2-3x growth", "$50-80B", "15-25% margin" NOT "$67.3B"
-✓ COMPETITIVE REALITY: Name specific competitors that threaten {company_name}
-✓ SIGNPOSTS: 5 measurable leading indicators with current status
-✓ RESEARCH-BACKED: 8-12 citations from authoritative sources
-✓ CEO-READY: Write for someone making multi-billion dollar asset allocation decisions
+CRITICAL REQUIREMENTS - BOARDROOM FORMAT CHECKLIST:
+✓ BLUF AT TOP: Executive summary with RECOMMENDATION in first paragraph
+✓ VISUAL HIERARCHY: Use 🔴🟡🟢 status indicators, bold numbers, 3-line max bullets
+✓ DASHBOARD METRICS: Structured data tables, not paragraphs
+✓ WATCHTOWER TABLE: Current value vs. trigger threshold vs. pre-approved action
+✓ SCENARIO CARDS: Condensed bullets, NOT 400-word prose blocks
+✓ ACTIVE VOICE: "Market collapses" NOT "There is a collapse in the market"
+✓ BOLD NUMBERS: Highlight all financial impacts ($XXX-YYY M, XX-YY%, XX% IRR)
+✓ COMPANY-SPECIFIC: Name specific products, plants, business units
+✓ KILL/DOUBLE: One asset to kill + one to double per scenario (15 words each)
+✓ QUANTIFIED EVERYTHING: Revenue, margins, ROIC, CapEx, write-downs (RANGES not precision)
+✓ STRUCTURAL BREAKS: 2-3 discontinuities with years, events, impacts
+✓ COMPETITIVE REALITY: Name specific competitors and their market share
+✓ CITATIONS: 8-12 sources (inline, not list) from S&P/McKinsey/IEA/company filings
+✓ BOARD-READY: Assume reader is 60-year-old CEO on iPad on jet, scanning not reading
 
-REMEMBER: You are not predicting the future. You are stress-testing {company_name}'s survival."""
+FORMATTING RULES:
+• Single paragraph = 60-80 words max (BLUF summary)
+• Bullet points = 3 lines max each
+• Every financial claim = Bold number with range
+• Every threat/opportunity = Status indicator (🔴🟡🟢)
+• Every metric = Current value + Trigger threshold
+• Kill/Double decision = 15 words rationale max
+
+REMEMBER: This is not an analysis. This is a PRE-LOADED DECISION FRAMEWORK. Board members buy with their eyes."""
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
