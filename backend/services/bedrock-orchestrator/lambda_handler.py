@@ -375,99 +375,149 @@ def generate_scenario_async_worker(event, context):
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
-        prompt = f"""You are an elite strategic foresight consultant. Generate 2 COMPREHENSIVE scenarios for {company_name} ({industry}, {region}) over {horizon_years} years.{context_note}
+        prompt = f"""You are an elite McKinsey/BCG-level strategic foresight consultant with 20+ years experience in {industry}. Generate 2 EXHAUSTIVE, RESEARCH-BACKED scenarios for {company_name} in {region} over {horizon_years} years.{context_note}
 
-CRITICAL: Each scenario must be 1500-2500 words with detailed narrative, quantitative data, and visualization-ready structures.
+CRITICAL REQUIREMENTS:
+• Each scenario: 3000-4000 words of deeply researched narrative
+• Use ONLY authoritative sources: peer-reviewed journals, industry reports from S&P/Moody's/Wood Mackenzie/IEA, government publications, major consultancies
+• Include 15-25 in-text APA citations per scenario
+• Account for: geopolitical realities, competitive dynamics, regulatory complexities, technology disruptions, capital constraints
+• Be realistic about political economy - acknowledge state champions, local content requirements, regulatory capture
+• Provide specific quantitative data with sources
+• Include comprehensive references section
 
 Return ONLY valid JSON:
 [
   {{
-    "title": "Scenario Name (7-10 words)",
+    "title": "Scenario Name (7-10 words reflecting core logic)",
     "probability": 0.XX,
-    "narrative": "Write a comprehensive 1500-2500 word strategic analysis covering:
+    "narrative": "Write an exhaustive 3000-4000 word strategic analysis with in-text APA citations:
 
-**EXECUTIVE SUMMARY** (200 words):
-[Strategic implications for {company_name} in this scenario]
+**EXECUTIVE SUMMARY** (300 words):
+[Strategic implications for {company_name}. Address: What are the 3-5 critical strategic choices? What is the fundamental bet this scenario requires? What are the irreversible commitments? What is the downside protection?]
 
-**MARKET DYNAMICS** (400 words):
-- Supply-demand evolution with specific volumes and growth rates
-- Price trajectories with ranges and drivers
-- Competitive landscape shifts with market share changes
-- Regional dynamics and geographic opportunities
+**GEOPOLITICAL & MACROECONOMIC CONTEXT** (500 words):
+- Regional political economy and power dynamics (cite specific governance indicators, World Bank/IMF forecasts)
+- Macroeconomic trajectories: GDP growth, inflation, currency stability (cite central bank data, economic forecasts)
+- Trade flows and investment patterns (cite UNCTAD, regional trade data)
+- Sovereign wealth fund strategies and capital allocation (cite SWF Institute data)
+- Geopolitical risks: sanctions, conflicts, regime stability (cite risk indices, political science research)
 
-**REGULATORY & POLICY ENVIRONMENT** (300 words):
-- Specific regulations with implementation dates and compliance costs
-- Carbon pricing mechanisms and environmental standards
-- Trade policies and their impact on operations
-- Government incentives and penalties
+**MARKET DYNAMICS** (600 words):
+- Supply-demand fundamentals with specific volumes, growth rates, and elasticities (cite industry reports, market research)
+- Price formation mechanisms and historical volatility patterns (cite commodity data, pricing indices)
+- Competitive landscape with named players, market shares, strategic positioning (cite company filings, industry analysis)
+- Value chain evolution and margin pools by segment (cite value chain research, profitability studies)
+- Customer behavior shifts and willingness-to-pay dynamics (cite consumer research, demand studies)
+- Regional arbitrage opportunities and barriers to entry (cite competitive analysis)
 
-**TECHNOLOGY & INNOVATION** (300 words):
-- Technology adoption curves and maturity timelines
-- Required R&D investments and infrastructure buildout
-- Digital transformation and automation impacts
-- Breakthrough technologies and disruption risks
+**REGULATORY & POLICY ENVIRONMENT** (500 words):
+- Specific regulations with bill numbers, implementation dates, compliance costs, enforcement track record (cite regulatory filings, legal databases)
+- Carbon pricing mechanisms with price trajectories and coverage (cite emissions trading data, climate policy research)
+- Local content requirements, licensing regimes, foreign ownership restrictions (cite regulatory codes, legal analysis)
+- Tax policy including rates, incentives, transfer pricing considerations (cite tax codes, international tax databases)
+- Trade agreements and their commercial implications (cite trade policy research)
+- Government procurement rules and state champion favoritism (cite public procurement data)
 
-**FINANCIAL IMPLICATIONS** (300 words):
-- CAPEX requirements by category and timing
-- Revenue streams evolution and margin dynamics
-- Cost structure changes and efficiency gains
-- Valuation impacts and investor perspectives
+**TECHNOLOGY & INNOVATION** (500 words):
+- Technology S-curves and adoption timelines with historical analogues (cite technology diffusion research)
+- R&D intensity requirements and innovation ecosystem maturity (cite R&D statistics, patent data)
+- Digital infrastructure availability and costs (cite telecom data, infrastructure reports)
+- Cybersecurity threats and required defensive investments (cite security indices, threat intelligence)
+- Automation potential by function with displacement estimates (cite labor economics research, AI capability research)
+- Breakthrough technology risks with probability-weighted scenarios (cite technology forecasting research)
 
-**STRATEGIC DECISIONS** (200 words):
-- Critical investment choices with NPV and IRR analysis
-- M&A opportunities with target valuations
-- Geographic expansion priorities
-- Portfolio rebalancing and asset optimization",
+**COMPETITIVE DYNAMICS** (600 words):
+- Named competitors with specific strategies, capabilities, financial resources (cite company filings, competitive intelligence)
+- Likely competitive responses to {company_name}'s moves (game theoretic analysis)
+- Barriers to competitive advantage and sustainability (cite competitive strategy research)
+- Alliances and ecosystem dynamics (cite partnership research, network effects studies)
+- Regulatory/political advantages held by local champions (cite political economy research)
+- Margin pressure from commoditization and disruption (cite pricing research, disruption literature)
+
+**FINANCIAL IMPLICATIONS** (600 words):
+- CAPEX requirements by category, year, with IRR hurdles and capital intensity benchmarks (cite capital markets data, industry benchmarks)
+- Revenue build with addressable market, penetration rates, pricing (cite market sizing research, penetration curves)
+- Cost structure evolution with operating leverage and scale economies (cite cost accounting research, economies of scale studies)
+- Working capital implications and cash conversion cycles (cite financial analysis, working capital benchmarks)
+- Valuation impacts with multiple ranges and comparable analysis (cite valuation research, trading multiples)
+- Shareholder value creation hurdles vs. cost of capital (cite financial economics research)
+
+**STRATEGIC DECISIONS & CAPITAL ALLOCATION** (400 words):
+- Specific investment decisions with timing, sizing, NPV/IRR/payback, sensitivity to key assumptions (cite capital budgeting research)
+- M&A targets with rationale, valuation ranges, integration risks (cite M&A research, deal databases)
+- Build vs. buy vs. partner analysis for key capabilities (cite transaction cost economics)
+- Geographic sequencing and market entry modes (cite international business research)
+- Portfolio rebalancing and capital redeployment (cite portfolio management research)
+- Optionality and staged investment approach (cite real options research)
+
+**RISKS & MITIGATION** (300 words):
+- Specific risk factors with probability estimates, impact quantification, early warning indicators (cite risk management research)
+- Scenario stress testing and break-even analysis (cite scenario planning research)
+- Hedging strategies and insurance mechanisms (cite derivatives research, insurance economics)
+- Contingency planning and strategic flexibility (cite strategic management research)",
 
     "timeline": [
-      {{"year": 2025, "milestone": "Specific event/development", "impact": "Quantified impact on {company_name}"}},
-      {{"year": 2027, "milestone": "Specific event/development", "impact": "Quantified impact"}},
-      {{"year": 2030, "milestone": "Specific event/development", "impact": "Quantified impact"}},
-      {{"year": 2035, "milestone": "Specific event/development", "impact": "Quantified impact"}},
-      {{"year": 2037, "milestone": "Specific event/development", "impact": "Quantified impact"}}
+      {{"year": 2025, "milestone": "Specific event with geopolitical/regulatory trigger", "impact": "Quantified financial impact on {company_name} with citation"}},
+      {{"year": 2028, "milestone": "Technology or competitive inflection point", "impact": "Market share/margin impact with source"}},
+      {{"year": 2032, "milestone": "Regulatory or market structure change", "impact": "Strategic implication with citation"}},
+      {{"year": 2037, "milestone": "Major capital deployment or harvest decision", "impact": "NPV/IRR impact with analytical source"}},
+      {{"year": 2040, "milestone": "End-state market position", "impact": "Valuation impact vs. alternatives"}}
     ],
 
     "financial_projections": {{
-      "years": [2025, 2027, 2030, 2033, 2035, 2037],
+      "years": [2025, 2028, 2032, 2035, 2037, 2040],
       "revenue_bn": [X, X, X, X, X, X],
       "ebitda_margin_pct": [X, X, X, X, X, X],
+      "roic_pct": [X, X, X, X, X, X],
       "capex_bn": [X, X, X, X, X, X],
       "free_cash_flow_bn": [X, X, X, X, X, X],
-      "market_share_pct": [X, X, X, X, X, X]
+      "market_share_pct": [X, X, X, X, X, X],
+      "ev_ebitda_multiple": [X, X, X, X, X, X]
     }},
 
     "competitive_landscape": [
-      {{"company": "Competitor name", "market_share_2025": X, "market_share_2037": X, "strategy": "Key strategy", "threat_level": "High/Medium/Low"}},
-      {{"company": "Competitor name", "market_share_2025": X, "market_share_2037": X, "strategy": "Key strategy", "threat_level": "High/Medium/Low"}},
-      {{"company": "Competitor name", "market_share_2025": X, "market_share_2037": X, "strategy": "Key strategy", "threat_level": "High/Medium/Low"}}
+      {{"company": "Specific competitor name", "market_share_2025": X, "market_share_2040": X, "strategy": "Detailed positioning", "competitive_advantage": "Source of advantage", "threat_level": "High/Medium/Low", "likely_response": "Expected competitive reaction"}},
+      {{"company": "Specific competitor name", "market_share_2025": X, "market_share_2040": X, "strategy": "Detailed positioning", "competitive_advantage": "Source of advantage", "threat_level": "High/Medium/Low", "likely_response": "Expected competitive reaction"}},
+      {{"company": "Specific competitor name", "market_share_2025": X, "market_share_2040": X, "strategy": "Detailed positioning", "competitive_advantage": "Source of advantage", "threat_level": "High/Medium/Low", "likely_response": "Expected competitive reaction"}}
     ],
 
     "key_metrics": {{
-      "production_volume_units": [X, X, X, X, X, X],
-      "renewable_capacity_gw": [X, X, X, X, X, X],
-      "carbon_intensity": [X, X, X, X, X, X],
-      "employee_count": [X, X, X, X, X, X]
+      "operational_metric_1": [X, X, X, X, X, X],
+      "operational_metric_2": [X, X, X, X, X, X],
+      "efficiency_metric": [X, X, X, X, X, X],
+      "sustainability_metric": [X, X, X, X, X, X]
     }},
 
     "key_decisions": [
-      {{"decision": "Strategic choice", "timing": "Year", "investment_bn": X, "npv_bn": X, "irr_pct": X, "risk_level": "High/Medium/Low"}},
-      {{"decision": "Strategic choice", "timing": "Year", "investment_bn": X, "npv_bn": X, "irr_pct": X, "risk_level": "High/Medium/Low"}},
-      {{"decision": "Strategic choice", "timing": "Year", "investment_bn": X, "npv_bn": X, "irr_pct": X, "risk_level": "High/Medium/Low"}}
+      {{"decision": "Specific strategic choice", "timing": "Year", "investment_bn": X, "npv_bn": X, "irr_pct": X, "payback_years": X, "risk_level": "High/Medium/Low", "key_assumptions": "Critical assumptions", "decision_rule": "Trigger conditions"}},
+      {{"decision": "Specific strategic choice", "timing": "Year", "investment_bn": X, "npv_bn": X, "irr_pct": X, "payback_years": X, "risk_level": "High/Medium/Low", "key_assumptions": "Critical assumptions", "decision_rule": "Trigger conditions"}},
+      {{"decision": "Specific strategic choice", "timing": "Year", "investment_bn": X, "npv_bn": X, "irr_pct": X, "payback_years": X, "risk_level": "High/Medium/Low", "key_assumptions": "Critical assumptions", "decision_rule": "Trigger conditions"}}
     ],
 
     "risks": [
-      {{"risk": "Risk factor", "probability": "High/Medium/Low", "impact_bn": X, "mitigation": "Strategy"}},
-      {{"risk": "Risk factor", "probability": "High/Medium/Low", "impact_bn": X, "mitigation": "Strategy"}}
+      {{"risk": "Specific risk factor with geopolitical/regulatory detail", "probability": "X%", "impact_bn": X, "timeframe": "Years", "early_warning_indicators": "Specific metrics to monitor", "mitigation": "Detailed mitigation strategy with cost"}},
+      {{"risk": "Specific risk factor with competitive/technology detail", "probability": "X%", "impact_bn": X, "timeframe": "Years", "early_warning_indicators": "Specific metrics to monitor", "mitigation": "Detailed mitigation strategy with cost"}}
     ],
 
-    "sources": [
-      "Author, A. (Year). Title. Journal/Publisher. DOI/URL",
-      "Organization. (Year). Report. URL"
+    "references": [
+      "International Energy Agency. (2024). World Energy Outlook 2024. IEA Publications. https://www.iea.org/reports/world-energy-outlook-2024",
+      "McKinsey & Company. (2023). Global Energy Perspective 2023. McKinsey Energy Insights.",
+      "Wood Mackenzie. (2024). [Specific Industry Report Title]. Wood Mackenzie Research.",
+      "World Bank. (2024). [Specific Country/Region Economic Report]. World Bank Publications.",
+      "[15-25 total high-quality sources in APA format]"
     ]
   }}
 ]
 
-USE ONLY peer-reviewed sources and authoritative industry reports. Provide specific, quantitative data throughout."""
+MANDATORY QUALITY STANDARDS:
+• Every quantitative claim must cite a source
+• Use recent data (2023-2024) wherever possible
+• Acknowledge political economy constraints (state champions, regulatory capture, local content requirements)
+• Be realistic about competitive dynamics - don't assume easy market share gains
+• Account for capital constraints and hurdle rates
+• Include downside scenarios and risk mitigation
+• Write at Board/C-suite level - assume sophisticated financial readers"""
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
