@@ -2,6 +2,21 @@ service: ai-foresight-platform
 
 frameworkVersion: '3'
 
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+    layer: false
+    zip: true
+    slim: true
+    strip: false
+    noDeploy:
+      - boto3
+      - botocore
+    invalidateCaches: true
+
 provider:
   name: aws
   runtime: python3.10
