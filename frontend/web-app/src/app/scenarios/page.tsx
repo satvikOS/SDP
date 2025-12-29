@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api-client';
 import { GlassCard, GlassButton } from '@/components/GlassCard';
-import DocumentReader from '@/components/DocumentReader';
-import { Plus, FileText, ArrowLeft, Sparkles, Loader2, BookOpen, TrendingUp, Eye, Trash2 } from 'lucide-react';
+import { Plus, FileText, ArrowLeft, Sparkles, Loader2, BookOpen, TrendingUp, Trash2 } from 'lucide-react';
 import { formatCurrency, formatDuration, cn } from '@/lib/utils';
 
 interface ScenarioData {
@@ -125,7 +124,6 @@ function ScenarioCard({ scenario, onDelete }: { scenario: ScenarioData; onDelete
   const [isExpanded, setIsExpanded] = useState(false);
   const [brLoading, setBrLoading] = useState<{ [key: number]: boolean }>({});
   const [brFormats, setBrFormats] = useState<{ [key: number]: any }>({});
-  const [showDocumentReader, setShowDocumentReader] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleBrTransform = async (scenarioData: any, index: number) => {
@@ -228,17 +226,12 @@ function ScenarioCard({ scenario, onDelete }: { scenario: ScenarioData; onDelete
               <span>Time: {formatDuration(result.generation_time_seconds || 0)}</span>
             </div>
             <div className="flex items-center gap-2">
-              <GlassButton
-                variant="primary"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowDocumentReader(true);
-                }}
-              >
-                <Eye className="w-3 h-3 mr-1.5" />
-                View Professional Document
-              </GlassButton>
+              <Link href={`/scenarios/${scenario.scenarioId}`}>
+                <GlassButton variant="primary" size="sm">
+                  <FileText className="w-3 h-3 mr-1.5" />
+                  View Document
+                </GlassButton>
+              </Link>
               <GlassButton
                 variant="ghost"
                 size="sm"
@@ -264,17 +257,6 @@ function ScenarioCard({ scenario, onDelete }: { scenario: ScenarioData; onDelete
           </div>
         )}
       </div>
-
-      {/* Document Reader Modal */}
-      {showDocumentReader && result && (
-        <DocumentReader
-          scenario={{
-            ...scenario,
-            ...result,
-          }}
-          onClose={() => setShowDocumentReader(false)}
-        />
-      )}
 
       {isExpanded && result?.scenarios && (
         <div className="mt-6 pt-6 border-t border-[var(--border)] space-y-4">
