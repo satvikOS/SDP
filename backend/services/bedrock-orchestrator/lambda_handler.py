@@ -784,14 +784,14 @@ def delete_scenario(event, context):
         table = dynamodb.Table(table_name)
 
         # Check if scenario exists
-        response = table.get_item(Key={'scenario_set_id': scenario_id})
+        response = table.get_item(Key={'scenarioId': scenario_id})
 
         if 'Item' not in response:
             logger.warning(f"Scenario not found: {scenario_id}")
             return _response(404, {'error': 'Scenario not found'})
 
         # Delete the scenario
-        table.delete_item(Key={'scenario_set_id': scenario_id})
+        table.delete_item(Key={'scenarioId': scenario_id})
 
         logger.info(f"Successfully deleted scenario: {scenario_id}")
 

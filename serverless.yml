@@ -7,7 +7,7 @@ plugins:
 
 custom:
   pythonRequirements:
-    dockerizePip: non-linux
+    dockerizePip: true
     layer: false
     zip: true
     slim: true
@@ -16,6 +16,7 @@ custom:
       - boto3
       - botocore
     invalidateCaches: true
+    pythonBin: python3
 
 provider:
   name: aws
