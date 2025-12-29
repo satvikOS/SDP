@@ -439,12 +439,38 @@ def generate_scenario_async_worker(event, context):
         if not ai_response:
             raise ValueError("No text content found in response")
 
-        # Parse the new structure which is a JSON object with matrix_framework and scenarios
-        start = ai_response.find('{')
-        end = ai_response.rfind('}') + 1
-        result_json = ai_response[start:end]
-        parsed_result = json.loads(result_json)
+        # Parse JSON from response - handle markdown code blocks if present
+        # Remove markdown code fences if they exist
+        cleaned_response = ai_response.strip()
+        if cleaned_response.startswith('```'):
+            # Remove opening fence
+            lines = cleaned_response.split('\n')
+            # Remove first line (```json or ```)
+            lines = lines[1:]
+            # Remove closing fence (last line)
+            if lines and lines[-1].strip() == '```':
+                lines = lines[:-1]
+            cleaned_response = '\n'.join(lines)
 
+        # Find JSON boundaries
+        start = cleaned_response.find('{')
+        end = cleaned_response.rfind('}') + 1
+
+        if start == -1 or end == 0:
+            logger.error(f"[Job {job_id}] No JSON found in response. First 500 chars: {ai_response[:500]}")
+            raise ValueError("No valid JSON found in AI response")
+
+        result_json = cleaned_response[start:end]
+
+        try:
+            parsed_result = json.loads(result_json)
+        except json.JSONDecodeError as e:
+            logger.error(f"[Job {job_id}] JSON parsing failed: {str(e)}")
+            logger.error(f"[Job {job_id}] Attempted to parse: {result_json[:500]}")
+            raise ValueError(f"Failed to parse JSON response: {str(e)}")
+
+        # Extract data from professional document structure
+        # The new format has: document_metadata, scenarios, matrix_framework, etc.
         matrix_framework = parsed_result.get('matrix_framework', {})
         scenarios = parsed_result.get('scenarios', [])
 

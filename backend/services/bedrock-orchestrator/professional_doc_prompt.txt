@@ -1,17 +1,16 @@
-You are generating a PROFESSIONAL STRATEGIC CONSULTING REPORT for {company_name}.
+You are generating PROFESSIONAL STRATEGIC SCENARIOS for {company_name}.
 
-This is delivered as a COMPLETE BUSINESS DOCUMENT suitable for Board-level review, with proper structure, citations, tables, and recommendations.
+This is a BOARD-LEVEL strategic foresight analysis using rigorous scenario planning methodology.
 
 ═══════════════════════════════════════════════════════════════════
-DOCUMENT METADATA
+CLIENT INFORMATION
 ═══════════════════════════════════════════════════════════════════
 
-Client: {company_name}
-Consultancy: Strategic Foresight Partners
+Company: {company_name}
 Industry: {industry}
 Region: {region}
 Time Horizon: {horizon_years} years
-Classification: CONFIDENTIAL - BOARD LEVEL ONLY
+Classification: CONFIDENTIAL - STRATEGIC PLANNING USE ONLY
 
 ═══════════════════════════════════════════════════════════════════
 PHASE 1: DEEP COMPANY RESEARCH (MANDATORY FIRST STEP)
@@ -20,1160 +19,244 @@ PHASE 1: DEEP COMPANY RESEARCH (MANDATORY FIRST STEP)
 Before building scenarios, RESEARCH {company_name} exhaustively using your knowledge:
 
 **A. COMPANY FUNDAMENTALS**
-1. Business Model: What are their revenue streams? Which 2-3 segments generate 60%+ of EBIT?
-2. Market Position: Approximate market cap, annual revenue scale, geographic footprint
-3. Strategic Assets: Key facilities, patents/IP, proprietary technologies, critical partnerships
-4. Financial Profile: Recent revenue/EBITDA/ROIC trends, capital structure, R&D intensity
-5. Competitive Position: Who are the top 3-5 competitors? Market share ranges? Competitive advantages?
+1. Business Model: Revenue streams, which 2-3 segments generate 60%+ of EBIT?
+2. Market Position: Market cap scale, annual revenue range, geographic footprint
+3. Strategic Assets: Key facilities, patents/IP, proprietary technologies, partnerships
+4. Financial Profile: Revenue/EBITDA/ROIC trends, capital structure, R&D intensity
+5. Competitive Position: Top 3-5 competitors, market share ranges, competitive advantages
 
 **B. INDUSTRY DYNAMICS**
-1. Market Structure: Total market size, growth rates (5Y CAGR), concentration (fragmented vs. consolidated)
-2. Value Chain: Where do margins concentrate? (R&D, manufacturing, distribution, service, data)
-3. Technology Trends: What technologies are reshaping the industry? Adoption curves?
-4. Regulatory Regime: Major regulations, policy trajectories, carbon/ESG requirements
-5. Disruption Vectors: What new technologies, business models, or competitors threaten existing profit pools?
+1. Market Structure: Total market size, growth rates (5Y CAGR), concentration
+2. Value Chain: Where do margins concentrate? (R&D, manufacturing, distribution, data)
+3. Technology Trends: Technologies reshaping industry, adoption curves
+4. Regulatory Regime: Major regulations, policy trajectories, ESG requirements
+5. Disruption Vectors: New technologies, business models, or competitors threatening profit pools
 
 **C. STRATEGIC VULNERABILITIES**
 1. Critical Dependencies: Suppliers, technologies, regulations they don't control
-2. Stranded Asset Risk: Which current assets could become obsolete over {horizon_years} years?
-3. Ecosystem Lock-in: What creates switching costs? Who owns critical standards/platforms?
+2. Stranded Asset Risk: Current assets that could become obsolete over {horizon_years} years
+3. Ecosystem Lock-in: Switching costs, who owns critical standards/platforms
 
-USE THIS RESEARCH to make every scenario HYPER-SPECIFIC to {company_name}.
+USE THIS RESEARCH to make scenarios HYPER-SPECIFIC to {company_name}.
 Mention actual product lines, facilities, competitors, technologies—NOT generic placeholders.
 
 {context_note}
 
 ═══════════════════════════════════════════════════════════════════
-PHASE 2: GENERATE COMPLETE PROFESSIONAL DOCUMENT
+STRATEGIC FRAMING PRINCIPLES
 ═══════════════════════════════════════════════════════════════════
 
-You will return a UNIFIED JSON document with ALL sections below.
+**THINK IN VALUE SHIFTS:**
+Over {horizon_years} years, what FUNDAMENTALLY changes about value creation in {industry}?
+- Defense 2040: Value shifts from KINETIC (90%) → COMPUTE (90%)
+- Energy 2040: Value shifts from EXTRACTION → ORCHESTRATION
+- Healthcare 2040: Value shifts from TREATMENT → PREDICTION
+
+**THINK IN PHYSICS:**
+What are IMMUTABLE constraints? (energy efficiency, compute density, material limits, biology)
+NOT policy speculation—what does thermodynamics/physics/economics FORCE to happen?
+
+**THINK IN ECOSYSTEMS:**
+What creates IRREVERSIBLE LOCK-IN?
+- Quantify switching costs: "$XXB to replicate, X-Y years"
+- Installed base advantage: "90% of code base uses X"
+- Standards ownership: "Controls YY% of interfaces"
+
+**THINK IN EXPONENTIAL DYNAMICS:**
+Where do DOUBLINGS occur? Phase transitions, not linear 3% CAGR.
+- Compute doubles every XX months → what breaks?
+- Cost halves every YY years → what becomes economic?
+
+**THINK IN DUAL-USE:**
+Commercial and Defense use the SAME technology base.
+Model as unified TAM with different regulatory overlays.
+
+**THINK IN PLATFORMS:**
+Don't assume {company_name} must own everything.
+Can they LICENSE IP? Become a PLATFORM? (95% margin vs. 20% margin)
 
 ═══════════════════════════════════════════════════════════════════
-SECTION 1: COVER PAGE
+SCENARIO PLANNING METHODOLOGY
 ═══════════════════════════════════════════════════════════════════
 
-Generate professional cover page elements with proper branding.
+**STEP 1: BUILD THE 2x2 MATRIX**
+
+Choose 2 uncertainties that CREATE ASYMMETRIC ADVANTAGES:
+
+**Axis X**: Determines WHO CAPTURES VALUE
+- Examples: Platform consolidation vs. Fragmentation, Vertical integration vs. Specialization
+
+**Axis Y**: Determines HOW MUCH VALUE EXISTS
+- Examples: Exponential technology advance vs. Plateau, Global integration vs. Regional blocs
+
+CRITICAL: Must be ORTHOGONAL and GENUINELY UNKNOWABLE (not optimistic vs. pessimistic)
+
+**STEP 2: BUILD 4 SCENARIOS**
+
+For EACH scenario (Bottom-Left, Bottom-Right, Top-Left, Top-Right):
+
+**A. SCENARIO NARRATIVE** (1500-2000 words):
+
+1. **Core Logic** (150-200 words):
+   - What PHYSICS or ECONOMICS makes this world stable?
+   - What VALUE SHIFT occurs?
+   - Why is this different from trend extrapolation?
+
+2. **Structural Breaks** (200-300 words):
+   - What 2-3 DISCONTINUITIES create this world?
+   - What TRIGGERS each shift? (technology threshold, geopolitical crisis, economic tipping point)
+   - Timeframes: YYYY-YYYY ranges
+   - Cite 2-3 sources on precedents or trajectories
+
+3. **Geopolitical & Macroeconomic Environment** (300-400 words):
+   - Power structures enabling/constraining value creation
+   - GDP growth RANGES by region (X-Y%)
+   - Cost of capital RANGES by risk profile
+   - Currency dynamics, trade architectures
+   - Capital flow patterns: Who can access capital? At what cost?
+   - Cite IMF, BIS, World Bank, think tanks (3-4 sources)
+
+4. **Industry Physics & Market Dynamics** (300-400 words):
+   - Market size: Grows X-Yx from $AA-BB B to $XX-YY B
+   - Margin pool distribution by value chain segment (%)
+   - Market structure: HHI ranges, # of players, winner-take-most vs. fragmented
+   - Technology constraints: PHYSICS limits (power efficiency, cost floors, material properties)
+   - Customer behavior: What shifts willingness-to-pay?
+   - Cite industry reports, technology roadmaps (3-4 sources)
+
+5. **Competitive Landscape** (400-500 words):
+   - Name 3-5 specific competitors and their STRATEGIC POSITIONS
+   - Who has ECOSYSTEM LOCK-IN? Quantify switching costs: $XXB, X-Y years
+   - Who has PHYSICS ADVANTAGES? (2-5x manufacturing scale, XX% better efficiency)
+   - Profitability RANGES by player archetype (EBITDA %, ROIC %)
+   - Regulatory dynamics: Market-driven (XX%) vs. State-directed (YY%)
+   - Cite company filings, analyst reports (3-4 sources)
+
+**B. STRATEGIC IMPLICATIONS FOR {company_name}** (600-800 words):
+
+6. **What BREAKS** (300-400 words):
+   - Name SPECIFIC products/assets/facilities that become OBSOLETE
+   - Why? (Technology shift? Regulatory change? Value migration?)
+   - Quantify:
+     - Revenue loss: $XX-YY M annually
+     - Margin compression: from XX% to YY%
+     - Asset write-downs: $XX-YY M
+     - Stranded CapEx: $XX-YY M
+   - Cumulative impact: Total revenue at risk, % of 2024 base
+   - Cite industry benchmarks (2-3 sources)
+
+7. **What SURVIVES & THRIVES** (300-400 words):
+   - Name SPECIFIC capabilities creating ASYMMETRIC ADVANTAGE
+   - What makes them defensible?
+     - Ecosystem lock-in: "$XXB to replicate, X+ years, YY% dependency"
+     - Physics advantages: "XX% better efficiency due to material/scale"
+     - Regulatory moats: "XX-year approval timeline blocks entrants"
+   - Quantify upside:
+     - Revenue opportunity: $XX-YY B by {horizon_years} years
+     - Margin expansion: from XX% to YY%
+     - Market share gain: from XX% to YY%
+     - ROIC improvement: from XX% to YY%
+   - Hidden optionality: Can {company_name} LICENSE this at 95% margin?
+   - Cite growth projections (2-3 sources)
+
+8. **Strategic Verdict** (150-200 words):
+   - Financial impact:
+     - Revenue: Grows/shrinks from $XX-YY B to $XX-YY B (vs. baseline: +/- XX%)
+     - EBITDA margin: XX-YY% vs. current XX%
+     - ROIC: XX-YY% vs. current XX%
+   - Competitive position:
+     - vs. Competitor A: {company_name} surpasses/trails by XX-YY pp market share
+     - Overall ranking: Strengthens to #X / Weakens to #Y / Maintains #Z
+   - Capital allocation:
+     - Current CapEx productive: XX-YY%
+     - New investment required: $XX-YY B over {horizon_years} years
+     - Stranded capital: $XX-YY B write-offs
+   - Strategic positioning: Market Leader | Strong #2 | Challenger | Niche | Platform | Component Supplier
+   - Recommended decision: KILL [asset]? DOUBLE [capability]? HEDGE?
+
+**C. SIGNPOSTS** (5-6 leading indicators):
+
+9. **Monitoring Dashboard**:
+   - Indicator: Specific measurable metric (e.g., "AI chip power efficiency >XX TOPS/Watt")
+   - Threshold: >XX or <YY or range
+   - Timeframe: 2026-2028 or specific quarter
+   - Significance: What this reveals about value migration/technology trajectory
+   - Data source: Where to track this (AnandTech, IEA, company filings, etc.)
+
+**D. REFERENCES** (8-12 APA citations):
+
+10. **Sources**:
+    - Company filings (10-Ks, investor presentations)
+    - Industry analysts (Gartner, McKinsey, BCG)
+    - Government agencies (IMF, World Bank, IEA, SIPRI)
+    - Think tanks (CSIS, Brookings, RAND)
+    - Academic research (HBR, MIT Sloan)
+    - Technical reports (roadmaps, standards bodies)
+
+Format: Author, A. A. (Year). Title. Publisher/Journal.
 
 ═══════════════════════════════════════════════════════════════════
-SECTION 2: EXECUTIVE SUMMARY (400-500 words)
+OUTPUT FORMAT - JSON STRUCTURE
 ═══════════════════════════════════════════════════════════════════
 
-Write a board-level executive summary covering:
-
-**A. The Value Shift** (100 words):
-What FUNDAMENTALLY changes about value creation in {industry} over {horizon_years} years?
-Example: "Defense 2040: Value migrates from kinetic hardware (90%) to AI-driven intelligence (90%). Weapon systems become software-defined compute platforms."
-
-**B. Critical Uncertainties** (100 words):
-Identify the TWO uncertainties that determine strategic outcomes:
-- Uncertainty 1: [Determines WHO CAPTURES VALUE - e.g., platform vs. fragmented]
-- Uncertainty 2: [Determines HOW MUCH VALUE EXISTS - e.g., exponential vs. plateau]
-
-**C. Scenario Overview** (100 words):
-One-sentence strategic thesis for each scenario:
-- Scenario 1: [Thesis]
-- Scenario 2: [Thesis]
-- Scenario 3: [Thesis]
-- Scenario 4: [Thesis]
-
-**D. Strategic Implications** (100 words):
-What are the 2-3 most critical decisions {company_name} must make?
-What % of current strategy becomes obsolete in worst case? Best case?
-
-**E. Recommended Actions** (100 words):
-Top 3 no-regret moves that create value across ALL scenarios.
-
-═══════════════════════════════════════════════════════════════════
-SECTION 3: METHODOLOGY (300-400 words)
-═══════════════════════════════════════════════════════════════════
-
-Describe the analytical approach:
-
-**Scenario Planning Framework:**
-- 2x2 matrix methodology (critical uncertainties, orthogonal axes)
-- Outside-in perspective (external world first, implications second)
-- Physics-based reasoning (technology constraints, immutable limits)
-- First principles thinking (value shifts, not trend extrapolation)
-
-**Research Approach:**
-- Sources: Company filings (10-Ks, investor presentations), industry reports (Gartner, McKinsey, BCG), government data (IMF, World Bank, IEA, SIPRI), think tanks (CSIS, Brookings, RAND), academic research
-- Timeframe: Historical data (2020-2024), forward projections ({horizon_years} years)
-- Methodology: Quantitative analysis (financial modeling, market sizing), qualitative analysis (competitive positioning, technology trajectories)
-
-**Analytical Framework:**
-1. **Physics Constraints**: Identify immutable limits (energy efficiency, compute density, material properties)
-2. **Ecosystem Effects**: Map irreversible lock-in (switching costs, installed base, standards)
-3. **Exponential Dynamics**: Identify phase transitions and doublings (not linear extrapolation)
-4. **Value Migration**: Track where margin pools move (hardware → software → data)
-5. **Dual-Use Framing**: Blur commercial/defense boundaries where relevant
-6. **Platform Thinking**: Consider licensing, IP, platform business models
-
-**Limitations & Assumptions:**
-- Scenarios are not predictions—they are plausible futures designed to stress-test strategy
-- Timeframe introduces uncertainty—use RANGES not point estimates
-- Technology evolution is fastest variable—regulatory/geopolitical slower
-- Focus on {company_name}'s strategic optionality, not forecasting "the" future
-
-═══════════════════════════════════════════════════════════════════
-SECTION 4: COMPANY & INDUSTRY ANALYSIS (600-800 words)
-═══════════════════════════════════════════════════════════════════
-
-**4A. COMPANY PROFILE** (300-400 words)
-
-**Business Overview:**
-- Revenue scale and breakdown by segment (use RANGES: "$XX-YY billion")
-- Geographic footprint (% revenue by region)
-- Customer base (B2B/B2G/B2C mix, concentration)
-- Recent financial performance (revenue CAGR, EBITDA %, ROIC %)
-
-**Strategic Assets:**
-- Key facilities/manufacturing footprint
-- Proprietary technologies, patents, R&D capabilities
-- Critical partnerships, ecosystem position
-- Brand value, customer relationships
-
-**Competitive Position:**
-- Market share in key segments
-- vs. Top 3 competitors (name them specifically)
-- Sustainable competitive advantages (moats)
-
-**Financial Profile TABLE:**
-Generate a comparison table:
-| Metric | {company_name} | Industry Avg | Top Competitor |
-|--------|----------------|--------------|----------------|
-| Revenue ($B) | XX-YY | ZZ | AA-BB |
-| EBITDA Margin % | XX-YY% | ZZ% | AA-BB% |
-| ROIC % | XX-YY% | ZZ% | AA-BB% |
-| R&D % of Revenue | XX-YY% | ZZ% | AA-BB% |
-| Market Share % | XX-YY% | - | AA-BB% |
-
-**4B. INDUSTRY ANALYSIS** (300-400 words)
-
-**Market Dynamics:**
-- Total addressable market (TAM) size and growth (use RANGES)
-- Market concentration: HHI estimate, top 5 player share
-- Competitive intensity: # of major players, ease of entry, substitution threats
-
-**Value Chain Structure:**
-- Where do margins concentrate? (upstream/midstream/downstream)
-- Vertical integration vs. horizontal specialization trends
-- Platform dynamics: Are network effects strong?
-
-**Technology Disruption:**
-- 3-5 key technologies reshaping the industry
-- Adoption trajectories, cost curves, performance improvements
-- Technology leaders vs. laggards
-
-**Regulatory Landscape:**
-- Market-driven vs. state-directed policies
-- Carbon pricing trajectories ($X-Y per ton by 2030/2040)
-- Industry-specific regulations
-- Geopolitical factors (trade, tech sovereignty)
-
-**Value Migration Trends:**
-- Where are profit pools moving? (e.g., hardware → software → data)
-- Margin trajectory by value chain segment
-- Customer willingness-to-pay drivers
-
-═══════════════════════════════════════════════════════════════════
-SECTION 5: SCENARIO MATRIX FRAMEWORK (200-300 words)
-═══════════════════════════════════════════════════════════════════
-
-Define the 2x2 matrix:
-
-**AXIS X: [Name - e.g., "Technology Diffusion Regime"]**
-- Left Pole: [e.g., "Fragmented / National Champions"]
-- Right Pole: [e.g., "Consolidated / Global Platforms"]
-- Strategic Significance: This determines WHO CAPTURES VALUE
-  [2-3 sentences: Why does this uncertainty create asymmetric advantages for different players?]
-
-**AXIS Y: [Name - e.g., "Innovation Trajectory"]**
-- Bottom Pole: [e.g., "Incremental / Linear Progress"]
-- Top Pole: [e.g., "Exponential / Phase Transition"]
-- Strategic Significance: This determines HOW MUCH VALUE EXISTS
-  [2-3 sentences: Why does this uncertainty change the size of the prize?]
-
-**Matrix Visual Description:**
-"2x2 matrix with 4 quadrants. Horizontal axis labeled '[Axis X Name]' spanning from '[Left Pole]' (left) to '[Right Pole]' (right). Vertical axis labeled '[Axis Y Name]' spanning from '[Bottom Pole]' (bottom) to '[Top Pole]' (top). Four quadrants labeled:
-- Bottom-Left: [Scenario 1 Title]
-- Bottom-Right: [Scenario 2 Title]
-- Top-Left: [Scenario 3 Title]
-- Top-Right: [Scenario 4 Title]"
-
-═══════════════════════════════════════════════════════════════════
-SECTION 6: THE FOUR SCENARIOS (2000-2500 words EACH)
-═══════════════════════════════════════════════════════════════════
-
-FOR EACH SCENARIO (1, 2, 3, 4), provide:
-
-───────────────────────────────────────────────────────────────────
-SCENARIO [#]: [TITLE - 5-7 words revealing strategic insight]
-───────────────────────────────────────────────────────────────────
-
-**Tagline:** [One-sentence strategic thesis, not description]
-
-**Quadrant:** [Bottom-Left | Bottom-Right | Top-Left | Top-Right]
-
-**Probability:** [0.15-0.35 - must sum to ~1.0 across 4 scenarios]
-
-**Core Logic** (150 words):
-What is the PHYSICS or ECONOMICS that makes this world stable?
-What fundamental VALUE SHIFT occurs in this scenario?
-Why is this different from extrapolating current trends?
-
-**Structural Breaks** (300-400 words):
-
-Identify 2-3 DISCONTINUITIES that create this world:
-
-**Break 1: [Event Name] (YYYY-YYYY)**
-- Trigger: [What causes this? Be specific]
-- Event: [What happens? Use RANGES for timing/scale]
-- Impact: [How does this reshape {industry}?]
-- Citations: [2 sources - (Author, Year)]
-
-**Break 2: [Event Name] (YYYY-YYYY)**
-- [Same structure]
-
-**Break 3: [Event Name] (YYYY-YYYY)**
-- [Same structure]
-
-Pathway: [Describe the causal chain from today to this future in 2-3 sentences]
-
-**The External World** (1000-1200 words):
-
-**A. Geopolitical & Macroeconomic Environment** (300-350 words):
-
-Power Structures:
-- [Describe global/regional power dynamics]
-- [Trade architectures: open vs. fragmented?]
-- [Technology sovereignty: managed competition vs. autarky?]
-
-Economic Fundamentals:
-- GDP growth RANGES by region (developed: X-Y%, emerging: X-Y%)
-- Cost of capital RANGES (by risk profile: low-risk X-Y%, high-risk X-Y%)
-- Currency dynamics (dollar share: X-Y%, alternatives: X-Y%)
-- Inflation regime (structural rate: X-Y%)
-
-Capital Flows:
-- FDI patterns (cross-border flows: up/down/selective?)
-- Financing availability by sector
-- Public vs. private capital dominance
-
-Citations: [3-4 sources from IMF, World Bank, BIS, think tanks]
-
-**B. Industry Physics & Market Dynamics** (350-400 words):
-
-Market Size:
-- TAM grows X-Y times from $AA-BB billion (2024) to $XX-YY billion (2024+{horizon_years})
-- Geographic distribution: [% by region]
-
-Margin Pool Distribution:
-- Which value chain segments capture margin? (R&D: X%, Manufacturing: Y%, Distribution: Z%, Data/Services: W%)
-- Total industry EBITDA pool: $XX-YY billion
-- ROIC ranges by player type
-
-Market Structure:
-- HHI: [range - below 1500 fragmented, 1500-2500 moderate, above 2500 concentrated]
-- Number of major players: [X-Y]
-- Winner-take-most vs. fragmented dynamics?
-
-Technology Constraints:
-- Physics limits: [e.g., "Power efficiency plateaus at X TOPS/Watt due to material limits"]
-- Cost curves: [e.g., "Battery costs reach floor of $X-Y/kWh"]
-- Performance trajectories: [use doublings or halvings where applicable]
-
-Customer Behavior:
-- What shifts willingness-to-pay? (performance? security? sustainability?)
-- Switching costs: [high/medium/low - quantify if possible]
-
-Citations: [3-4 sources from industry reports, technology roadmaps]
-
-**C. Competitive Landscape** (350-400 words):
-
-Major Players (name 3-5 specific companies):
-
-**{company_name}:**
-- Market share: X-Y%
-- Strategic position: [Platform/Integrator/Component Supplier/Niche]
-- Competitive advantage: [What creates moat?]
-- Profitability: EBITDA X-Y%, ROIC X-Y%
-
-**Competitor A [Name]:**
-- [Same structure]
-
-**Competitor B [Name]:**
-- [Same structure]
-
-[Continue for 3-5 total]
-
-Ecosystem Dynamics:
-- Who owns critical standards/platforms?
-- Switching costs quantified: $XX-YY billion, X-Y years to replicate
-- Installed base advantage: [who has it?]
-
-Physics Advantages:
-- Manufacturing scale: [who has 2-5x cost advantage?]
-- Energy efficiency: [who achieves X% better performance/watt?]
-- Compute density / material efficiency: [quantified gaps]
-
-Regulatory Positioning:
-- Market-driven (XX% of spend) vs. State-directed (YY%)
-- Who benefits from regulations? Who gets hurt?
-
-Profitability by Archetype:
-- Platform leaders: EBITDA X-Y%, ROIC X-Y%
-- Vertical integrators: EBITDA X-Y%, ROIC X-Y%
-- Component specialists: EBITDA X-Y%, ROIC X-Y%
-
-Citations: [3-4 sources from company filings, analyst reports, databases]
-
-**COMPETITIVE LANDSCAPE TABLE:**
-| Company | Market Share | EBITDA % | ROIC % | Strategic Position | Key Advantage |
-|---------|--------------|----------|--------|-------------------|---------------|
-| {company_name} | XX-YY% | XX-YY% | XX-YY% | [Position] | [Moat] |
-| [Competitor A] | XX-YY% | XX-YY% | XX-YY% | [Position] | [Moat] |
-| [Competitor B] | XX-YY% | XX-YY% | XX-YY% | [Position] | [Moat] |
-
-**Strategic Implications for {company_name}** (600-800 words):
-
-**D. What BREAKS** (300-350 words):
-
-Name SPECIFIC assets/products that become OBSOLETE or UNECONOMIC:
-
-**Product/Asset 1: [Specific name, e.g., "Widget X Manufacturing Plant in Location Y"]**
-- Why it breaks: [Technology shift? Regulatory change? Value migration?]
-- Timeline: Becomes uneconomic by YYYY-YYYY
-- Financial impact:
-  - Revenue loss: $XX-YY million annually
-  - Margin compression: from XX% to YY%
-  - Asset write-down: $XX-YY million
-  - CapEx stranded: $XX-YY million
-
-**Product/Asset 2: [Specific name]**
-- [Same structure]
-
-**Product/Asset 3: [Specific name]**
-- [Same structure]
-
-Cumulative Impact:
-- Total revenue at risk: $XX-YY billion (XX-YY% of 2024 base)
-- Total stranded capital: $XX-YY billion
-- Margin compression: EBITDA from XX% to YY%
-
-Strategic Vulnerabilities Exposed:
-- [Which dependencies become fatal?]
-- [Which technologies become obsolete?]
-- [Which markets close off?]
-
-Citations: [2-3 sources for industry benchmarks, technology trajectories]
-
-**E. What SURVIVES & THRIVES** (300-350 words):
-
-Name SPECIFIC capabilities that create ASYMMETRIC ADVANTAGE:
-
-**Capability 1: [Specific name, e.g., "Proprietary Algorithm Platform"]**
-- Why defensible: [Ecosystem lock-in? Physics advantage? Regulatory moat?]
-- Quantified moat: [e.g., "$20B to replicate, 5+ years, 90% code base dependency"]
-- Financial upside:
-  - Revenue opportunity: $XX-YY billion by 2024+{horizon_years}
-  - Margin expansion: from XX% to YY%
-  - Market share gain: from XX% to YY%
-  - ROIC improvement: from XX% to YY%
-
-**Capability 2: [Specific name]**
-- [Same structure]
-
-**Capability 3: [Specific name]**
-- [Same structure]
-
-Hidden Optionality:
-- [What becomes unexpectedly valuable?]
-- [Can {company_name} LICENSE this at 95% margin instead of selling?]
-- [Platform opportunities?]
-
-Geographic Expansion:
-- [Which markets open up?]
-- [TAM expansion: from $XX-YY B to $XX-YY B]
-
-Citations: [2-3 sources for growth projections, competitive analysis]
-
-**F. The Strategic Verdict** (150-200 words):
-
-**Financial Impact:**
-- Revenue trajectory: Grows/shrinks from $XX-YY B (2024) to $XX-YY B (2024+{horizon_years})
-- vs. Baseline: XX-YY% above/below
-- EBITDA margin: XX-YY% (vs. XX-YY% current)
-- ROIC: XX-YY% (vs. XX-YY% current)
-- Free cash flow: $XX-YY B annually
-
-**Competitive Position:**
-- vs. Competitor A: {company_name} surpasses/trails by XX-YY percentage points market share
-- vs. Competitor B: [Same]
-- Overall: Strengthens to #X player / Weakens to #Y player / Maintains #Z position
-
-**Capital Allocation:**
-- Current strategy effectiveness: XX-YY% of existing CapEx remains productive
-- Required NEW investment: $XX-YY B over {horizon_years} years
-- Stranded capital: $XX-YY B write-offs
-
-**Strategic Positioning:**
-- Final state: [Market Leader / Strong #2 / Challenger / Niche Player / Platform / Component Supplier]
-- vs. Current: [Improvement / Deterioration / Lateral move]
-
-**Recommended Decision:**
-[KILL specific asset? DOUBLE specific capability? HEDGE with option?]
-
-**VALUE CHAIN VISUAL:**
-[Describe a flowchart showing:
-"Inputs → {company_name} value-add → Outputs → End customer. Highlight where {company_name} captures margin (thick box) vs. commoditized segments (thin box). Show ecosystem lock-in points with star markers."]
-
-**Signposts for This Scenario** (5-6 leading indicators):
-
-| Indicator | Threshold | Timeframe | Data Source |
-|-----------|-----------|-----------|-------------|
-| [Metric 1 e.g., "AI chip power efficiency"] | >XX TOPS/Watt | 2026-2028 | [e.g., "AnandTech benchmarks"] |
-| [Metric 2] | [Threshold] | [When] | [Source] |
-| [Metric 3] | [Threshold] | [When] | [Source] |
-| [Metric 4] | [Threshold] | [When] | [Source] |
-| [Metric 5] | [Threshold] | [When] | [Source] |
-
-**References for This Scenario (8-12 citations in APA format):**
-1. [Author, A. A. (Year). Title of work. Publisher.]
-2. [Author, B. B., & Author, C. C. (Year). Title. Journal Name, Volume(Issue), pages.]
-[... continue to 8-12 total]
-
-═══════════════════════════════════════════════════════════════════
-SECTION 7: CROSS-SCENARIO SIGNPOSTS DASHBOARD (300-400 words)
-═══════════════════════════════════════════════════════════════════
-
-Create a monitoring framework covering 10-15 leading indicators that reveal which scenario is unfolding.
-
-**Dashboard Description:**
-"This dashboard tracks leading indicators across 5 categories: Technology Trajectories, Regulatory Shifts, Competitive Dynamics, Customer Behavior, and Capital Flows. Monitor quarterly. Thresholds indicate which scenario(s) are gaining probability."
-
-**Signposts Table:**
-
-| Category | Indicator | Current (2024) | Scenario 1 | Scenario 2 | Scenario 3 | Scenario 4 | Data Source | Update Frequency |
-|----------|-----------|----------------|------------|------------|------------|------------|-------------|------------------|
-| **Technology** | [Metric 1] | XX | >YY | <ZZ | AA-BB | CC-DD | [Source] | Quarterly |
-| **Technology** | [Metric 2] | XX | >YY | <ZZ | AA-BB | CC-DD | [Source] | Monthly |
-| **Regulatory** | [Metric 3] | XX | >YY | <ZZ | AA-BB | CC-DD | [Source] | Annual |
-| **Competitive** | [Metric 4] | XX | >YY | <ZZ | AA-BB | CC-DD | [Source] | Quarterly |
-| **Customer** | [Metric 5] | XX | >YY | <ZZ | AA-BB | CC-DD | [Source] | Quarterly |
-| **Capital Flows** | [Metric 6] | XX | >YY | <ZZ | AA-BB | CC-DD | [Source] | Quarterly |
-[... continue to 10-15 rows total]
-
-**Monitoring Guidance:**
-- **Early Warning (6-12 months out)**: [Which 3-4 indicators move first?]
-- **Confirmation (12-24 months out)**: [Which indicators confirm the trend?]
-- **Point of No Return (24-36 months out)**: [When does strategic pivot become too costly?]
-
-**Scenario Probability Updates:**
-"Reassess scenario probabilities quarterly based on signpost movements. If 3+ signposts align to one scenario, increase probability by 5-10 percentage points. If sustained over 2+ quarters, triggers contingent strategy activation."
-
-═══════════════════════════════════════════════════════════════════
-SECTION 8: STRATEGIC RECOMMENDATIONS (500-700 words)
-═══════════════════════════════════════════════════════════════════
-
-**8A. NO-REGRET MOVES** (250-300 words)
-
-Actions that create value across ALL four scenarios:
-
-**1. [Action Name - e.g., "Accelerate Platform Ecosystem Development"]**
-- Rationale: [Why this works in all scenarios - 2-3 sentences]
-- Implementation: [What specifically to do - 2-3 sentences]
-- Expected ROI: [Range: XX-YY% IRR, payback X-Y years]
-- Investment: [$XX-YY million over X years]
-- Timeframe: [Start QX 20YY, complete QX 20YY]
-- Risk: [Low/Medium/High if delayed?]
-
-**2. [Action Name]**
-- [Same structure]
-
-**3. [Action Name]**
-- [Same structure]
-
-**8B. OPTIONS & HEDGES** (150-200 words)
-
-Maintaining strategic flexibility:
-
-**Real Options to Buy (creating future choices):**
-- [Option 1]: [Small investment now ($XX-YY M) that creates valuable choice later]
-  - Value if exercised: [$XX-YY B opportunity]
-  - Decision point: [When to decide: 20XX-20YY]
-  - Scenarios where valuable: [1, 2, 3, or 4?]
-
-- [Option 2]: [Same structure]
-
-**Real Options to Sell (preparing exits):**
-- [Asset 1]: [Begin divestment preparation for potential sale]
-  - Estimated value: [$XX-YY B]
-  - Scenarios where divest: [Which scenarios?]
-  - Preparation time: [X-Y years]
-
-**Reversible Experiments (test & learn):**
-- [Experiment 1]: [Low-cost test ($XX-YY M) to validate assumption]
-  - Learn: [What does this tell us?]
-  - Timeline: [X-Y quarters]
-
-**8C. CONTINGENT STRATEGIES** (150-200 words)
-
-Scenario-specific actions triggered by signposts:
-
-**IF Scenario 1 unfolds → THEN:**
-- Primary action: [Specific strategic move]
-- Trigger: [Which signposts confirm? At what threshold?]
-- Investment: [$XX-YY B]
-- Timing: [Activate when?]
-
-**IF Scenario 2 unfolds → THEN:**
-- [Same structure]
-
-**IF Scenario 3 unfolds → THEN:**
-- [Same structure]
-
-**IF Scenario 4 unfolds → THEN:**
-- [Same structure]
-
-**8D. CAPITAL ALLOCATION FRAMEWORK** (100-150 words)
-
-Portfolio approach balancing scenarios:
-
-**Core Business (XX-YY% of CapEx):**
-- Sustain current profit engines
-- Works in: All scenarios
-- Annual: [$XX-YY B]
-
-**Growth Options (XX-YY% of CapEx):**
-- Optimized for Scenarios [X, Y]
-- Upside if correct: [X-Yx current EBITDA]
-- Annual: [$XX-YY B]
-
-**Strategic Hedges (XX-YY% of CapEx):**
-- Downside protection in Scenarios [X, Y]
-- Insurance value: [Protects $XX-YY B revenue]
-- Annual: [$XX-YY B]
-
-**Total Annual CapEx: $XX-YY billion**
-
-═══════════════════════════════════════════════════════════════════
-SECTION 9: GLOSSARY (Alphabetical, 20-30 terms)
-═══════════════════════════════════════════════════════════════════
-
-Define key terms used throughout:
-
-**CAGR (Compound Annual Growth Rate):** The rate of return that would be required for an investment to grow from its beginning balance to its ending balance over a specified time period, assuming profits were reinvested at the end of each period.
-
-**Ecosystem Lock-in:** A competitive moat created when customers/developers/partners become dependent on a platform or standard, making switching prohibitively expensive in terms of time, money, or compatibility. Example: 90% of defense AI code uses CUDA; rewriting would cost $20B and 5+ years.
-
-**EBITDA (Earnings Before Interest, Taxes, Depreciation, and Amortization):** A measure of company operating performance. Expressed as percentage of revenue, indicates operational efficiency.
-
-**HHI (Herfindahl-Hirschman Index):** Market concentration measure. Sum of squared market shares. <1500 = competitive, 1500-2500 = moderate concentration, >2500 = highly concentrated.
-
-**Real Option:** A strategic investment that creates future flexibility. Gives management the right (but not obligation) to take future action. Valued using option pricing theory.
-
-**ROIC (Return on Invested Capital):** Net operating profit after tax divided by invested capital. Measures how efficiently a company uses capital to generate profits. >15% typically considered good, >25% excellent.
-
-**Stranded Assets:** Investments that lose economic value before end of useful life due to technology shifts, regulatory changes, or market disruption. Example: coal plants shut down before debt is repaid.
-
-**Value Migration:** The shift of profit pools within an industry value chain. Example: Defense value migrating from hardware (90%) to software/intelligence (90%) over 20 years.
-
-[Continue with 15-25 more terms relevant to {industry} and {company_name}]
-
-═══════════════════════════════════════════════════════════════════
-SECTION 10: MASTER REFERENCE LIST (40-60 citations, APA format)
-═══════════════════════════════════════════════════════════════════
-
-Alphabetical by author, all sources cited across the document:
-
-[Cite sources from these categories, actual sources:]
-- Company filings (10-Ks, 8-Ks, investor presentations from {company_name} and competitors)
-- Industry analysts (Gartner, McKinsey, Boston Consulting Group, Bain, Deloitte, PwC)
-- Government agencies (IMF, World Bank, IEA, SIPRI, Department of Defense, Department of Commerce)
-- Think tanks (CSIS, Brookings Institution, RAND Corporation, Carnegie Endowment)
-- Academic journals (Harvard Business Review, MIT Sloan Management Review, Strategic Management Journal)
-- News sources (Financial Times, Wall Street Journal, Bloomberg, The Economist)
-- Technical reports (Technology roadmaps, standards bodies, research labs)
-
-Format each as:
-[Author Last Name], [First Initial]. ([Year]). [Title of work]. [Publisher/Journal], [Volume(Issue)], [pages if applicable].
-
-Example:
-Huang, J. (2024). The Future of AI Computing. NVIDIA Investor Presentation Q4 2024.
-
-═══════════════════════════════════════════════════════════════════
-FINAL OUTPUT FORMAT - COMPLETE JSON STRUCTURE
-═══════════════════════════════════════════════════════════════════
-
-Return this EXACT JSON structure with ALL sections filled:
-{
-  "document_metadata": {
-    "title": "Strategic Foresight Analysis: {company_name}",
-    "client": "{company_name}",
-    "consultancy": "Strategic Foresight Partners",
-    "industry": "{industry}",
-    "region": "{region}",
-    "horizon_years": {horizon_years},
-    "date": "[Current date in YYYY-MM-DD format]",
-    "classification": "CONFIDENTIAL - BOARD LEVEL ONLY",
-    "document_id": "[Generate unique ID]"
-  },
-
-  "cover_page": {
-    "main_title": "STRATEGIC FORESIGHT ANALYSIS",
-    "company_line": "{company_name} | {industry} Sector",
-    "scope_line": "{region} | {horizon_years}-Year Horizon",
-    "prepared_for": "{company_name} Board of Directors",
-    "prepared_by": "Strategic Foresight Partners",
-    "date_issued": "[Current date formatted]",
-    "classification_marking": "CONFIDENTIAL - BOARD LEVEL ONLY",
-    "footer_left": "{company_name} | Strategic Foresight Partners",
-    "footer_right": "Page 1"
-  },
-
-  "executive_summary": {
-    "value_shift": "[2-3 paragraphs, 100 words]",
-    "critical_uncertainties": "[2 paragraphs describing the axes, 100 words]",
-    "scenario_overview": [
-      {"scenario": "Scenario 1", "thesis": "[One sentence]"},
-      {"scenario": "Scenario 2", "thesis": "[One sentence]"},
-      {"scenario": "Scenario 3", "thesis": "[One sentence]"},
-      {"scenario": "Scenario 4", "thesis": "[One sentence]"}
-    ],
-    "strategic_implications": "[1-2 paragraphs, 100 words]",
-    "recommended_actions": [
-      "[No-regret move 1 - 1 sentence]",
-      "[No-regret move 2 - 1 sentence]",
-      "[No-regret move 3 - 1 sentence]"
-    ],
-    "word_count": 400-500
-  },
-
-  "table_of_contents": [
-    {"section": "Executive Summary", "page": 2},
-    {"section": "Methodology & Framework", "page": 4},
-    {"section": "Company & Industry Analysis", "page": 6},
-    {"section": "Scenario Matrix", "page": 9},
-    {"section": "Scenario 1: [Title]", "page": 11},
-    {"section": "Scenario 2: [Title]", "page": 18},
-    {"section": "Scenario 3: [Title]", "page": 25},
-    {"section": "Scenario 4: [Title]", "page": 32},
-    {"section": "Strategic Signposts", "page": 39},
-    {"section": "Recommendations", "page": 42},
-    {"section": "Glossary", "page": 45},
-    {"section": "References", "page": 48}
-  ],
-
-  "methodology": {
-    "framework": "[Scenario planning approach - 100 words]",
-    "research_approach": "[Sources and methods - 100 words]",
-    "analytical_framework": "[Physics-based, first principles - 150 words]",
-    "limitations": "[Key assumptions - 100 words]",
-    "word_count": 300-400
-  },
-
-  "company_analysis": {
-    "business_profile": "[Revenue breakdown, geographic footprint, customer base - 100-150 words]",
-    "strategic_assets": "[Facilities, IP, partnerships - 100-150 words]",
-    "financial_performance": "[Trends - 100-150 words]",
-    "competitive_position": "[Market position - 100-150 words]",
-    
-    "financial_comparison_table": {
-      "title": "{company_name} Financial Performance vs. Industry",
-      "headers": ["Metric", "{company_name}", "Industry Average", "Top Competitor"],
-      "rows": [
-        ["Revenue ($B)", "[XX-YY]", "[ZZ]", "[AA-BB]"],
-        ["EBITDA Margin %", "[XX-YY]%", "[ZZ]%", "[AA-BB]%"],
-        ["ROIC %", "[XX-YY]%", "[ZZ]%", "[AA-BB]%"],
-        ["R&D % of Revenue", "[XX-YY]%", "[ZZ]%", "[AA-BB]%"],
-        ["Market Share %", "[XX-YY]%", "-", "[AA-BB]%"]
-      ],
-      "notes": "[Any footnotes or data sources]"
-    },
-    "word_count": 400-600
-  },
-
-  "industry_analysis": {
-    "market_dynamics": "[Market size, growth, concentration - 150-200 words]",
-    "value_chain": "[Where margins concentrate - 100-150 words]",
-    "technology_disruption": "[Key technologies - 100-150 words]",
-    "regulatory_landscape": "[Regulations, policies - 100-150 words]",
-    "value_migration": "[Profit pool shifts - 100-150 words]",
-    "word_count": 500-700
-  },
-
-  "matrix_framework": {
-    "axis_x": {
+Return ONLY valid JSON with this EXACT structure:
+
+{{
+  "matrix_framework": {{
+    "axis_x": {{
       "name": "[Uncertainty that determines WHO CAPTURES VALUE]",
-      "left_pole": "[Description]",
-      "right_pole": "[Description]",
-      "significance": "[Why this matters - 2-3 sentences]"
-    },
-    "axis_y": {
+      "left_pole": "[Left extreme]",
+      "right_pole": "[Right extreme]",
+      "description": "[Why this determines who captures value - 2-3 sentences]"
+    }},
+    "axis_y": {{
       "name": "[Uncertainty that determines HOW MUCH VALUE EXISTS]",
-      "bottom_pole": "[Description]",
-      "top_pole": "[Description]",
-      "significance": "[Why this matters - 2-3 sentences]"
-    },
-    "visual_description": "[Description of 2x2 matrix visual]",
-    "word_count": 200-300
-  },
+      "bottom_pole": "[Bottom extreme]",
+      "top_pole": "[Top extreme]",
+      "description": "[Why this determines total value - 2-3 sentences]"
+    }}
+  }},
 
   "scenarios": [
-    {
-      "number": 1,
-      "title": "[5-7 words revealing strategic insight]",
-      "tagline": "[One-sentence strategic thesis]",
-      "quadrant": "[Bottom-Left|Bottom-Right|Top-Left|Top-Right]",
-      "probability": 0.XX,
+    {{
+      "title": "[5-7 words revealing strategic insight, not description]",
+      "tagline": "[One-sentence STRATEGIC thesis]",
+      "core_logic": "[150-200 words: PHYSICS/ECONOMICS making this stable + VALUE SHIFT]",
+      "probability": 0.15-0.35,
+      "quadrant": "Bottom-Left|Bottom-Right|Top-Left|Top-Right",
 
-      "core_logic": "[100-150 words on physics/economics that make this stable + value shift]",
+      "narrative": "[COMPLETE STRATEGIC ANALYSIS - 1500-2000 words following structure above:
+      - Core logic and value shift
+      - Structural breaks with triggers and timeframes
+      - Geopolitical/macro environment with GDP, capital flows, power structures
+      - Industry physics with market sizing, margin pools, technology constraints
+      - Competitive landscape with named players, ecosystem lock-in, physics advantages
+      - What breaks for {company_name} (specific assets, quantified losses)
+      - What survives/thrives (specific capabilities, quantified upside)
+      - Strategic verdict (financials, competitive position, capital allocation)
 
-      "structural_breaks": [
-        {
-          "number": 1,
-          "name": "[Event Name]",
-          "timeframe": "[YYYY-YYYY]",
-          "trigger": "[What causes this]",
-          "event": "[What happens - use RANGES]",
-          "impact": "[How this reshapes industry]",
-          "citations": ["[Author, Year]", "[Author, Year]"]
-        },
-        {
-          "number": 2,
-          "name": "[Event Name]",
-          "timeframe": "[YYYY-YYYY]",
-          "trigger": "[Trigger]",
-          "event": "[Event]",
-          "impact": "[Impact]",
-          "citations": ["[Citation]", "[Citation]"]
-        },
-        {
-          "number": 3,
-          "name": "[Event Name]",
-          "timeframe": "[YYYY-YYYY]",
-          "trigger": "[Trigger]",
-          "event": "[Event]",
-          "impact": "[Impact]",
-          "citations": ["[Citation]"]
-        }
-      ],
-      "pathway_summary": "[2-3 sentences on causal chain]",
-
-      "external_world": {
-        "geopolitical_macro": {
-          "content": "[300-350 words with inline citations]",
-          "citations": ["[Full citation 1]", "[Full citation 2]", "[Full citation 3]", "[Full citation 4]"]
-        },
-        "industry_physics": {
-          "content": "[350-400 words with inline citations]",
-          "citations": ["[Full citation 1]", "[Full citation 2]", "[Full citation 3]", "[Full citation 4]"]
-        },
-        "competitive_landscape": {
-          "content": "[300-350 words with inline citations]",
-          "citations": ["[Full citation 1]", "[Full citation 2]", "[Full citation 3]", "[Full citation 4]"]
-        },
-        "competitive_table": {
-          "title": "Competitive Landscape - Scenario [#]",
-          "headers": ["Company", "Market Share %", "EBITDA %", "ROIC %", "Strategic Position", "Key Advantage"],
-          "rows": [
-            ["{company_name}", "[XX-YY]%", "[XX-YY]%", "[XX-YY]%", "[Position]", "[Moat]"],
-            ["[Competitor A]", "[XX-YY]%", "[XX-YY]%", "[XX-YY]%", "[Position]", "[Moat]"],
-            ["[Competitor B]", "[XX-YY]%", "[XX-YY]%", "[XX-YY]%", "[Position]", "[Moat]"],
-            ["[Competitor C]", "[XX-YY]%", "[XX-YY]%", "[XX-YY]%", "[Position]", "[Moat]"]
-          ]
-        }
-      },
-
-      "strategic_implications": {
-        "what_breaks": {
-          "overview": "[50-100 words introducing what fails]",
-          "assets": [
-            {
-              "name": "[Specific product/facility name]",
-              "why_breaks": "[Technology/regulation/value migration explanation]",
-              "timeline": "[Becomes uneconomic by YYYY-YYYY]",
-              "financial_impact": {
-                "revenue_loss": "[$XX-YY million annually]",
-                "margin_compression": "[from XX% to YY%]",
-                "write_down": "[$XX-YY million]",
-                "stranded_capex": "[$XX-YY million]"
-              }
-            },
-            {
-              "name": "[Asset 2]",
-              "why_breaks": "[Explanation]",
-              "timeline": "[Timeline]",
-              "financial_impact": {
-                "revenue_loss": "[$XX-YY M]",
-                "margin_compression": "[XX% to YY%]",
-                "write_down": "[$XX-YY M]",
-                "stranded_capex": "[$XX-YY M]"
-              }
-            },
-            {
-              "name": "[Asset 3]",
-              "why_breaks": "[Explanation]",
-              "timeline": "[Timeline]",
-              "financial_impact": "[Same structure]"
-            }
-          ],
-          "cumulative_impact": {
-            "total_revenue_risk": "[$XX-YY B, XX-YY% of 2024 base]",
-            "total_stranded_capital": "[$XX-YY B]",
-            "margin_compression": "[EBITDA from XX% to YY%]"
-          },
-          "strategic_vulnerabilities": "[Which dependencies become fatal? 50-100 words]",
-          "citations": ["[Citation 1]", "[Citation 2]", "[Citation 3]"],
-          "word_count": 300-350
-        },
-
-        "what_survives": {
-          "overview": "[50-100 words introducing what thrives]",
-          "capabilities": [
-            {
-              "name": "[Specific capability/asset name]",
-              "why_defensible": "[Ecosystem lock-in/physics/regulation explanation]",
-              "moat_quantification": "[e.g., $20B to replicate, 5+ years, 90% dependency]",
-              "financial_upside": {
-                "revenue_opportunity": "[$XX-YY B by 2024+{horizon_years}]",
-                "margin_expansion": "[from XX% to YY%]",
-                "market_share_gain": "[from XX% to YY%]",
-                "roic_improvement": "[from XX% to YY%]"
-              }
-            },
-            {
-              "name": "[Capability 2]",
-              "why_defensible": "[Explanation]",
-              "moat_quantification": "[Quantified]",
-              "financial_upside": "[Same structure]"
-            },
-            {
-              "name": "[Capability 3]",
-              "why_defensible": "[Explanation]",
-              "moat_quantification": "[Quantified]",
-              "financial_upside": "[Same structure]"
-            }
-          ],
-          "hidden_optionality": "[What becomes unexpectedly valuable? Licensing opportunities? 50-100 words]",
-          "geographic_expansion": "[New markets, TAM expansion - 50 words]",
-          "citations": ["[Citation 1]", "[Citation 2]", "[Citation 3]"],
-          "word_count": 300-350
-        },
-
-        "strategic_verdict": {
-          "financial_impact": {
-            "revenue_trajectory": "[Grows/shrinks from $XX-YY B (2024) to $XX-YY B (2024+horizon), XX-YY% vs. baseline]",
-            "ebitda_margin": "[XX-YY% vs. XX-YY% current]",
-            "roic": "[XX-YY% vs. XX-YY% current]",
-            "free_cash_flow": "[$XX-YY B annually]"
-          },
-          "competitive_position": {
-            "vs_competitor_a": "[Surpasses/trails by XX-YY pp market share]",
-            "vs_competitor_b": "[Same]",
-            "overall_ranking": "[Strengthens to #X / Weakens to #Y / Maintains #Z]"
-          },
-          "capital_allocation": {
-            "existing_capex_productive": "[XX-YY%]",
-            "new_investment_required": "[$XX-YY B over {horizon_years} years]",
-            "stranded_capital": "[$XX-YY B write-offs]"
-          },
-          "strategic_positioning": {
-            "final_state": "[Market Leader|Strong #2|Challenger|Niche|Platform|Component Supplier]",
-            "vs_current": "[Improvement|Deterioration|Lateral]"
-          },
-          "recommended_decision": "[KILL specific asset? DOUBLE specific capability? HEDGE?]",
-          "word_count": 150-200
-        },
-
-        "value_chain_visual": {
-          "description": "[Flowchart description: Inputs → {company_name} value-add → Outputs → Customer. Highlight margin capture points, ecosystem lock-in stars]",
-          "elements": [
-            {"type": "box", "label": "[Upstream segment]", "thickness": "thin", "note": "Commoditized"},
-            {"type": "box", "label": "{company_name} Core", "thickness": "thick", "note": "High margin capture"},
-            {"type": "star", "label": "Ecosystem Lock-in", "note": "$XXB switching cost"},
-            {"type": "arrow", "from": "[Segment]", "to": "[Segment]"},
-            {"type": "box", "label": "[Downstream]", "thickness": "medium"}
-          ]
-        }
-      },
+      Use RANGES not precision. Focus on PHYSICS and ECOSYSTEMS over policy.
+      Identify ASYMMETRIC ADVANTAGES. Cite 10-15 authoritative sources inline.
+      Target: Board members making $XXB irreversible capital allocation decisions.]",
 
       "signposts": [
-        {
-          "indicator": "[Specific measurable metric with threshold]",
-          "threshold": "[>XX or <YY]",
-          "timeframe": "[2026-2028]",
-          "significance": "[What this reveals about value migration/technology]",
-          "data_source": "[Specific source]"
-        },
-        {
-          "indicator": "[Metric 2]",
-          "threshold": "[Threshold]",
-          "timeframe": "[Timeframe]",
-          "significance": "[Significance]",
-          "data_source": "[Source]"
-        },
-        {
-          "indicator": "[Metric 3]",
-          "threshold": "[Threshold]",
-          "timeframe": "[Timeframe]",
-          "significance": "[Significance]",
-          "data_source": "[Source]"
-        },
-        {
-          "indicator": "[Metric 4]",
-          "threshold": "[Threshold]",
-          "timeframe": "[Timeframe]",
-          "significance": "[Significance]",
-          "data_source": "[Source]"
-        },
-        {
-          "indicator": "[Metric 5]",
-          "threshold": "[Threshold]",
-          "timeframe": "[Timeframe]",
-          "significance": "[Significance]",
-          "data_source": "[Source]"
-        }
+        {{
+          "indicator": "[Measurable metric with threshold]",
+          "timeframe": "[When to monitor]",
+          "significance": "[What this reveals]",
+          "data_source": "[Where to track]"
+        }}
+        // ... 5-6 signposts total
       ],
 
       "references": [
-        "[Author, A. A. (Year). Title. Publisher.]",
-        "[Author, B. B., & Author, C. C. (Year). Title. Journal, Volume(Issue), pages.]",
-        "[Continue to 8-12 total APA citations]"
-      ],
-
-      "word_count": 2000-2500
-    },
-    // Scenario 2 - same structure
-    {
-      "number": 2,
-      "title": "[Title]",
-      "tagline": "[Tagline]",
-      "quadrant": "[Quadrant]",
-      "probability": 0.XX,
-      // ... full structure as above
-    },
-    // Scenario 3 - same structure
-    {
-      "number": 3,
-      "title": "[Title]",
-      "tagline": "[Tagline]",
-      "quadrant": "[Quadrant]",
-      "probability": 0.XX,
-      // ... full structure
-    },
-    // Scenario 4 - same structure
-    {
-      "number": 4,
-      "title": "[Title]",
-      "tagline": "[Tagline]",
-      "quadrant": "[Quadrant]",
-      "probability": 0.XX,
-      // ... full structure
-    }
-  ],
-
-  "signposts_dashboard": {
-    "overview": "[Description of monitoring approach - 100 words]",
-    "table": {
-      "title": "Cross-Scenario Strategic Signposts Dashboard",
-      "description": "Monitor quarterly. Thresholds indicate which scenario(s) gaining probability.",
-      "headers": ["Category", "Indicator", "Current (2024)", "Scenario 1", "Scenario 2", "Scenario 3", "Scenario 4", "Data Source", "Frequency"],
-      "rows": [
-        ["Technology", "[Metric 1]", "XX", ">YY", "<ZZ", "AA-BB", "CC-DD", "[Source]", "Quarterly"],
-        ["Technology", "[Metric 2]", "XX", ">YY", "<ZZ", "AA-BB", "CC-DD", "[Source]", "Monthly"],
-        ["Regulatory", "[Metric 3]", "XX", ">YY", "<ZZ", "AA-BB", "CC-DD", "[Source]", "Annual"],
-        ["Competitive", "[Metric 4]", "XX", ">YY", "<ZZ", "AA-BB", "CC-DD", "[Source]", "Quarterly"],
-        ["Customer", "[Metric 5]", "XX", ">YY", "<ZZ", "AA-BB", "CC-DD", "[Source]", "Quarterly"],
-        ["Capital", "[Metric 6]", "XX", ">YY", "<ZZ", "AA-BB", "CC-DD", "[Source]", "Quarterly"],
-        ["Technology", "[Metric 7]", "XX", ">YY", "<ZZ", "AA-BB", "CC-DD", "[Source]", "Quarterly"],
-        ["Regulatory", "[Metric 8]", "XX", ">YY", "<ZZ", "AA-BB", "CC-DD", "[Source]", "Semi-annual"],
-        ["Competitive", "[Metric 9]", "XX", ">YY", "<ZZ", "AA-BB", "CC-DD", "[Source]", "Quarterly"],
-        ["Customer", "[Metric 10]", "XX", ">YY", "<ZZ", "AA-BB", "CC-DD", "[Source]", "Quarterly"]
+        "[Author, A. A. (Year). Title. Publisher.]"
+        // ... 8-12 APA citations
       ]
-    },
-    "monitoring_guidance": {
-      "early_warning": "[Which 3-4 indicators move first? - 50 words]",
-      "confirmation": "[Which indicators confirm trend? - 50 words]",
-      "point_of_no_return": "[When does pivot become too costly? - 50 words]"
-    },
-    "probability_update_rule": "[How to adjust scenario probabilities based on signpost movements - 100 words]",
-    "word_count": 300-400
-  },
-
-  "recommendations": {
-    "no_regret_moves": [
-      {
-        "number": 1,
-        "action_name": "[Specific action]",
-        "rationale": "[Why this works across all scenarios - 2-3 sentences]",
-        "implementation": "[What specifically to do - 2-3 sentences]",
-        "expected_roi": "[XX-YY% IRR, payback X-Y years]",
-        "investment": "[$XX-YY million over X years]",
-        "timeframe": "[Start QX 20YY, complete QX 20YY]",
-        "risk_if_delayed": "[Low|Medium|High]"
-      },
-      {
-        "number": 2,
-        "action_name": "[Action 2]",
-        "rationale": "[Rationale]",
-        "implementation": "[Implementation]",
-        "expected_roi": "[ROI]",
-        "investment": "[$XX-YY M]",
-        "timeframe": "[Timeframe]",
-        "risk_if_delayed": "[Risk]"
-      },
-      {
-        "number": 3,
-        "action_name": "[Action 3]",
-        // ... same structure
-      }
-    ],
-
-    "options_and_hedges": {
-      "real_options_to_buy": [
-        {
-          "option_name": "[Option 1]",
-          "small_investment_now": "[$XX-YY M]",
-          "value_if_exercised": "[$XX-YY B opportunity]",
-          "decision_point": "[20XX-20YY]",
-          "valuable_in_scenarios": "[1, 2, 3, and/or 4]",
-          "description": "[What this creates]"
-        },
-        {
-          "option_name": "[Option 2]",
-          // ... same structure
-        }
-      ],
-      "real_options_to_sell": [
-        {
-          "asset": "[Asset 1]",
-          "preparation_action": "[Begin divestment prep]",
-          "estimated_value": "[$XX-YY B]",
-          "divest_in_scenarios": "[Which scenarios?]",
-          "preparation_time": "[X-Y years]"
-        }
-      ],
-      "reversible_experiments": [
-        {
-          "experiment": "[Experiment 1]",
-          "cost": "[$XX-YY M]",
-          "learning_objective": "[What does this validate?]",
-          "timeline": "[X-Y quarters]"
-        }
-      ]
-    },
-
-    "contingent_strategies": [
-      {
-        "scenario": "Scenario 1",
-        "primary_action": "[Specific strategic move]",
-        "trigger_signposts": "[Which signposts? At what threshold?]",
-        "investment": "[$XX-YY B]",
-        "timing": "[Activate when?]"
-      },
-      {
-        "scenario": "Scenario 2",
-        "primary_action": "[Action]",
-        "trigger_signposts": "[Triggers]",
-        "investment": "[$XX-YY B]",
-        "timing": "[Timing]"
-      },
-      {
-        "scenario": "Scenario 3",
-        // ... same structure
-      },
-      {
-        "scenario": "Scenario 4",
-        // ... same structure
-      }
-    ],
-
-    "capital_allocation": {
-      "core_business": {
-        "percentage": "[XX-YY]%",
-        "description": "[Sustain current profit engines]",
-        "works_in": "All scenarios",
-        "annual_amount": "[$XX-YY B]"
-      },
-      "growth_options": {
-        "percentage": "[XX-YY]%",
-        "description": "[Growth investments]",
-        "optimized_for": "Scenarios [X, Y]",
-        "upside_if_correct": "[X-Yx current EBITDA]",
-        "annual_amount": "[$XX-YY B]"
-      },
-      "strategic_hedges": {
-        "percentage": "[XX-YY]%",
-        "description": "[Downside protection]",
-        "protects_against": "Scenarios [X, Y]",
-        "insurance_value": "[Protects $XX-YY B revenue]",
-        "annual_amount": "[$XX-YY B]"
-      },
-      "total_annual_capex": "[$XX-YY billion]"
-    },
-
-    "word_count": 500-700
-  },
-
-  "glossary": [
-    {
-      "term": "CAGR (Compound Annual Growth Rate)",
-      "definition": "[Definition - 2-3 sentences]"
-    },
-    {
-      "term": "EBITDA (Earnings Before Interest, Taxes, Depreciation, and Amortization)",
-      "definition": "[Definition - 2-3 sentences]"
-    },
-    {
-      "term": "Ecosystem Lock-in",
-      "definition": "[Definition with example - 2-3 sentences]"
-    },
-    {
-      "term": "HHI (Herfindahl-Hirschman Index)",
-      "definition": "[Definition - 2-3 sentences]"
-    },
-    {
-      "term": "Real Option",
-      "definition": "[Definition - 2-3 sentences]"
-    },
-    {
-      "term": "ROIC (Return on Invested Capital)",
-      "definition": "[Definition - 2-3 sentences]"
-    },
-    {
-      "term": "Stranded Assets",
-      "definition": "[Definition with example - 2-3 sentences]"
-    },
-    {
-      "term": "Value Migration",
-      "definition": "[Definition with example - 2-3 sentences]"
-    },
-    // ... continue with 15-30 total terms alphabetically
-    {
-      "term": "[Industry-specific term]",
-      "definition": "[Definition]"
-    }
-  ],
-
-  "master_references": [
-    "[Author, A. A. (Year). Title of work. Publisher.]",
-    "[Author, B. B., & Author, C. C. (Year). Title of article. Journal Name, Volume(Issue), pages. DOI]",
-    "[Company Name. (Year). Form 10-K annual report. Retrieved from URL]",
-    "[Organization Name. (Year). Report title. Retrieved from URL]",
-    // ... continue alphabetically to 40-60 total citations
-  ],
-
-  "document_statistics": {
-    "total_word_count": "[Approx 12000-15000]",
-    "total_pages": "[Estimated 50-60]",
-    "scenarios_count": 4,
-    "tables_count": "[6-10]",
-    "citations_count": "[40-60]",
-    "glossary_terms_count": "[20-30]"
-  }
-}
+    }}
+    // ... 4 scenarios total (one per quadrant)
+  ]
+}}
 
 ═══════════════════════════════════════════════════════════════════
 QUALITY CONTROL CHECKLIST
@@ -1182,19 +265,18 @@ QUALITY CONTROL CHECKLIST
 Before submitting, verify:
 
 ✓ **Company-Specific**: Named actual {company_name} products, facilities, competitors (not "Product X")
-✓ **Deep Research**: Used real knowledge about {company_name}, {industry}, and {region}
+✓ **Deep Research**: Used real knowledge about {company_name}, {industry}, {region}
 ✓ **Physics First**: Grounded in immutable constraints (energy, compute, materials, biology)
 ✓ **Ecosystem Lock-in**: Quantified switching costs with $XXB and X-year estimates
 ✓ **Exponential Dynamics**: Identified phase transitions, doublings (not 3% CAGR thinking)
 ✓ **Dual-Use TAM**: Blurred commercial/defense where relevant
 ✓ **Platform Strategies**: Considered licensing (95% margin), IP, platform models
 ✓ **Quantified Ranges**: Used "X-Yx" and "$XX-YY B" (not "$67.3B")
-✓ **APA Citations**: 8-12 per scenario, 40-60 total, properly formatted
+✓ **APA Citations**: 8-12 per scenario inline in narrative
 ✓ **Professional Tone**: Board-level document, not marketing fluff
-✓ **Tables Included**: 6-10 tables with proper structure
-✓ **Visuals Described**: Flowcharts, matrix diagram described textually
-✓ **Complete JSON**: All fields filled, no "[TODO]" placeholders
-✓ **Word Counts**: Each section meets target length
+✓ **Complete JSON**: All fields filled, valid JSON structure
+✓ **Word Counts**: Each narrative 1500-2000 words
 ✓ **Probabilities Sum**: 4 scenario probabilities sum to ~1.0
+✓ **Specific Assets**: Named actual products/facilities/capabilities (not generic)
 
-GENERATE THE COMPLETE PROFESSIONAL DOCUMENT NOW.
+GENERATE THE 4 PROFESSIONAL SCENARIOS NOW.
