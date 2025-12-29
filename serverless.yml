@@ -65,6 +65,9 @@ package:
     - '!.git/**'
     - '!.venv/**'
     - '!__pycache__/**'
+    - '!frontend/**'
+    - '!.sst/**'
+    - '!.next/**'
 
 functions:
   health:
