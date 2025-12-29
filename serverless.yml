@@ -219,6 +219,54 @@ functions:
       patterns:
         - backend/services/bedrock-orchestrator/**
 
+  exportToPdf:
+    handler: backend/services/bedrock-orchestrator/document_export.export_to_pdf
+    timeout: 60
+    memorySize: 1024
+    events:
+      - httpApi:
+          path: /scenarios/export/pdf
+          method: post
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+
+  exportToPptx:
+    handler: backend/services/bedrock-orchestrator/document_export.export_to_pptx
+    timeout: 60
+    memorySize: 1024
+    events:
+      - httpApi:
+          path: /scenarios/export/pptx
+          method: post
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+
+  exportToWord:
+    handler: backend/services/bedrock-orchestrator/document_export.export_to_word
+    timeout: 60
+    memorySize: 1024
+    events:
+      - httpApi:
+          path: /scenarios/export/word
+          method: post
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+
+  exportToEpub:
+    handler: backend/services/bedrock-orchestrator/document_export.export_to_epub
+    timeout: 60
+    memorySize: 1024
+    events:
+      - httpApi:
+          path: /scenarios/export/epub
+          method: post
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+
 resources:
   Resources:
     DataLakeBucket:

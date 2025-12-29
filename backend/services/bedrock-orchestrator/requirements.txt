@@ -9,3 +9,9 @@ redis>=5.0.0
 tenacity>=8.2.0
 python-dotenv>=1.0.0
 httpx>=0.24.0
+
+# Document export libraries
+reportlab>=4.0.0
+python-pptx>=0.6.23
+python-docx>=1.1.0
+Pillow>=10.0.0

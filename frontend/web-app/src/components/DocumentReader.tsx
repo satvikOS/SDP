@@ -42,9 +42,54 @@ export default function DocumentReader({ scenario, onClose }: DocumentReaderProp
     setZoom(parseInt(e.target.value));
   };
 
-  // Export handlers (UI only for now - Phase 3 will implement actual export)
-  const handleExport = (format: string) => {
-    alert(`Export to ${format} will be implemented in Phase 3`);
+  // Export handlers
+  const handleExport = async (format: string) => {
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const endpoint = `${API_URL}/scenarios/export/${format.toLowerCase()}`;
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ scenario }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Export failed: ${response.statusText}`);
+      }
+
+      // Get the blob from response
+      const blob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+
+      // Set filename based on format
+      const company_name = scenario.company_name.replace(/\s+/g, '_');
+      const date = new Date().toISOString().split('T')[0];
+      const extensions: Record<string, string> = {
+        'PDF': 'pdf',
+        'PPTX': 'pptx',
+        'WORD': 'docx',
+        'EPUB': 'epub'
+      };
+      a.download = `Strategic_Foresight_${company_name}_${date}.${extensions[format]}`;
+
+      // Trigger download
+      document.body.appendChild(a);
+      a.click();
+
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error(`Export to ${format} failed:`, error);
+      alert(`Failed to export to ${format}. ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   };
 
   return (
