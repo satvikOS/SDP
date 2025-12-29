@@ -23,7 +23,7 @@ export function GlassCard({ children, className, hover = false }: GlassCardProps
 
 interface GlassButtonProps {
   children: React.ReactNode;
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void;
   variant?: 'primary' | 'secondary' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
@@ -57,7 +57,7 @@ export function GlassButton({
   return (
     <button
       type={type}
-      onClick={onClick}
+      onClick={(e) => onClick?.(e)}
       disabled={disabled}
       className={cn(
         baseStyles,
