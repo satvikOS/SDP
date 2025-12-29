@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 // Professional UI - OLED black theme with glassmorphism
 const nextConfig = {
-  output: 'export',
   reactStrictMode: true,
   trailingSlash: true,
   images: {
