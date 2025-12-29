@@ -754,3 +754,55 @@ def get_analytics(event, context):
             'error': 'Failed to generate analytics',
             'message': str(e)
         })
+
+
+def delete_scenario(event, context):
+    """
+    Delete a scenario from DynamoDB.
+
+    Path parameters:
+        scenario_id: The ID of the scenario to delete
+
+    Returns:
+        200: Scenario deleted successfully
+        404: Scenario not found
+        500: Internal server error
+    """
+    try:
+        # Get scenario_id from path parameters
+        scenario_id = event.get('pathParameters', {}).get('scenario_id')
+
+        if not scenario_id:
+            logger.error("Missing scenario_id in path parameters")
+            return _response(400, {'error': 'Missing scenario_id'})
+
+        logger.info(f"Attempting to delete scenario: {scenario_id}")
+
+        # Get DynamoDB table
+        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+        table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
+        table = dynamodb.Table(table_name)
+
+        # Check if scenario exists
+        response = table.get_item(Key={'scenario_set_id': scenario_id})
+
+        if 'Item' not in response:
+            logger.warning(f"Scenario not found: {scenario_id}")
+            return _response(404, {'error': 'Scenario not found'})
+
+        # Delete the scenario
+        table.delete_item(Key={'scenario_set_id': scenario_id})
+
+        logger.info(f"Successfully deleted scenario: {scenario_id}")
+
+        return _response(200, {
+            'message': 'Scenario deleted successfully',
+            'scenario_id': scenario_id
+        })
+
+    except Exception as e:
+        logger.error(f"Error deleting scenario: {str(e)}", exc_info=True)
+        return _response(500, {
+            'error': 'Failed to delete scenario',
+            'message': str(e)
+        })

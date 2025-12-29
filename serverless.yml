@@ -267,6 +267,18 @@ functions:
       patterns:
         - backend/services/bedrock-orchestrator/**
 
+  deleteScenario:
+    handler: backend/services/bedrock-orchestrator/lambda_handler.delete_scenario
+    timeout: 10
+    memorySize: 256
+    events:
+      - httpApi:
+          path: /scenarios/{scenario_id}
+          method: delete
+    package:
+      patterns:
+        - backend/services/bedrock-orchestrator/**
+
 resources:
   Resources:
     DataLakeBucket:

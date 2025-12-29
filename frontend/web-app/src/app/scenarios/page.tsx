@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { apiClient } from '@/lib/api-client';
 import { GlassCard, GlassButton } from '@/components/GlassCard';
 import DocumentReader from '@/components/DocumentReader';
-import { Plus, FileText, ArrowLeft, Sparkles, Loader2, BookOpen, TrendingUp, Eye } from 'lucide-react';
+import { Plus, FileText, ArrowLeft, Sparkles, Loader2, BookOpen, TrendingUp, Eye, Trash2 } from 'lucide-react';
 import { formatCurrency, formatDuration, cn } from '@/lib/utils';
 
 interface ScenarioData {
@@ -88,7 +88,11 @@ export default function ScenariosPage() {
         ) : (
           <div className="grid grid-cols-1 gap-4">
             {scenarios.map((scenario) => (
-              <ScenarioCard key={scenario.scenarioId} scenario={scenario} />
+              <ScenarioCard
+                key={scenario.scenarioId}
+                scenario={scenario}
+                onDelete={loadScenarios}
+              />
             ))}
           </div>
         )}
@@ -117,11 +121,12 @@ function EmptyState() {
   );
 }
 
-function ScenarioCard({ scenario }: { scenario: ScenarioData }) {
+function ScenarioCard({ scenario, onDelete }: { scenario: ScenarioData; onDelete?: () => void }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [brLoading, setBrLoading] = useState<{ [key: number]: boolean }>({});
   const [brFormats, setBrFormats] = useState<{ [key: number]: any }>({});
   const [showDocumentReader, setShowDocumentReader] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleBrTransform = async (scenarioData: any, index: number) => {
     try {
@@ -137,6 +142,32 @@ function ScenarioCard({ scenario }: { scenario: ScenarioData }) {
       alert('Failed to transform to boardroom format: ' + (err.message || 'Unknown error'));
     } finally {
       setBrLoading({ ...brLoading, [index]: false });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm(`Are you sure you want to delete this scenario for ${scenario.company_name}? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${API_URL}/scenarios/${scenario.scenarioId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete scenario');
+      }
+
+      // Call onDelete callback to refresh the list
+      onDelete?.();
+    } catch (err: any) {
+      console.error('Delete failed:', err);
+      alert('Failed to delete scenario: ' + (err.message || 'Unknown error'));
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -196,17 +227,40 @@ function ScenarioCard({ scenario }: { scenario: ScenarioData }) {
               <span>•</span>
               <span>Time: {formatDuration(result.generation_time_seconds || 0)}</span>
             </div>
-            <GlassButton
-              variant="primary"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowDocumentReader(true);
-              }}
-            >
-              <Eye className="w-3 h-3 mr-1.5" />
-              View Professional Document
-            </GlassButton>
+            <div className="flex items-center gap-2">
+              <GlassButton
+                variant="primary"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowDocumentReader(true);
+                }}
+              >
+                <Eye className="w-3 h-3 mr-1.5" />
+                View Professional Document
+              </GlassButton>
+              <GlassButton
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete();
+                }}
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3 h-3 mr-1.5" />
+                    Delete
+                  </>
+                )}
+              </GlassButton>
+            </div>
           </div>
         )}
       </div>
