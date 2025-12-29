@@ -8,7 +8,7 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: true
-    layer: false
+    layer: true
     zip: true
     slim: true
     strip: false
