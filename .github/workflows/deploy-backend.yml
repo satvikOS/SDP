@@ -1,0 +1,52 @@
+name: Deploy Backend API
+
+on:
+  push:
+    branches:
+      - claude/ai-foresight-platform-yEVtZ
+    paths:
+      - 'backend/**'
+      - 'serverless.yml'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install backend dependencies
+        working-directory: backend/services/bedrock-orchestrator
+        run: |
+          pip install -r requirements.txt -t .
+
+      - name: Install Serverless Framework
+        run: npm install -g serverless
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy backend with Serverless
+        run: |
+          serverless deploy --stage dev --verbose
+
+      - name: Display API endpoint
+        run: |
+          echo "✅ Backend API deployed successfully!"
+          serverless info --stage dev

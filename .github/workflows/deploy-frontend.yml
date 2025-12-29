@@ -1,24 +1,18 @@
-name: Deploy Frontend to AWS Amplify
+name: Deploy Frontend to CloudFront
 
 on:
   push:
     branches:
-      - main
       - claude/ai-foresight-platform-yEVtZ
     paths:
       - 'frontend/**'
+      - 'sst.config.ts'
       - '.github/workflows/deploy-frontend.yml'
-
   workflow_dispatch:
-
-env:
-  NODE_VERSION: '18'
 
 jobs:
   deploy:
-    name: Deploy Next.js Frontend
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,17 +20,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '18'
 
-      - name: Install dependencies
-        working-directory: frontend/web-app
+      - name: Install root dependencies
         run: npm install
 
-      - name: Build application
+      - name: Install frontend dependencies
         working-directory: frontend/web-app
-        env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.API_ENDPOINT }}
-        run: npm run build
+        run: npm install
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -45,22 +36,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # Deploy to AWS Amplify Hosting (supports Next.js SSR with dynamic routes)
-      # Note: This requires AWS Amplify app to be set up first
-      # For now, the build completes successfully and artifacts can be deployed manually
-      # TODO: Set up AWS Amplify Hosting or use alternative deployment for Next.js SSR
-
-      - name: Package build artifacts
-        working-directory: frontend/web-app
+      - name: Deploy frontend with SST
         run: |
-          echo "✅ Build completed successfully"
-          echo "📦 Build artifacts ready in .next directory"
-          echo "⚠️  Note: Deployment requires AWS Amplify Hosting (not S3 static hosting)"
-          echo "   Dynamic routes require server-side rendering support"
+          npm run sst:deploy
 
-      - name: Deployment summary
+      - name: Display deployment info
         run: |
-          STAGE=${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
-          echo "✅ Frontend build completed for ${STAGE} environment"
-          echo "📁 Build output: frontend/web-app/.next"
-          echo "🔧 Next step: Deploy to AWS Amplify Hosting or Vercel"
+          echo "✅ Frontend deployed successfully to CloudFront!"
+          echo "Check the logs above for your CloudFront URL"
