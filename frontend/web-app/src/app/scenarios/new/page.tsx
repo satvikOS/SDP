@@ -67,6 +67,32 @@ export default function NewScenarioPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validation: Check required fields
+    if (!formData.company_name || formData.company_name.trim() === '') {
+      setError('Please enter a company name');
+      setStage('error');
+      return;
+    }
+
+    if (!formData.industry) {
+      setError('Please select an industry');
+      setStage('error');
+      return;
+    }
+
+    if (!formData.region) {
+      setError('Please select a region');
+      setStage('error');
+      return;
+    }
+
+    if (!formData.horizon_years || formData.horizon_years < 1) {
+      setError('Please select a valid time horizon (at least 1 year)');
+      setStage('error');
+      return;
+    }
+
     setStage('generating');
     setError(null);
     setCurrentStep(0);
