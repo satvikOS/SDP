@@ -95,7 +95,7 @@ aws configure
 # Go to AWS Console
 # Services → Bedrock → Model access
 # Request access to:
-# - Anthropic: Claude Sonnet 4.5, Haiku 3.5
+# - Anthropic: AI Sonnet 4.5, Haiku 3.5
 # - Amazon: Titan Text, Titan Embeddings
 # - Meta: Llama 3.1 (optional)
 
@@ -282,8 +282,8 @@ aws logs tail /aws/lambda/ai-foresight-platform-dev-executeAgent --follow
 
 ```python
 # In config.py or environment
-SIGNAL_SYNTHESIZER_MODEL=us.anthropic.claude-haiku-3-5-v1:0  # $0.25 vs $3
-NARRATIVE_GENERATOR_MODEL=us.anthropic.claude-haiku-3-5-v1:0
+SIGNAL_SYNTHESIZER_MODEL=us.anthropic.ai-haiku-3-5-v1:0  # $0.25 vs $3
+NARRATIVE_GENERATOR_MODEL=us.anthropic.ai-haiku-3-5-v1:0
 ```
 
 ### 2. Enable Aggressive Caching

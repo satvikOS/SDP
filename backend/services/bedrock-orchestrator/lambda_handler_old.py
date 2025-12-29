@@ -322,7 +322,7 @@ def generate_scenario(event, context):
             'created_at': datetime.utcnow().isoformat() + 'Z',
             'generation_time_seconds': 180,  # Mock: 3 minutes
             'ai_generated': True,
-            'generation_method': 'AWS Bedrock AI - Claude 3 Opus (Maximum Detail Mode)',
+            'generation_method': 'AWS Bedrock AI - AI 3 Opus (Maximum Detail Mode)',
             'themes': [
                 'Digital transformation acceleration',
                 'Sustainability imperatives',
@@ -366,7 +366,7 @@ def generate_scenario(event, context):
                 'actionability': 9.3
             },
             'models_used': {
-                'claude-3-opus': 1
+                'ai-3-opus': 1
             },
             'total_cost_usd': 2.85,  # Opus: $15/MTok input, $75/MTok output (~150K input, 8K output tokens)
             'status': 'completed'

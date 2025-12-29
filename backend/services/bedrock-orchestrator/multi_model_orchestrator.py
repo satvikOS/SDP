@@ -18,8 +18,8 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from shared.models import *
 
-# Add path to agent definitions (reuse from Claude orchestrator)
-sys.path.append(os.path.join(os.path.dirname(__file__), '../claude-orchestrator'))
+# Add path to agent definitions (reuse from AI orchestrator)
+sys.path.append(os.path.join(os.path.dirname(__file__), '../ai-orchestrator'))
 from agents import AgentType, get_agent_template
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class CostTracker:
 
     # Approximate costs per 1M tokens (update with actual Bedrock pricing)
     MODEL_COSTS = {
-        # Claude models (per 1M tokens)
+        # AI models (per 1M tokens)
         BedrockModelId.CLAUDE_SONNET_4_5: {"input": 3.00, "output": 15.00},
         BedrockModelId.CLAUDE_OPUS_4: {"input": 15.00, "output": 75.00},
         BedrockModelId.CLAUDE_HAIKU_3_5: {"input": 0.25, "output": 1.25},

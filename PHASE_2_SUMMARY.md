@@ -2,7 +2,7 @@
 
 **Status:** ✅ Complete
 **Committed:** 8037d9c
-**Branch:** claude/ai-foresight-platform-yEVtZ
+**Branch:** ai-platform/ai-foresight-platform-yEVtZ
 **Pushed to GitHub:** Yes (Auto-deploys on push)
 
 ---
@@ -16,13 +16,13 @@ Built end-to-end orchestration system that executes all 7 AI agents sequentially
 **File:** `backend/services/scenario-engine/pipeline.py`
 
 **Workflow:**
-1. **Signal Synthesizer** → Extract themes from signals (Claude Sonnet 4.5)
-2. **Driver Extractor** → Identify drivers and uncertainties (Claude Sonnet 4.5)
-3. **Scenario Constructor** → Build scenario frameworks (Claude Sonnet 4.5)
-4. **Narrative Generator** → Write rich narratives for each scenario (Claude Sonnet 4.5, runs 4×)
-5. **Signpost Designer** → Create monitoring framework (Claude Haiku 3.5, runs 4×)
-6. **Action Planner** → Generate strategic recommendations (Claude Sonnet 4.5)
-7. **Quality Critic** → Validate and improve output (Claude Sonnet 4.5)
+1. **Signal Synthesizer** → Extract themes from signals (AI Sonnet 4.5)
+2. **Driver Extractor** → Identify drivers and uncertainties (AI Sonnet 4.5)
+3. **Scenario Constructor** → Build scenario frameworks (AI Sonnet 4.5)
+4. **Narrative Generator** → Write rich narratives for each scenario (AI Sonnet 4.5, runs 4×)
+5. **Signpost Designer** → Create monitoring framework (AI Haiku 3.5, runs 4×)
+6. **Action Planner** → Generate strategic recommendations (AI Sonnet 4.5)
+7. **Quality Critic** → Validate and improve output (AI Sonnet 4.5)
 
 **Key Features:**
 - ✅ Automatic cost tracking across all agent calls
@@ -107,7 +107,7 @@ Built modern, responsive web interface for scenario generation and visualization
 #### 1. Backend Deployment (`.github/workflows/deploy-lambda.yml`)
 
 **Triggers:**
-- Push to `main` or `claude/ai-foresight-platform-yEVtZ`
+- Push to `main` or `ai-platform/ai-foresight-platform-yEVtZ`
 - Changes in `backend/**`, `serverless.yml`, or workflows
 
 **Pipeline:**
@@ -131,7 +131,7 @@ Built modern, responsive web interface for scenario generation and visualization
 #### 2. Frontend Deployment (`.github/workflows/deploy-frontend.yml`)
 
 **Triggers:**
-- Push to `main` or `claude/ai-foresight-platform-yEVtZ`
+- Push to `main` or `ai-platform/ai-foresight-platform-yEVtZ`
 - Changes in `frontend/**` or workflow file
 
 **Pipeline:**
@@ -215,7 +215,7 @@ Built modern, responsive web interface for scenario generation and visualization
 ### User Journey:
 
 1. **Edit code on iPad Pro** (GitHub web editor, mobile app, or Codespaces)
-2. **Commit and push** to `claude/ai-foresight-platform-yEVtZ` branch
+2. **Commit and push** to `ai-platform/ai-foresight-platform-yEVtZ` branch
 3. **GitHub Actions automatically triggers:**
    - Runs tests
    - Deploys backend to AWS Lambda (dev environment)
@@ -309,8 +309,8 @@ Built modern, responsive web interface for scenario generation and visualization
 ## Cost Analysis
 
 ### Per Scenario Generation:
-- **Claude Sonnet 4.5** (7 calls): ~$0.08-0.20
-- **Claude Haiku 3.5** (4 calls): ~$0.01-0.05
+- **AI Sonnet 4.5** (7 calls): ~$0.08-0.20
+- **AI Haiku 3.5** (4 calls): ~$0.01-0.05
 - **Lambda execution**: ~$0.01
 - **Total per generation:** $0.10-0.30
 
@@ -445,5 +445,5 @@ Phase 2 delivers a **complete, production-ready scenario generation platform** w
 ---
 
 **Committed:** 8037d9c
-**Branch:** claude/ai-foresight-platform-yEVtZ
+**Branch:** ai-platform/ai-foresight-platform-yEVtZ
 **Status:** ✅ Pushed to GitHub (ready for auto-deployment)

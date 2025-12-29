@@ -17,19 +17,19 @@ The AI Foresight Platform now supports **AWS Bedrock** for multi-model AI orches
 │         Multi-Model Orchestrator                    │
 │  ┌──────────────────────────────────────────────┐   │
 │  │  Agent Type → Model Selector                 │   │
-│  │  - Signal Synthesizer → Claude Sonnet 4.5    │   │
-│  │  - Driver Extractor → Claude Sonnet 4.5      │   │
-│  │  - Scenario Constructor → Claude Sonnet 4.5  │   │
-│  │  - Narrative Generator → Claude Sonnet 4.5   │   │
-│  │  - Signpost Designer → Claude Haiku 3.5      │   │
-│  │  - Action Planner → Claude Sonnet 4.5        │   │
-│  │  - Quality Critic → Claude Haiku 3.5         │   │
+│  │  - Signal Synthesizer → AI Sonnet 4.5    │   │
+│  │  - Driver Extractor → AI Sonnet 4.5      │   │
+│  │  - Scenario Constructor → AI Sonnet 4.5  │   │
+│  │  - Narrative Generator → AI Sonnet 4.5   │   │
+│  │  - Signpost Designer → AI Haiku 3.5      │   │
+│  │  - Action Planner → AI Sonnet 4.5        │   │
+│  │  - Quality Critic → AI Haiku 3.5         │   │
 │  └──────────────────────────────────────────────┘   │
 │                                                      │
 │  ┌──────────────────────────────────────────────┐   │
 │  │  Fallback Strategy                           │   │
 │  │  Primary fails → Secondary model             │   │
-│  │  - Claude unavailable → Llama 70B            │   │
+│  │  - AI unavailable → Llama 70B            │   │
 │  │  - Haiku unavailable → Titan Express         │   │
 │  └──────────────────────────────────────────────┘   │
 └────────────────────┬────────────────────────────────┘
@@ -44,7 +44,7 @@ The AI Foresight Platform now supports **AWS Bedrock** for multi-model AI orches
 
 ## Model Selection Strategy
 
-### High-Complexity Tasks (Claude Sonnet 4.5)
+### High-Complexity Tasks (AI Sonnet 4.5)
 
 Best for tasks requiring strong reasoning, creativity, and complex analysis:
 - **Signal Synthesizer** - Pattern recognition across diverse data
@@ -53,9 +53,9 @@ Best for tasks requiring strong reasoning, creativity, and complex analysis:
 - **Narrative Generator** - Creative yet rigorous storytelling
 - **Action Planner** - Strategic decision-making
 
-**Fallback**: Cohere Command R+, Llama 70B, or Claude Opus 4 depending on task
+**Fallback**: Cohere Command R+, Llama 70B, or AI Opus 4 depending on task
 
-### Medium-Complexity Tasks (Claude Haiku 3.5 or Titan)
+### Medium-Complexity Tasks (AI Haiku 3.5 or Titan)
 
 Suitable for analytical tasks with clear structure:
 - **Signpost Designer** - Structured monitoring framework
@@ -67,9 +67,9 @@ Suitable for analytical tasks with clear structure:
 
 | Model | Cost/1M Tokens | Best For |
 |-------|----------------|----------|
-| Claude Opus 4 | $15 / $75 | Extremely complex reasoning (rarely needed) |
-| Claude Sonnet 4.5 | $3 / $15 | Primary workhorse for complex tasks |
-| Claude Haiku 3.5 | $0.25 / $1.25 | Fast, cost-effective for simpler tasks |
+| AI Opus 4 | $15 / $75 | Extremely complex reasoning (rarely needed) |
+| AI Sonnet 4.5 | $3 / $15 | Primary workhorse for complex tasks |
+| AI Haiku 3.5 | $0.25 / $1.25 | Fast, cost-effective for simpler tasks |
 | Llama 3.1 70B | $0.99 / $0.99 | Good fallback for complex reasoning |
 | Cohere Command R+ | $2.50 / $10 | Strong at structured output |
 | Titan Express | $0.20 / $0.60 | Budget-friendly, decent quality |
@@ -85,7 +85,7 @@ Suitable for analytical tasks with clear structure:
 ### 2. Enable Bedrock Models
 
 Go to AWS Bedrock Console and request access to:
-- **Anthropic**: Claude Sonnet 4.5, Haiku 3.5, Opus 4
+- **Anthropic**: AI Sonnet 4.5, Haiku 3.5, Opus 4
 - **Amazon**: Titan Text Express, Titan Embeddings
 - **Meta**: Llama 3.1 70B, 8B
 - **Cohere**: Command R+, Command R
@@ -201,8 +201,8 @@ print(cost_report)
 # {
 #   "total_cost_usd": 12.5432,
 #   "by_model": {
-#     "us.anthropic.claude-sonnet-4-5-v1:0": 10.20,
-#     "us.anthropic.claude-haiku-3-5-v1:0": 2.34
+#     "us.anthropic.ai-sonnet-4-5-v1:0": 10.20,
+#     "us.anthropic.ai-haiku-3-5-v1:0": 2.34
 #   },
 #   "by_agent": {
 #     "signal_synthesizer": 3.50,
@@ -234,7 +234,7 @@ class AgentModelMapping(BaseSettings):
 When primary model fails (throttling, unavailable, error):
 
 ```
-1. Attempt: Claude Sonnet 4.5
+1. Attempt: AI Sonnet 4.5
    ↓ (ThrottlingException)
 2. Fallback: Llama 70B
    ↓ (Success)
@@ -400,7 +400,7 @@ eksctl create iamserviceaccount \
 7. **Monitor Latency** - Track P95/P99 latencies
 8. **Log Model Usage** - Audit which models are used when
 
-## Migration from Direct Claude API
+## Migration from Direct AI API
 
 If migrating from direct Anthropic API:
 
@@ -410,7 +410,7 @@ If migrating from direct Anthropic API:
 4. **Better Resilience** - Fallback to other models
 5. **Cost Visibility** - Built-in cost tracking
 
-Simply update environment to use Bedrock orchestrator instead of Claude orchestrator.
+Simply update environment to use Bedrock orchestrator instead of AI orchestrator.
 
 ---
 

@@ -53,7 +53,7 @@ npm run build
 npm start
 
 # Or use GitHub Actions (auto-deploy on push)
-# Push to main or claude/ai-foresight-platform-yEVtZ branch
+# Push to main or ai-platform/ai-foresight-platform-yEVtZ branch
 ```
 
 ## Environment Variables
@@ -105,7 +105,7 @@ src/
 
 Automatically deploys to AWS S3 + CloudFront when you push to GitHub:
 
-1. Push changes to `main` or `claude/ai-foresight-platform-yEVtZ`
+1. Push changes to `main` or `ai-platform/ai-foresight-platform-yEVtZ`
 2. GitHub Actions builds Next.js app
 3. Deploys to S3 bucket
 4. Invalidates CloudFront cache (production only)

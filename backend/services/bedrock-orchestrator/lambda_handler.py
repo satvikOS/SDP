@@ -58,7 +58,7 @@ def health(event, context):
         return _response(200, {
             'status': 'healthy',
             'timestamp': datetime.utcnow().isoformat(),
-            'model': 'claude-opus-4-5',
+            'model': 'ai-opus-4-5',
             'bedrock_available': True
         })
     except Exception as e:
@@ -99,7 +99,7 @@ def generate_scenario(event, context):
 
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
         # Use cross-region inference profile for Opus 4.5 (required - only supports INFERENCE_PROFILE)
-        model_id = 'us.anthropic.claude-opus-4-5-20251101-v1:0'
+        model_id = 'us.anthropic.ai-opus-4-5-20251101-v1:0'
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
@@ -185,7 +185,7 @@ REMEMBER: 2000-5000 words per narrative. Board-level intelligence worth $100K+ p
             'horizon_years': horizon_years,
             'created_at': datetime.utcnow().isoformat() + 'Z',
             'ai_generated': True,
-            'generation_method': 'Claude Opus 4.5',
+            'generation_method': 'AI Opus 4.5',
             'scenarios': scenarios,
             'status': 'completed'
         }
@@ -203,7 +203,7 @@ REMEMBER: 2000-5000 words per narrative. Board-level intelligence worth $100K+ p
             'error': 'Bedrock API Error',
             'error_type': error_type,
             'message': error_message,
-            'fix': 'Go to AWS Bedrock Console → Model access → Enable Claude Opus 4.5' if 'ResourceNotFoundException' in error_type or 'AccessDeniedException' in error_type else 'Check CloudWatch logs for details'
+            'fix': 'Go to AWS Bedrock Console → Model access → Enable Anthropic Opus 4.5' if 'ResourceNotFoundException' in error_type or 'AccessDeniedException' in error_type else 'Check CloudWatch logs for details'
         })
 
 
@@ -216,7 +216,7 @@ def list_available_models(event, context):
         logger.info("Fetching available foundation models...")
         models_response = bedrock.list_foundation_models()
 
-        # Filter for Claude Opus 4 models
+        # Filter for AI Opus 4 models
         opus_models = []
         all_anthropic = []
 
@@ -269,9 +269,9 @@ def test_bedrock(event, context):
             'messages': [{'role': 'user', 'content': 'Say hello'}]
         }
 
-        logger.info("Testing Bedrock with Claude Opus 4.5...")
+        logger.info("Testing Bedrock with AI Opus 4.5...")
         response = bedrock.invoke_model(
-            modelId='us.anthropic.claude-opus-4-5-20251101-v1:0',  # Cross-region inference profile
+            modelId='us.anthropic.ai-opus-4-5-20251101-v1:0',  # Cross-region inference profile
             contentType='application/json',
             accept='application/json',
             body=json.dumps(test_request)
@@ -288,8 +288,8 @@ def test_bedrock(event, context):
 
         return _response(200, {
             'status': 'SUCCESS',
-            'message': 'Claude Opus 4.5 is accessible',
-            'model': 'anthropic.claude-opus-4-5-20251101-v1:0',
+            'message': 'AI Opus 4.5 is accessible',
+            'model': 'anthropic.ai-opus-4-5-20251101-v1:0',
             'response_preview': preview_text
         })
 
@@ -381,14 +381,14 @@ def generate_scenario_async_worker(event, context):
 
         logger.info(f"[Job {job_id}] Generating for {company_name}")
 
-        # Configure boto3 with extended timeout for long-running Claude Opus 4.5 requests
+        # Configure boto3 with extended timeout for long-running AI Opus 4.5 requests
         boto_config = Config(
             read_timeout=600,  # 10 minutes for comprehensive scenario generation
             connect_timeout=10,
             retries={'max_attempts': 2}
         )
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1', config=boto_config)
-        model_id = 'us.anthropic.claude-opus-4-5-20251101-v1:0'
+        model_id = 'us.anthropic.ai-opus-4-5-20251101-v1:0'
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
@@ -481,7 +481,7 @@ def generate_scenario_async_worker(event, context):
         # Calculate generation time
         generation_time = (datetime.utcnow() - start_time).total_seconds()
 
-        # Estimate cost (rough approximation for Claude Opus 4.5)
+        # Estimate cost (rough approximation for AI Opus 4.5)
         # Input: ~2000 tokens (longer prompt), Output: ~15000 tokens (4 comprehensive scenarios)
         input_tokens = 2000
         output_tokens = 15000  # 4 scenarios × ~3750 tokens each
@@ -503,7 +503,7 @@ def generate_scenario_async_worker(event, context):
             'created_at': start_time.isoformat() + 'Z',
             'generation_time_seconds': generation_time,
             'ai_generated': True,
-            'generation_method': 'Claude Opus 4.5 - 2x2 Matrix Scenario Planning',
+            'generation_method': 'AI Opus 4.5 - 2x2 Matrix Scenario Planning',
 
             # 2x2 Matrix Framework
             'matrix_framework': matrix_framework,
@@ -516,7 +516,7 @@ def generate_scenario_async_worker(event, context):
             'uncertainties': [matrix_framework.get('axis_x', {}), matrix_framework.get('axis_y', {})],
             'action_plan': {},
             'quality_report': {'scenario_methodology': '2x2 matrix with outside-in perspective'},
-            'models_used': {'claude-opus-4-5': 1},
+            'models_used': {'ai-opus-4-5': 1},
             'total_cost_usd': estimated_cost
         }
 

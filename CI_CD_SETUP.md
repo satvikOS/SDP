@@ -107,7 +107,7 @@ Watch deployment at: `https://github.com/YOUR_USERNAME/SDP/actions`
 
 | Branch | Deploys To | Auto-Deploy | Use For |
 |--------|------------|-------------|---------|
-| `claude/ai-foresight-platform-yEVtZ` | dev | ✅ Yes | Development |
+| `ai-platform/ai-foresight-platform-yEVtZ` | dev | ✅ Yes | Development |
 | `main` | prod | ✅ Yes | Production |
 | Other branches | - | ❌ No | Feature work |
 
@@ -291,7 +291,7 @@ git push
 
 ```yaml
 # Already configured:
-- dev environment (auto-deploy from claude/ai-foresight-platform-yEVtZ)
+- dev environment (auto-deploy from ai-platform/ai-foresight-platform-yEVtZ)
 - prod environment (auto-deploy from main)
 ```
 

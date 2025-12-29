@@ -95,9 +95,9 @@ This guide will help you:
 ### 3.3 Enable Required Models
 Check these boxes:
 - ✅ **Anthropic**
-  - ✅ Claude 3.5 Sonnet v2
-  - ✅ Claude 3.5 Haiku
-  - ✅ Claude 3 Sonnet
+  - ✅ AI 3.5 Sonnet v2
+  - ✅ AI 3.5 Haiku
+  - ✅ AI 3 Sonnet
 - ✅ **Meta** (optional, for future use)
   - ✅ Llama 3.1 models
 - ✅ **Amazon**
@@ -299,7 +299,7 @@ Since you just added GitHub Secrets, let's trigger deployment:
 
 #### 7.3 Run Workflow
 - Click **"Run workflow"** button (right side)
-- Branch: **claude/ai-foresight-platform-yEVtZ**
+- Branch: **ai-platform/ai-foresight-platform-yEVtZ**
 - Click **"Run workflow"** (green button)
 
 #### 7.4 Watch Deployment
@@ -495,7 +495,7 @@ You'll see these steps:
 **Solution:**
 1. AWS Console → Bedrock → Model access
 2. Click "Modify model access"
-3. Enable Claude 3.5 Sonnet and Haiku
+3. Enable AI 3.5 Sonnet and Haiku
 4. Wait for "Access granted" status
 
 ### ❌ "Could not find credentials" Error

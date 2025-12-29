@@ -17,10 +17,10 @@ class ModelProvider(str, Enum):
 
 class BedrockModelId(str, Enum):
     """AWS Bedrock model identifiers."""
-    # Anthropic Claude models
-    CLAUDE_SONNET_4_5 = "us.anthropic.claude-sonnet-4-5-v1:0"
-    CLAUDE_OPUS_4 = "us.anthropic.claude-opus-4-v1:0"
-    CLAUDE_HAIKU_3_5 = "us.anthropic.claude-haiku-3-5-v1:0"
+    # Anthropic AI models
+    CLAUDE_SONNET_4_5 = "us.anthropic.ai-sonnet-4-5-v1:0"
+    CLAUDE_OPUS_4 = "us.anthropic.ai-opus-4-v1:0"
+    CLAUDE_HAIKU_3_5 = "us.anthropic.ai-haiku-3-5-v1:0"
 
     # Amazon Titan models
     TITAN_TEXT_EXPRESS = "amazon.titan-text-express-v1"

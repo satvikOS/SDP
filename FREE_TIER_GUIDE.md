@@ -82,7 +82,7 @@ curl -X POST http://localhost:8000/execute \
 
 ### Bedrock Costs (Only Cost)
 
-Using **Claude Haiku** (cheapest model):
+Using **AI Haiku** (cheapest model):
 - Input: $0.25 per 1M tokens
 - Output: $1.25 per 1M tokens
 
@@ -440,7 +440,7 @@ docker-compose up -d
 1. **Use Haiku for development** ($0.25 vs $3 per 1M tokens)
    ```bash
    # In .env
-   SIGNAL_SYNTHESIZER_MODEL=us.anthropic.claude-haiku-3-5-v1:0
+   SIGNAL_SYNTHESIZER_MODEL=us.anthropic.ai-haiku-3-5-v1:0
    ```
 
 2. **Enable aggressive caching**

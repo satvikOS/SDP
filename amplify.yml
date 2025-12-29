@@ -1,17 +1,19 @@
 version: 1
-frontend:
-  phases:
-    preBuild:
-      commands:
-        - cd frontend/web-app
-        - npm install
-    build:
-      commands:
-        - npm run build
-  artifacts:
-    baseDirectory: frontend/web-app/.next
-    files:
-      - '**/*'
-  cache:
-    paths:
-      - frontend/web-app/node_modules/**/*
+applications:
+  - appRoot: frontend/web-app
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm ci --cache .npm --prefer-offline
+        build:
+          commands:
+            - npm run build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - .next/cache/**/*
+          - node_modules/**/*

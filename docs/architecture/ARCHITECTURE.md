@@ -10,7 +10,7 @@ This document describes the technical architecture of the AI-Driven Strategic Fo
 
 1. **Microservices Architecture** - Loosely coupled services for scalability
 2. **Event-Driven** - Async communication via Kafka for real-time processing
-3. **AI-First** - Claude LLM as the primary intelligence layer
+3. **AI-First** - AI LLM as the primary intelligence layer
 4. **API-Centric** - RESTful and GraphQL APIs for integration
 5. **Cloud-Native** - Kubernetes-based, multi-cloud portable
 6. **Security by Design** - Zero-trust, encryption, audit logging
@@ -51,7 +51,7 @@ This document describes the technical architecture of the AI-Driven Strategic Fo
 │  └─────────────┘  └──────────────┘  └─────────────┘     │
 │                                                           │
 │  ┌─────────────┐  ┌──────────────┐  ┌─────────────┐     │
-│  │ Claude      │  │ Scenario     │  │ Monitoring  │     │
+│  │ AI      │  │ Scenario     │  │ Monitoring  │     │
 │  │ Orchestrator│  │ Engine       │  │ Service     │     │
 │  └─────────────┘  └──────────────┘  └─────────────┘     │
 │                                                           │
@@ -103,9 +103,9 @@ This document describes the technical architecture of the AI-Driven Strategic Fo
 
 ## Core Service Details
 
-### Claude Orchestrator Service
+### AI Orchestrator Service
 
-**Purpose**: Central AI orchestration service managing all Claude interactions
+**Purpose**: Central AI orchestration service managing all AI interactions
 
 **Key Components**:
 - Agent Registry (7 specialized agents)
@@ -184,7 +184,7 @@ GET /metrics - Service metrics
   - Contradictory evidence inclusion
 
 **RAG Context Builder**:
-- Assembles evidence bundles for Claude agents
+- Assembles evidence bundles for AI agents
 - Formats context according to agent requirements
 - Manages token budgets
 - Citation tracking
@@ -247,43 +247,43 @@ External Data Sources
         │       Retrieve Evidence
         │             │
         │             ▼
-        ├─────▶ Claude Agent 1: Signal Synthesizer
+        ├─────▶ AI Agent 1: Signal Synthesizer
         │             │
         │             ▼
         │       Extract Themes
         │             │
         │             ▼
-        ├─────▶ Claude Agent 2: Driver Extractor
+        ├─────▶ AI Agent 2: Driver Extractor
         │             │
         │             ▼
         │       Identify Drivers & Uncertainties
         │             │
         │             ▼
-        ├─────▶ Claude Agent 3: Scenario Constructor
+        ├─────▶ AI Agent 3: Scenario Constructor
         │             │
         │             ▼
         │       Create Scenario Logics
         │             │
         │             ▼
-        ├─────▶ Claude Agent 4: Narrative Generator (per scenario)
+        ├─────▶ AI Agent 4: Narrative Generator (per scenario)
         │             │
         │             ▼
         │       Rich Narratives
         │             │
         │             ▼
-        ├─────▶ Claude Agent 5: Signpost Designer
+        ├─────▶ AI Agent 5: Signpost Designer
         │             │
         │             ▼
         │       Monitoring Signposts
         │             │
         │             ▼
-        ├─────▶ Claude Agent 6: Action Planner
+        ├─────▶ AI Agent 6: Action Planner
         │             │
         │             ▼
         │       Action Recommendations
         │             │
         │             ▼
-        └─────▶ Claude Agent 7: Quality Critic
+        └─────▶ AI Agent 7: Quality Critic
                       │
                       ▼
               Validated Scenario Set
@@ -340,7 +340,7 @@ Data Sources (streaming)
 
 - **Encryption at Rest**: AES-256
 - **Encryption in Transit**: TLS 1.3
-- **PII Detection**: Automated scanning before Claude calls
+- **PII Detection**: Automated scanning before AI calls
 - **Data Masking**: Sensitive fields masked in logs
 - **Tenant Isolation**: Logical separation in multi-tenant DB
 
@@ -367,7 +367,7 @@ Data Sources (streaming)
 
 **Cache Keys**:
 - Evidence retrieval: Hash of query + filters
-- Claude outputs: Hash of agent type + context
+- AI outputs: Hash of agent type + context
 - Scenario sets: scenario_set_id + version
 
 ### Database Optimization
@@ -381,7 +381,7 @@ Data Sources (streaming)
 | Metric | Target |
 |--------|--------|
 | API P95 Latency | < 200ms |
-| Claude Agent Latency | < 10s |
+| AI Agent Latency | < 10s |
 | Ingestion Throughput | 10k events/sec |
 | Scenario Generation | < 5 min end-to-end |
 | Concurrent Users | 1,000+ |
@@ -399,7 +399,7 @@ Data Sources (streaming)
 ### Metrics (Prometheus)
 
 - Request rates, error rates, latencies
-- Claude token usage, costs
+- AI token usage, costs
 - Cache hit rates
 - Database connection pools
 - Queue depths

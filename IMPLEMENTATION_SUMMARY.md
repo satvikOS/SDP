@@ -2,7 +2,7 @@
 
 ## 🎉 Project Status: Core Foundation Complete
 
-All foundational components for the AI-driven strategic foresight platform have been successfully implemented and committed to branch `claude/ai-foresight-platform-yEVtZ`.
+All foundational components for the AI-driven strategic foresight platform have been successfully implemented and committed to branch `ai-platform/ai-foresight-platform-yEVtZ`.
 
 ## ✅ What Was Built
 
@@ -25,8 +25,8 @@ The platform now supports intelligent AI orchestration across multiple models:
 - ✅ Configurable model mapping for optimization
 
 #### Cost Optimization
-- Uses Claude Sonnet 4.5 for complex reasoning tasks
-- Uses Claude Haiku 3.5 for simple analytical tasks
+- Uses AI Sonnet 4.5 for complex reasoning tasks
+- Uses AI Haiku 3.5 for simple analytical tasks
 - Automatic fallback to Llama/Cohere for redundancy
 - Estimated cost: ~$0.48 per scenario generation
 - Monthly cost (100 scenarios): ~$48
@@ -100,7 +100,7 @@ Enterprise-grade security features:
 - **7 AI agents** with specialized prompts
 - **8 data models** with full schemas
 - **5+ data connectors** (extensible framework)
-- **2 orchestration options** (Claude direct + Bedrock multi-model)
+- **2 orchestration options** (AI direct + Bedrock multi-model)
 - **100% Python type hints** with Pydantic validation
 
 ## 🗂️ Repository Structure
@@ -116,7 +116,7 @@ SDP/
 │   │   │   ├── bedrock_client.py                # AWS Bedrock wrapper
 │   │   │   ├── multi_model_orchestrator.py      # Main orchestrator
 │   │   │   └── requirements.txt
-│   │   ├── claude-orchestrator/                 # Direct Anthropic API
+│   │   ├── ai-orchestrator/                 # Direct Anthropic API
 │   │   │   ├── agents.py                        # 7 agent definitions
 │   │   │   ├── orchestrator.py                  # Core logic
 │   │   │   ├── api.py                           # FastAPI service
@@ -157,7 +157,7 @@ python multi_model_orchestrator.py
 ### Option 2: Direct Anthropic API
 
 ```bash
-cd backend/services/claude-orchestrator
+cd backend/services/ai-orchestrator
 pip install -r requirements.txt
 cp .env.example .env
 # Add ANTHROPIC_API_KEY to .env
@@ -230,7 +230,7 @@ print(f"Output: {response['output']}")
 
 ## 📝 Git Information
 
-- **Branch**: `claude/ai-foresight-platform-yEVtZ`
+- **Branch**: `ai-platform/ai-foresight-platform-yEVtZ`
 - **Commit**: Implement AI-Driven Strategic Foresight Platform with AWS Bedrock Multi-Model Orchestration
 - **Status**: ✅ Committed and pushed to origin
 

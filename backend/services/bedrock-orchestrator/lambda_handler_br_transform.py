@@ -63,7 +63,7 @@ def transform_to_boardroom(event, context):
             retries={'max_attempts': 2}
         )
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1', config=boto_config)
-        model_id = 'us.anthropic.claude-opus-4-5-20251101-v1:0'
+        model_id = 'us.anthropic.ai-opus-4-5-20251101-v1:0'
 
         # Transformation prompt
         prompt = f"""You are transforming an ACADEMIC scenario analysis into BOARDROOM format for Fortune 500 executives.

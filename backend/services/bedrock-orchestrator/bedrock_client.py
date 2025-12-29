@@ -13,11 +13,11 @@ class BedrockScenarioGenerator:
     def __init__(self):
         self.bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
 
-        # ULTIMATE ENTERPRISE MODE: Claude Opus 4.5 - Most powerful model available
+        # ULTIMATE ENTERPRISE MODE: AI Opus 4.5 - Most powerful model available
         # - Absolute maximum reasoning depth and strategic foresight capability
         # - Upwards of 1000s of words with no artificial limits
         # - Client demands exhaustive detail regardless of cost or latency
-        self.model_id = 'anthropic.claude-opus-4-5-20251101-v1:0'  # Opus 4.5 in Bedrock
+        self.model_id = 'anthropic.ai-opus-4-5-20251101-v1:0'  # Opus 4.5 in Bedrock
 
         # NO LIMIT on output - client wants 1000s of words
         self.max_tokens = 200000  # Maximum possible - no artificial constraints
@@ -31,7 +31,7 @@ class BedrockScenarioGenerator:
         horizon_years: int,
         strategic_context: str = ''
     ) -> List[Dict[str, Any]]:
-        """Generate 4 scenarios using Claude via Bedrock."""
+        """Generate 4 scenarios using AI via Bedrock."""
 
         prompt = self._build_scenario_prompt(
             company_name, industry, region, horizon_years, strategic_context

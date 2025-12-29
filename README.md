@@ -1,12 +1,12 @@
 # AI-Driven Strategic Foresight Platform
 
-A fully AI-powered scenario planning platform using Anthropic Claude for automated strategic foresight, horizon scanning, and decision support across multiple industries.
+A fully AI-powered scenario planning platform using Anthropic AI for automated strategic foresight, horizon scanning, and decision support across multiple industries.
 
 ## 🚀 Deployment Status
 
 **Backend:** ✅ Live at `https://33kvywy84h.execute-api.us-east-1.amazonaws.com`
 **Frontend:** 🚀 Deploying with API connection fix...
-**Branch:** `claude/ai-foresight-platform-yEVtZ`
+**Branch:** `ai-platform/ai-foresight-platform-yEVtZ`
 **Last Updated:** 2025-12-26
 
 ## 🎯 Overview
@@ -22,8 +22,8 @@ This platform automates the strategic foresight process by:
 ### 🚀 Key Innovation: AWS Bedrock Multi-Model AI
 
 Unlike traditional single-model systems, this platform uses **AWS Bedrock** to orchestrate multiple AI models:
-- **Claude Sonnet 4.5** for complex reasoning and scenario construction
-- **Claude Haiku 3.5** for fast, cost-effective analytical tasks
+- **AI Sonnet 4.5** for complex reasoning and scenario construction
+- **AI Haiku 3.5** for fast, cost-effective analytical tasks
 - **Llama 70B** as intelligent fallback for complex tasks
 - **Amazon Titan** for embeddings and simple text generation
 - **Cohere** and **AI21** for specialized capabilities
@@ -49,7 +49,7 @@ Unlike traditional single-model systems, this platform uses **AWS Bedrock** to o
      ┌────────┴────┐ ┌──────┴──────┐ ┌──┴────────┐
      │             │ │             │ │           │
 ┌────▼──────┐ ┌───▼─────┐ ┌───▼────┐ ┌▼──────────┐
-│ Ingestion │ │ Signal  │ │ Trend  │ │  Claude   │
+│ Ingestion │ │ Signal  │ │ Trend  │ │  AI   │
 │  Service  │ │ Service │ │Service │ │Orchestrator│
 └─────┬─────┘ └────┬────┘ └───┬────┘ └─────┬─────┘
       │            │            │            │
@@ -66,7 +66,7 @@ Unlike traditional single-model systems, this platform uses **AWS Bedrock** to o
 3. **Signal Service** - Detects patterns and weak signals
 4. **Trend Service** - Time-series forecasting and trend analysis
 5. **Vector Service** - Embeddings and RAG retrieval
-6. **Claude Orchestrator** - AI agent orchestration with Anthropic Claude
+6. **AI Orchestrator** - AI agent orchestration with Anthropic Claude
 7. **Scenario Engine** - Scenario generation and management
 8. **Monitoring Service** - Signpost tracking and alerts
 9. **Action Planner** - Strategic recommendations
@@ -74,7 +74,7 @@ Unlike traditional single-model systems, this platform uses **AWS Bedrock** to o
 
 ## 🤖 AI Agent Architecture
 
-The platform uses **7 specialized Claude agents**, each with tailored prompts and output schemas:
+The platform uses **7 specialized AI agents**, each with tailored prompts and output schemas:
 
 ### Agent Types
 
@@ -164,7 +164,7 @@ ENABLE_MODEL_FALLBACK=true
 ```
 
 **Enable models in AWS Bedrock Console**:
-- Anthropic: Claude Sonnet 4.5, Haiku 3.5
+- Anthropic: AI Sonnet 4.5, Haiku 3.5
 - Amazon: Titan Text, Titan Embeddings
 - Meta: Llama 3.1 70B
 - Others: Cohere, AI21
@@ -174,7 +174,7 @@ See [BEDROCK_DEPLOYMENT.md](docs/guides/BEDROCK_DEPLOYMENT.md) for detailed setu
 #### Alternative: Direct Anthropic API
 
 ```bash
-cd backend/services/claude-orchestrator
+cd backend/services/ai-orchestrator
 pip install -r requirements.txt
 cp .env.example .env
 # Add ANTHROPIC_API_KEY=your_key
@@ -187,8 +187,8 @@ cp .env.example .env
 cd backend/services/bedrock-orchestrator
 python multi_model_orchestrator.py
 
-# OR Claude direct
-cd backend/services/claude-orchestrator
+# OR AI direct
+cd backend/services/ai-orchestrator
 python api.py
 ```
 
@@ -240,7 +240,7 @@ asyncio.run(test_agent())
 SDP/
 ├── backend/
 │   ├── services/
-│   │   ├── claude-orchestrator/      # Claude AI orchestration
+│   │   ├── ai-orchestrator/      # AI AI orchestration
 │   │   │   ├── agents.py             # Agent definitions & prompts
 │   │   │   ├── orchestrator.py       # Core orchestrator
 │   │   │   ├── api.py                # FastAPI service
@@ -268,7 +268,7 @@ SDP/
 │   ├── terraform/                    # IaC
 │   └── docker/                       # Dockerfiles
 ├── ai/
-│   ├── prompts/                      # Claude prompt templates
+│   ├── prompts/                      # AI prompt templates
 │   ├── agents/                       # Agent configurations
 │   └── evaluation/                   # Model evaluation
 └── docs/
@@ -279,13 +279,13 @@ SDP/
 
 ## 🔧 Configuration
 
-### Claude Orchestrator Settings
+### AI Orchestrator Settings
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `anthropic_api_key` | - | Anthropic API key (required) |
-| `anthropic_default_model` | claude-sonnet-4-5-20250929 | Primary model |
-| `anthropic_fast_model` | claude-haiku-3-5-20241022 | Fast model for simple tasks |
+| `anthropic_default_model` | ai-sonnet-4-5-20250929 | Primary model |
+| `anthropic_fast_model` | ai-haiku-3-5-20241022 | Fast model for simple tasks |
 | `anthropic_max_tokens` | 4096 | Max output tokens |
 | `cache_enabled` | true | Enable semantic caching |
 | `cache_ttl_seconds` | 3600 | Cache TTL |
@@ -339,7 +339,7 @@ Structured JSON logging with:
 ### Unit Tests
 
 ```bash
-pytest backend/services/claude-orchestrator/tests/
+pytest backend/services/ai-orchestrator/tests/
 ```
 
 ### Integration Tests
@@ -466,7 +466,7 @@ Track consumer behavior shifts, sustainability trends, economic cycles, and mark
 
 ### Phase 1: MVP (Current)
 - [x] Core data models
-- [x] Claude orchestrator with 7 agents
+- [x] AI orchestrator with 7 agents
 - [x] Data ingestion connectors
 - [x] RAG context builder
 - [ ] Basic frontend UI
