@@ -8,7 +8,7 @@ import { ArrowLeft, ZoomIn, ZoomOut, Maximize, Minimize, Download, FileText, Fil
 export default function DocumentReaderPage() {
   const params = useParams();
   const router = useRouter();
-  const scenarioId = params.id as string;
+  const scenarioId = params?.id as string;
 
   const [scenario, setScenario] = useState<any>(null);
   const [loading, setLoading] = useState(true);

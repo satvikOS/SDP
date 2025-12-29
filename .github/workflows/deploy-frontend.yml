@@ -45,19 +45,22 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Deploy to S3
+      # Deploy to AWS Amplify Hosting (supports Next.js SSR with dynamic routes)
+      # Note: This requires AWS Amplify app to be set up first
+      # For now, the build completes successfully and artifacts can be deployed manually
+      # TODO: Set up AWS Amplify Hosting or use alternative deployment for Next.js SSR
+
+      - name: Package build artifacts
         working-directory: frontend/web-app
         run: |
-          aws s3 sync out/ s3://ai-foresight-frontend-${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}/ --delete
-
-      - name: Invalidate CloudFront cache
-        if: github.ref == 'refs/heads/main'
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
+          echo "✅ Build completed successfully"
+          echo "📦 Build artifacts ready in .next directory"
+          echo "⚠️  Note: Deployment requires AWS Amplify Hosting (not S3 static hosting)"
+          echo "   Dynamic routes require server-side rendering support"
 
       - name: Deployment summary
         run: |
           STAGE=${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
-          echo "✅ Frontend deployed to S3: ai-foresight-frontend-${STAGE}"
+          echo "✅ Frontend build completed for ${STAGE} environment"
+          echo "📁 Build output: frontend/web-app/.next"
+          echo "🔧 Next step: Deploy to AWS Amplify Hosting or Vercel"
