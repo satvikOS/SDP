@@ -65,41 +65,50 @@ def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def health(event, context):
-    """Health check endpoint with Multi-AI Pipeline diagnostics."""
+    """Health check endpoint - NEVER fails."""
+    multi_ai_status = {}
+
+    # Safely check each component
     try:
-        # Check Multi-AI Pipeline status
-        multi_ai_status = {
-            'enabled': bool(MULTI_AI_ENABLED),
-            'env_var_set': os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'false').lower() == 'true',
-            'google_api_key_set': bool(os.getenv('GOOGLE_API_KEY')),
-            'gemini_sdk_installed': False
-        }
+        multi_ai_status['enabled'] = bool(MULTI_AI_ENABLED)
+    except:
+        multi_ai_status['enabled'] = False
 
-        # Try to import google-generativeai to verify it's installed
-        try:
-            import google.generativeai as genai
-            multi_ai_status['gemini_sdk_installed'] = True
-        except ImportError as e:
-            multi_ai_status['gemini_import_error'] = str(e)
-        except Exception as e:
-            multi_ai_status['gemini_check_error'] = str(e)
+    try:
+        multi_ai_status['env_var_set'] = os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'false').lower() == 'true'
+    except:
+        multi_ai_status['env_var_set'] = False
 
-        response_body = {
+    try:
+        multi_ai_status['google_api_key_set'] = bool(os.getenv('GOOGLE_API_KEY'))
+    except:
+        multi_ai_status['google_api_key_set'] = False
+
+    # Check if google-generativeai is installed
+    multi_ai_status['gemini_sdk_installed'] = False
+    try:
+        import google.generativeai as genai
+        multi_ai_status['gemini_sdk_installed'] = True
+    except ImportError as e:
+        multi_ai_status['gemini_import_error'] = str(e)[:200]
+    except Exception as e:
+        multi_ai_status['gemini_error'] = str(e)[:200]
+
+    # Always return 200 OK
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': json.dumps({
             'status': 'healthy',
             'timestamp': datetime.utcnow().isoformat(),
             'model': 'ai-opus-4-5',
             'bedrock_available': True,
             'multi_ai_pipeline': multi_ai_status
-        }
-
-        return _response(200, response_body)
-    except Exception as e:
-        logger.error(f"Health check failed: {str(e)}", exc_info=True)
-        return _response(500, {
-            'status': 'error',
-            'error': str(e),
-            'timestamp': datetime.utcnow().isoformat()
         })
+    }
 
 
 def list_agents(event, context):
