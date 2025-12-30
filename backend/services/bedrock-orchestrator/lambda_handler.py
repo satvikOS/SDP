@@ -65,34 +65,41 @@ def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def health(event, context):
+    """Health check endpoint with Multi-AI Pipeline diagnostics."""
     try:
         # Check Multi-AI Pipeline status
         multi_ai_status = {
-            'enabled': MULTI_AI_ENABLED,
+            'enabled': bool(MULTI_AI_ENABLED),
             'env_var_set': os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'false').lower() == 'true',
-            'google_api_key_set': bool(os.getenv('GOOGLE_API_KEY'))
+            'google_api_key_set': bool(os.getenv('GOOGLE_API_KEY')),
+            'gemini_sdk_installed': False
         }
 
         # Try to import google-generativeai to verify it's installed
-        gemini_available = False
         try:
             import google.generativeai as genai
-            gemini_available = True
-        except ImportError:
-            gemini_available = False
+            multi_ai_status['gemini_sdk_installed'] = True
+        except ImportError as e:
+            multi_ai_status['gemini_import_error'] = str(e)
+        except Exception as e:
+            multi_ai_status['gemini_check_error'] = str(e)
 
-        multi_ai_status['gemini_sdk_installed'] = gemini_available
-
-        return _response(200, {
+        response_body = {
             'status': 'healthy',
             'timestamp': datetime.utcnow().isoformat(),
             'model': 'ai-opus-4-5',
             'bedrock_available': True,
             'multi_ai_pipeline': multi_ai_status
-        })
+        }
+
+        return _response(200, response_body)
     except Exception as e:
-        logger.error(f"Health error: {e}")
-        return _response(500, {'error': str(e)})
+        logger.error(f"Health check failed: {str(e)}", exc_info=True)
+        return _response(500, {
+            'status': 'error',
+            'error': str(e),
+            'timestamp': datetime.utcnow().isoformat()
+        })
 
 
 def list_agents(event, context):
