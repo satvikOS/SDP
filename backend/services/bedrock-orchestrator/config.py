@@ -85,6 +85,16 @@ class Settings(BaseSettings):
     # Model Configuration
     model_mapping: AgentModelMapping = AgentModelMapping()
 
+    # Multi-Model Pipeline Configuration (All via AWS Bedrock)
+    enable_multi_model_pipeline: bool = True
+    multi_model_review_enabled: bool = True
+
+    # Model IDs for multi-model pipeline (all Bedrock models)
+    initial_draft_model: str = BedrockModelId.CLAUDE_SONNET_4_5.value  # Claude for initial
+    strategic_review_model: str = "mistral.mistral-large-2407-v1:0"  # Mistral for strategic review
+    due_diligence_model: str = "us.meta.llama3-3-70b-instruct-v1:0"  # Llama for due diligence
+    final_refinement_model: str = BedrockModelId.CLAUDE_SONNET_4_5.value  # Claude for final
+
     # Performance Settings
     max_tokens: int = 4096
     temperature_default: float = 1.0

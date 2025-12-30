@@ -10,6 +10,17 @@ from typing import Dict, List, Any
 from datetime import datetime
 from decimal import Decimal
 
+# Import multi-AI pipeline for enhanced scenario generation
+try:
+    from multi_ai_pipeline import MultiAIPipeline
+    MULTI_AI_ENABLED = True
+    logger_init = logging.getLogger()
+    logger_init.info("Multi-AI pipeline imported successfully")
+except ImportError as e:
+    MULTI_AI_ENABLED = False
+    logger_init = logging.getLogger()
+    logger_init.warning(f"Multi-AI pipeline not available: {e}")
+
 logger = logging.getLogger()
 logger.setLevel(os.getenv('LOG_LEVEL', 'INFO'))
 
@@ -99,7 +110,7 @@ def generate_scenario(event, context):
 
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
         # Use cross-region inference profile for Opus 4.5 (required - only supports INFERENCE_PROFILE)
-        model_id = 'us.anthropic.ai-opus-4-5-20251101-v1:0'
+        model_id = 'us.anthropic.claude-opus-4-5-20251101-v1:0'
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
@@ -271,7 +282,7 @@ def test_bedrock(event, context):
 
         logger.info("Testing Bedrock with AI Opus 4.5...")
         response = bedrock.invoke_model(
-            modelId='us.anthropic.ai-opus-4-5-20251101-v1:0',  # Cross-region inference profile
+            modelId='us.anthropic.claude-opus-4-5-20251101-v1:0',  # Cross-region inference profile
             contentType='application/json',
             accept='application/json',
             body=json.dumps(test_request)
@@ -289,7 +300,7 @@ def test_bedrock(event, context):
         return _response(200, {
             'status': 'SUCCESS',
             'message': 'AI Opus 4.5 is accessible',
-            'model': 'anthropic.ai-opus-4-5-20251101-v1:0',
+            'model': 'anthropic.claude-opus-4-5-20251101-v1:0',
             'response_preview': preview_text
         })
 
@@ -388,7 +399,7 @@ def generate_scenario_async_worker(event, context):
             retries={'max_attempts': 2}
         )
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1', config=boto_config)
-        model_id = 'us.anthropic.ai-opus-4-5-20251101-v1:0'
+        model_id = 'us.anthropic.claude-opus-4-5-20251101-v1:0'
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
@@ -663,6 +674,8 @@ def list_scenarios(event, context):
 def get_analytics(event, context):
     """Get analytics for scenario generation system."""
     try:
+        from decimal import Decimal
+
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
         table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
         table = dynamodb.Table(table_name)
@@ -675,10 +688,10 @@ def get_analytics(event, context):
         failed = [s for s in all_scenarios if s.get('status') == 'failed']
         processing = [s for s in all_scenarios if s.get('status') == 'processing']
 
-        # Calculate aggregate metrics
+        # Calculate aggregate metrics (convert Decimal to float)
         total_scenarios = len(completed)
-        total_cost = sum([s.get('result', {}).get('total_cost_usd', 0) for s in completed])
-        total_time = sum([s.get('result', {}).get('generation_time_seconds', 0) for s in completed])
+        total_cost = sum([float(s.get('result', {}).get('total_cost_usd', 0)) for s in completed])
+        total_time = sum([float(s.get('result', {}).get('generation_time_seconds', 0)) for s in completed])
 
         avg_cost = total_cost / total_scenarios if total_scenarios > 0 else 0
         avg_time = total_time / total_scenarios if total_scenarios > 0 else 0
@@ -698,19 +711,20 @@ def get_analytics(event, context):
         # Time horizon distribution
         horizon_dist = {}
         for s in completed:
-            horizon = s.get('horizon_years', 0)
+            horizon = int(s.get('horizon_years', 0)) if s.get('horizon_years', 0) else 0
             horizon_dist[str(horizon)] = horizon_dist.get(str(horizon), 0) + 1
 
         # Recent activity (last 30 days)
         from datetime import datetime, timedelta
         thirty_days_ago = int((datetime.utcnow() - timedelta(days=30)).timestamp())
-        recent_scenarios = [s for s in completed if s.get('createdAt', 0) >= thirty_days_ago]
+        recent_scenarios = [s for s in completed if int(s.get('createdAt', 0)) >= thirty_days_ago]
 
         # Cost trend (group by day for last 30 days)
         cost_by_day = {}
         for s in recent_scenarios:
-            created_date = datetime.fromtimestamp(s.get('createdAt', 0)).strftime('%Y-%m-%d')
-            cost = s.get('result', {}).get('total_cost_usd', 0)
+            created_at = int(s.get('createdAt', 0)) if s.get('createdAt', 0) else 0
+            created_date = datetime.fromtimestamp(created_at).strftime('%Y-%m-%d') if created_at > 0 else 'Unknown'
+            cost = float(s.get('result', {}).get('total_cost_usd', 0))
             cost_by_day[created_date] = cost_by_day.get(created_date, 0) + cost
 
         # Most active companies
@@ -784,14 +798,14 @@ def delete_scenario(event, context):
         table = dynamodb.Table(table_name)
 
         # Check if scenario exists
-        response = table.get_item(Key={'scenario_set_id': scenario_id})
+        response = table.get_item(Key={'scenarioId': scenario_id})
 
         if 'Item' not in response:
             logger.warning(f"Scenario not found: {scenario_id}")
             return _response(404, {'error': 'Scenario not found'})
 
         # Delete the scenario
-        table.delete_item(Key={'scenario_set_id': scenario_id})
+        table.delete_item(Key={'scenarioId': scenario_id})
 
         logger.info(f"Successfully deleted scenario: {scenario_id}")
 

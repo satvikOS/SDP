@@ -1,0 +1,17 @@
+boto3>=1.34.0
+botocore>=1.34.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+python-json-logger>=2.0.7
+redis>=5.0.0
+tenacity>=8.2.0
+python-dotenv>=1.0.0
+httpx>=0.24.0
+
+# Document export libraries
+reportlab>=4.0.0
+python-pptx>=0.6.23
+python-docx>=1.1.0
+Pillow>=10.0.0
