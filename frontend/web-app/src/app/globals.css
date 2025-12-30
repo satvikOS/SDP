@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Light theme - Egg white & Grey */
+/* Light theme - Egg white & Grey (default) */
 :root {
   --bg: #faf8f3;           /* Egg white (dull) */
   --surface: #e8e8e8;      /* Grey */
@@ -14,7 +14,8 @@
 }
 
 /* Dark theme - OLED & Tar Black */
-.dark {
+html.dark,
+html.dark body {
   --bg: #000000;           /* OLED black */
   --surface: #0d0d0d;      /* Tar black */
   --panel: #1a1a1a;        /* Darker tar */
@@ -22,19 +23,6 @@
   --text-primary: #e8e8e8;
   --text-secondary: #a0a0a0;
   --text-tertiary: #6b6b6b;
-}
-
-/* Default to dark theme based on system preference */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #000000;
-    --surface: #0d0d0d;
-    --panel: #1a1a1a;
-    --border: #262626;
-    --text-primary: #e8e8e8;
-    --text-secondary: #a0a0a0;
-    --text-tertiary: #6b6b6b;
-  }
 }
 
 * {
@@ -91,21 +79,21 @@ html {
 }
 
 /* Custom scrollbar - Dark theme */
-.dark ::-webkit-scrollbar {
+html.dark ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
-.dark ::-webkit-scrollbar-track {
+html.dark ::-webkit-scrollbar-track {
   background: #0a0a0a;
 }
 
-.dark ::-webkit-scrollbar-thumb {
+html.dark ::-webkit-scrollbar-thumb {
   background: #333;
   border-radius: 3px;
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
+html.dark ::-webkit-scrollbar-thumb:hover {
   background: #444;
 }
 

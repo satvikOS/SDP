@@ -663,6 +663,8 @@ def list_scenarios(event, context):
 def get_analytics(event, context):
     """Get analytics for scenario generation system."""
     try:
+        from decimal import Decimal
+
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
         table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
         table = dynamodb.Table(table_name)
@@ -675,10 +677,10 @@ def get_analytics(event, context):
         failed = [s for s in all_scenarios if s.get('status') == 'failed']
         processing = [s for s in all_scenarios if s.get('status') == 'processing']
 
-        # Calculate aggregate metrics
+        # Calculate aggregate metrics (convert Decimal to float)
         total_scenarios = len(completed)
-        total_cost = sum([s.get('result', {}).get('total_cost_usd', 0) for s in completed])
-        total_time = sum([s.get('result', {}).get('generation_time_seconds', 0) for s in completed])
+        total_cost = sum([float(s.get('result', {}).get('total_cost_usd', 0)) for s in completed])
+        total_time = sum([float(s.get('result', {}).get('generation_time_seconds', 0)) for s in completed])
 
         avg_cost = total_cost / total_scenarios if total_scenarios > 0 else 0
         avg_time = total_time / total_scenarios if total_scenarios > 0 else 0
@@ -698,19 +700,20 @@ def get_analytics(event, context):
         # Time horizon distribution
         horizon_dist = {}
         for s in completed:
-            horizon = s.get('horizon_years', 0)
+            horizon = int(s.get('horizon_years', 0)) if s.get('horizon_years', 0) else 0
             horizon_dist[str(horizon)] = horizon_dist.get(str(horizon), 0) + 1
 
         # Recent activity (last 30 days)
         from datetime import datetime, timedelta
         thirty_days_ago = int((datetime.utcnow() - timedelta(days=30)).timestamp())
-        recent_scenarios = [s for s in completed if s.get('createdAt', 0) >= thirty_days_ago]
+        recent_scenarios = [s for s in completed if int(s.get('createdAt', 0)) >= thirty_days_ago]
 
         # Cost trend (group by day for last 30 days)
         cost_by_day = {}
         for s in recent_scenarios:
-            created_date = datetime.fromtimestamp(s.get('createdAt', 0)).strftime('%Y-%m-%d')
-            cost = s.get('result', {}).get('total_cost_usd', 0)
+            created_at = int(s.get('createdAt', 0)) if s.get('createdAt', 0) else 0
+            created_date = datetime.fromtimestamp(created_at).strftime('%Y-%m-%d') if created_at > 0 else 'Unknown'
+            cost = float(s.get('result', {}).get('total_cost_usd', 0))
             cost_by_day[created_date] = cost_by_day.get(created_date, 0) + cost
 
         # Most active companies

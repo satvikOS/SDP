@@ -26,14 +26,8 @@ export default function Home() {
       .then(() => setIsHealthy(true))
       .catch(() => setIsHealthy(false));
 
-    // Get agents list from API, fallback to expected agents
-    apiClient.getAgents()
-      .then(apiAgents => {
-        if (apiAgents && apiAgents.length > 0) {
-          setAgents(apiAgents);
-        }
-      })
-      .catch(() => {});
+    // Always display expected agents - don't override with API response
+    // The API may return incomplete data during startup
   }, []);
 
   return (
