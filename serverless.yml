@@ -24,6 +24,9 @@ provider:
   region: us-east-1
   stage: ${opt:stage, 'dev'}
 
+  layers:
+    - Ref: PythonRequirementsLambdaLayer
+
   iam:
     role:
       statements:
