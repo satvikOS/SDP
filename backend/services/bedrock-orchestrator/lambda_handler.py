@@ -489,21 +489,79 @@ def generate_scenario_async_worker(event, context):
         logger.info(f"[Job {job_id}] Axis X: {matrix_framework.get('axis_x', {}).get('name', 'N/A')}")
         logger.info(f"[Job {job_id}] Axis Y: {matrix_framework.get('axis_y', {}).get('name', 'N/A')}")
 
+        # --- Multi-AI Pipeline Integration ---
+        if MULTI_AI_ENABLED and os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == 'true':
+            logger.info(f"[Job {job_id}] Starting multi-AI pipeline enhancement (Claude Opus → Gemini → Claude Sonnet → Claude Opus)")
+
+            try:
+                pipeline = MultiAIPipeline()
+
+                enhanced_result = pipeline.execute_pipeline(
+                    company_name=company_name,
+                    industry=industry,
+                    region=region,
+                    horizon_years=horizon_years,
+                    strategic_context=strategic_context,
+                    multi_agent_output=parsed_result
+                )
+
+                # Use enhanced results
+                if 'professional_document' in enhanced_result:
+                    parsed_result = enhanced_result['professional_document']
+                    scenarios = enhanced_result.get('scenarios', scenarios)
+
+                pipeline_metadata = enhanced_result.get('pipeline_metadata', {})
+                strategic_critique = enhanced_result.get('strategic_critique', '')
+
+                logger.info(f"[Job {job_id}] Multi-AI pipeline completed successfully")
+                logger.info(f"[Job {job_id}] Models used: {pipeline_metadata.get('models_used', [])}")
+                logger.info(f"[Job {job_id}] Review layers: {pipeline_metadata.get('review_layers', [])}")
+
+            except Exception as e:
+                logger.warning(f"[Job {job_id}] Multi-AI pipeline failed, using base result: {e}")
+                # Continue with original parsed_result
+                pipeline_metadata = {'error': str(e), 'fallback_used': True}
+        else:
+            logger.info(f"[Job {job_id}] Multi-AI pipeline disabled, using base Claude result")
+            pipeline_metadata = {'pipeline_enabled': False}
+        # --- End Multi-AI Pipeline Integration ---
+
         # Calculate generation time
         generation_time = (datetime.utcnow() - start_time).total_seconds()
 
-        # Estimate cost (rough approximation for AI Opus 4.5)
-        # Input: ~2000 tokens (longer prompt), Output: ~15000 tokens (4 comprehensive scenarios)
+        # Estimate cost
+        # Base Claude Opus 4.5: Input ~2000 tokens, Output ~15000 tokens
         input_tokens = 2000
         output_tokens = 15000  # 4 scenarios × ~3750 tokens each
         cost_per_1k_input = 0.015  # $15/MTok
         cost_per_1k_output = 0.075  # $75/MTok
-        estimated_cost = (input_tokens / 1000 * cost_per_1k_input) + (output_tokens / 1000 * cost_per_1k_output)
+        base_cost = (input_tokens / 1000 * cost_per_1k_input) + (output_tokens / 1000 * cost_per_1k_output)
+
+        # Adjust cost if multi-AI pipeline was used
+        if MULTI_AI_ENABLED and os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == 'true':
+            # Multi-AI pipeline: Claude Opus + Gemini + Claude Sonnet + Claude Opus
+            # Approximately 2.4x base cost ($0.15 → $0.36)
+            estimated_cost = base_cost * 2.4
+            logger.info(f"[Job {job_id}] Multi-AI pipeline cost: ${estimated_cost:.4f} (base: ${base_cost:.4f})")
+        else:
+            estimated_cost = base_cost
 
         # Store results in DynamoDB
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
         table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
         table = dynamodb.Table(table_name)
+
+        # Determine generation method based on pipeline usage
+        if MULTI_AI_ENABLED and os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == 'true':
+            generation_method = 'Multi-AI Pipeline: Claude Opus → Gemini → Claude Sonnet → Claude Opus'
+            models_used = {
+                'claude-opus-4.5': 2,  # Initial + Final
+                'gemini-3-pro': 1,     # Strategic review
+                'claude-sonnet-4.5': 1  # Due diligence
+            }
+        else:
+            generation_method = 'AI Opus 4.5 - 2x2 Matrix Scenario Planning'
+            models_used = {'ai-opus-4-5': 1}
 
         result = {
             'scenario_set_id': job_id,
@@ -514,7 +572,7 @@ def generate_scenario_async_worker(event, context):
             'created_at': start_time.isoformat() + 'Z',
             'generation_time_seconds': generation_time,
             'ai_generated': True,
-            'generation_method': 'AI Opus 4.5 - 2x2 Matrix Scenario Planning',
+            'generation_method': generation_method,
 
             # 2x2 Matrix Framework
             'matrix_framework': matrix_framework,
@@ -527,9 +585,15 @@ def generate_scenario_async_worker(event, context):
             'uncertainties': [matrix_framework.get('axis_x', {}), matrix_framework.get('axis_y', {})],
             'action_plan': {},
             'quality_report': {'scenario_methodology': '2x2 matrix with outside-in perspective'},
-            'models_used': {'ai-opus-4-5': 1},
+            'models_used': models_used,
             'total_cost_usd': estimated_cost
         }
+
+        # Add multi-AI pipeline metadata if available
+        if MULTI_AI_ENABLED and 'pipeline_metadata' in locals():
+            result['pipeline_metadata'] = pipeline_metadata
+        if MULTI_AI_ENABLED and 'strategic_critique' in locals():
+            result['strategic_critique'] = strategic_critique
 
         # Convert floats to Decimal for DynamoDB compatibility
         result_for_dynamodb = _convert_floats_to_decimal(result)
