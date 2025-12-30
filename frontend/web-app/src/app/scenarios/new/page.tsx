@@ -270,7 +270,7 @@ export default function NewScenarioPage() {
                 <textarea
                   value={formData.strategic_context}
                   onChange={(e) => setFormData({ ...formData, strategic_context: e.target.value })}
-                  placeholder="Example for Defense: 'We are pursuing AUKUS Pillar 2 co-production agreements in Australia. Current JASSM-ER margins are 18% EBITDA. Key strategic question: Can we maintain margins if forced to transfer 40% of production to Australian facilities with 23% higher labor costs? Also evaluating $2.3B R&D investment in CJADC2 software-defined payloads - need analysis of Government Purpose Rights risk to our IP moat.'&#10;&#10;Example for Energy: 'Evaluating $4.5B green hydrogen electrolyzer facility. Current green H2 costs: $2.80/kg (target: $1.50/kg). Critical decision: Build 2GW facility + 800km pipeline now, or wait for technology maturity? Competitive threat: European players (Linde, Air Liquide) have 18-month head start on offtake contracts. Need quantitative break-even analysis factoring carbon pricing scenarios.'&#10;&#10;Provide: Current strategy, key investments under consideration, margin targets, competitive threats, regulatory constraints, quantitative metrics that matter."
+                  placeholder="Describe your current strategic context, key investments under consideration, competitive dynamics, and specific questions that need analysis..."
                   rows={8}
                   className="w-full glass-panel px-4 py-3 rounded-lg text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-accent-500 resize-none font-light text-sm leading-relaxed"
                 />

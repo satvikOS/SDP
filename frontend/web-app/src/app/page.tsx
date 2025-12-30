@@ -6,9 +6,19 @@ import { apiClient } from '@/lib/api-client';
 import { GlassCard, GlassButton } from '@/components/GlassCard';
 import { Sparkles, ArrowRight, Zap, TrendingUp, Target, CheckCircle2, BarChart3 } from 'lucide-react';
 
+const EXPECTED_AGENTS = [
+  'Signal Synthesizer',
+  'Driver Extractor',
+  'Scenario Constructor',
+  'Narrative Generator',
+  'Signpost Designer',
+  'Action Planner',
+  'Quality Critic'
+];
+
 export default function Home() {
   const [isHealthy, setIsHealthy] = useState<boolean | null>(null);
-  const [agents, setAgents] = useState<string[]>([]);
+  const [agents, setAgents] = useState<string[]>(EXPECTED_AGENTS);
 
   useEffect(() => {
     // Check API health
@@ -16,28 +26,30 @@ export default function Home() {
       .then(() => setIsHealthy(true))
       .catch(() => setIsHealthy(false));
 
-    // Get agents list
+    // Get agents list from API, fallback to expected agents
     apiClient.getAgents()
-      .then(setAgents)
+      .then(apiAgents => {
+        if (apiAgents && apiAgents.length > 0) {
+          setAgents(apiAgents);
+        }
+      })
       .catch(() => {});
   }, []);
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
+      {/* System Status Indicator - Top Right */}
+      <div className="fixed top-4 right-6 z-50">
+        <div className="glass-panel rounded-full px-3 py-1.5 inline-flex items-center space-x-2">
+          <div className={`w-1 h-1 rounded-full ${
+            isHealthy ? 'bg-green-500' : isHealthy === false ? 'bg-red-500' : 'bg-yellow-500'
+          }`} />
+          <span className="text-xs text-[var(--text-secondary)]">System</span>
+        </div>
+      </div>
+
       {/* Main Content */}
       <main className="pt-16 pb-16">
-        {/* Status Banner */}
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-8">
-          <div className="glass-panel rounded-lg px-4 py-2 inline-flex items-center space-x-2">
-            <div className={`w-1.5 h-1.5 rounded-full ${
-              isHealthy ? 'bg-green-500' : isHealthy === false ? 'bg-red-500' : 'bg-yellow-500'
-            }`} />
-            <span className="text-sm text-[var(--text-secondary)]">
-              {isHealthy ? 'System Online' : isHealthy === false ? 'System Offline' : 'Initializing...'}
-            </span>
-          </div>
-        </div>
-
         {/* Hero */}
         <section className="max-w-4xl mx-auto px-6 lg:px-8 text-center mb-20">
           <h1 className="text-4xl lg:text-5xl font-light text-[var(--text-primary)] mb-6 tracking-tight leading-tight">
@@ -116,15 +128,9 @@ export default function Home() {
             </div>
 
             <div className="space-y-2">
-              {agents.length > 0 ? (
-                agents.map((agent, idx) => (
-                  <AgentRow key={agent} number={idx + 1} name={agent} />
-                ))
-              ) : (
-                <div className="text-sm text-[var(--text-tertiary)] text-center py-8">
-                  {isHealthy === false ? 'API disconnected' : 'Loading agents...'}
-                </div>
-              )}
+              {agents.map((agent, idx) => (
+                <AgentRow key={agent} number={idx + 1} name={agent} />
+              ))}
             </div>
           </GlassCard>
         </section>
@@ -163,12 +169,10 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode; titl
 }
 
 function AgentRow({ number, name }: { number: number; name: string }) {
-  const formatName = (name: string) => {
-    return name
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  };
+  // Format name if it comes from API with underscores
+  const displayName = name.includes('_')
+    ? name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+    : name;
 
   return (
     <div className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-[var(--surface)] transition-colors">
@@ -176,7 +180,7 @@ function AgentRow({ number, name }: { number: number; name: string }) {
         <span className="text-xs font-medium text-accent-600">{number}</span>
       </div>
       <span className="text-sm text-[var(--text-primary)] font-light">
-        {formatName(name)}
+        {displayName}
       </span>
       <div className="flex-1" />
       <CheckCircle2 className="w-4 h-4 text-green-500" />

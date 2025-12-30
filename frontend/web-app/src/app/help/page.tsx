@@ -185,7 +185,7 @@ export default function HelpPage() {
                 How accurate are AI-generated scenarios?
               </summary>
               <p className="mt-3 text-xs text-[var(--text-secondary)] leading-relaxed">
-                Our scenarios are powered by Claude Opus 4.5 with extended reasoning capabilities. The AI analyzes current trends,
+                Our scenarios are powered by advanced multi-agent AI systems with extended reasoning capabilities. The AI analyzes current trends,
                 historical patterns, and strategic frameworks used by top consulting firms. However, scenarios represent possible
                 futures - not predictions. Always validate with domain experts.
               </p>
