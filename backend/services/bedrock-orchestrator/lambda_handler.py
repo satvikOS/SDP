@@ -11,6 +11,7 @@ from datetime import datetime
 from decimal import Decimal
 
 # Import multi-AI pipeline for enhanced scenario generation
+MULTI_AI_IMPORT_ERROR = None
 try:
     from multi_ai_pipeline import MultiAIPipeline
     MULTI_AI_ENABLED = True
@@ -18,8 +19,14 @@ try:
     logger_init.info("Multi-AI pipeline imported successfully")
 except ImportError as e:
     MULTI_AI_ENABLED = False
+    MULTI_AI_IMPORT_ERROR = f"ImportError: {str(e)}"
     logger_init = logging.getLogger()
     logger_init.warning(f"Multi-AI pipeline not available: {e}")
+except Exception as e:
+    MULTI_AI_ENABLED = False
+    MULTI_AI_IMPORT_ERROR = f"Exception: {str(e)}"
+    logger_init = logging.getLogger()
+    logger_init.error(f"Multi-AI pipeline import failed: {e}")
 
 logger = logging.getLogger()
 logger.setLevel(os.getenv('LOG_LEVEL', 'INFO'))
@@ -65,39 +72,57 @@ def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def health(event, context):
-    """Health check - shows Multi-AI Pipeline status."""
-    result = {'status': 'healthy'}
-
-    # Check all components safely
+    """Health check - ABSOLUTE FAILSAFE - will never crash."""
     try:
-        result['multi_ai_enabled'] = bool(MULTI_AI_ENABLED)
-    except:
-        result['multi_ai_enabled'] = False
+        result = {'status': 'healthy'}
 
-    try:
-        result['env_pipeline'] = os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'NOT_SET')
-    except:
-        result['env_pipeline'] = 'ERROR'
+        # Check all components safely
+        try:
+            result['multi_ai_enabled'] = bool(MULTI_AI_ENABLED)
+        except:
+            result['multi_ai_enabled'] = False
 
-    try:
-        result['env_google_key'] = 'SET' if os.getenv('GOOGLE_API_KEY') else 'NOT_SET'
-    except:
-        result['env_google_key'] = 'ERROR'
+        try:
+            result['multi_ai_import_error'] = MULTI_AI_IMPORT_ERROR if MULTI_AI_IMPORT_ERROR else 'NONE'
+        except:
+            result['multi_ai_import_error'] = 'ERROR'
 
-    # Try importing google-generativeai
-    try:
-        import google.generativeai
-        result['gemini_sdk'] = 'INSTALLED'
-    except ImportError as e:
-        result['gemini_sdk'] = f'MISSING: {str(e)[:100]}'
+        try:
+            result['env_pipeline'] = os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'NOT_SET')
+        except:
+            result['env_pipeline'] = 'ERROR'
+
+        try:
+            result['env_google_key'] = 'SET' if os.getenv('GOOGLE_API_KEY') else 'NOT_SET'
+        except:
+            result['env_google_key'] = 'ERROR'
+
+        # Try importing google-generativeai
+        try:
+            import google.generativeai
+            result['gemini_sdk'] = 'INSTALLED'
+        except ImportError as e:
+            result['gemini_sdk'] = f'MISSING: {str(e)[:100]}'
+        except Exception as e:
+            result['gemini_sdk'] = f'ERROR: {str(e)[:100]}'
+
+        return {
+            'statusCode': 200,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps(result)
+        }
     except Exception as e:
-        result['gemini_sdk'] = f'ERROR: {str(e)[:100]}'
-
-    return {
-        'statusCode': 200,
-        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-        'body': json.dumps(result)
-    }
+        # If ANYTHING fails, return the error message
+        import traceback
+        return {
+            'statusCode': 200,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({
+                'status': 'error',
+                'error': str(e),
+                'traceback': traceback.format_exc()[:500]
+            })
+        }
 
 
 def list_agents(event, context):
