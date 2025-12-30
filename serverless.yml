@@ -98,6 +98,7 @@ functions:
     handler: backend/services/bedrock-orchestrator/lambda_handler.health
     timeout: 10
     memorySize: 256
+    layers: []  # No layers needed for health check
     events:
       - httpApi:
           path: /health
