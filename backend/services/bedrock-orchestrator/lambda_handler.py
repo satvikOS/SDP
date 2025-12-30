@@ -16,6 +16,13 @@ MULTI_AI_ENABLED = os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == '
 logger = logging.getLogger()
 logger.setLevel(os.getenv('LOG_LEVEL', 'INFO'))
 
+# Log Multi-AI configuration on module load
+logger.info(f"=== MULTI-AI PIPELINE CONFIG ===")
+logger.info(f"MULTI_AI_ENABLED: {MULTI_AI_ENABLED}")
+logger.info(f"ENABLE_MULTI_MODEL_PIPELINE env: {os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'NOT_SET')}")
+logger.info(f"GOOGLE_API_KEY: {'SET' if os.getenv('GOOGLE_API_KEY') else 'NOT_SET'}")
+logger.info(f"================================")
+
 
 def _convert_floats_to_decimal(obj):
     """Convert all float values to Decimal for DynamoDB compatibility."""
@@ -482,13 +489,23 @@ def generate_scenario_async_worker(event, context):
         logger.info(f"[Job {job_id}] Axis Y: {matrix_framework.get('axis_y', {}).get('name', 'N/A')}")
 
         # --- Multi-AI Pipeline Integration ---
+        logger.info(f"[Job {job_id}] === MULTI-AI PIPELINE CHECK ===")
+        logger.info(f"[Job {job_id}] MULTI_AI_ENABLED = {MULTI_AI_ENABLED}")
+        logger.info(f"[Job {job_id}] ENABLE_MULTI_MODEL_PIPELINE env = {os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'NOT_SET')}")
+
         if MULTI_AI_ENABLED and os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == 'true':
-            logger.info(f"[Job {job_id}] Starting multi-AI pipeline enhancement (Claude Opus → Gemini → Claude Sonnet → Claude Opus)")
+            logger.info(f"[Job {job_id}] ✓ Multi-AI pipeline ENABLED - starting enhancement")
+            logger.info(f"[Job {job_id}] Pipeline: Claude Opus → Gemini 3 Pro → Claude Sonnet → Claude Opus")
 
             try:
                 # Import dynamically to avoid module-level import issues
+                logger.info(f"[Job {job_id}] Importing MultiAIPipeline...")
                 from multi_ai_pipeline import MultiAIPipeline
+                logger.info(f"[Job {job_id}] ✓ MultiAIPipeline imported successfully")
+
+                logger.info(f"[Job {job_id}] Initializing MultiAIPipeline...")
                 pipeline = MultiAIPipeline()
+                logger.info(f"[Job {job_id}] ✓ MultiAIPipeline initialized")
 
                 enhanced_result = pipeline.execute_pipeline(
                     company_name=company_name,
@@ -512,11 +529,16 @@ def generate_scenario_async_worker(event, context):
                 logger.info(f"[Job {job_id}] Review layers: {pipeline_metadata.get('review_layers', [])}")
 
             except Exception as e:
-                logger.warning(f"[Job {job_id}] Multi-AI pipeline failed, using base result: {e}")
+                import traceback
+                logger.error(f"[Job {job_id}] ✗ Multi-AI pipeline FAILED - using base result")
+                logger.error(f"[Job {job_id}] Error: {str(e)}")
+                logger.error(f"[Job {job_id}] Traceback: {traceback.format_exc()[:500]}")
                 # Continue with original parsed_result
                 pipeline_metadata = {'error': str(e), 'fallback_used': True}
         else:
-            logger.info(f"[Job {job_id}] Multi-AI pipeline disabled, using base Claude result")
+            logger.warning(f"[Job {job_id}] ✗ Multi-AI pipeline DISABLED")
+            logger.warning(f"[Job {job_id}] Reason: MULTI_AI_ENABLED={MULTI_AI_ENABLED}, env={os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'NOT_SET')}")
+            logger.info(f"[Job {job_id}] Using base Claude Opus 4.5 result only")
             pipeline_metadata = {'pipeline_enabled': False}
         # --- End Multi-AI Pipeline Integration ---
 
