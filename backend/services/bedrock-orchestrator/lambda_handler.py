@@ -65,49 +65,38 @@ def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def health(event, context):
-    """Health check endpoint - NEVER fails."""
-    multi_ai_status = {}
+    """Health check - shows Multi-AI Pipeline status."""
+    result = {'status': 'healthy'}
 
-    # Safely check each component
+    # Check all components safely
     try:
-        multi_ai_status['enabled'] = bool(MULTI_AI_ENABLED)
+        result['multi_ai_enabled'] = bool(MULTI_AI_ENABLED)
     except:
-        multi_ai_status['enabled'] = False
+        result['multi_ai_enabled'] = False
 
     try:
-        multi_ai_status['env_var_set'] = os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'false').lower() == 'true'
+        result['env_pipeline'] = os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'NOT_SET')
     except:
-        multi_ai_status['env_var_set'] = False
+        result['env_pipeline'] = 'ERROR'
 
     try:
-        multi_ai_status['google_api_key_set'] = bool(os.getenv('GOOGLE_API_KEY'))
+        result['env_google_key'] = 'SET' if os.getenv('GOOGLE_API_KEY') else 'NOT_SET'
     except:
-        multi_ai_status['google_api_key_set'] = False
+        result['env_google_key'] = 'ERROR'
 
-    # Check if google-generativeai is installed
-    multi_ai_status['gemini_sdk_installed'] = False
+    # Try importing google-generativeai
     try:
-        import google.generativeai as genai
-        multi_ai_status['gemini_sdk_installed'] = True
+        import google.generativeai
+        result['gemini_sdk'] = 'INSTALLED'
     except ImportError as e:
-        multi_ai_status['gemini_import_error'] = str(e)[:200]
+        result['gemini_sdk'] = f'MISSING: {str(e)[:100]}'
     except Exception as e:
-        multi_ai_status['gemini_error'] = str(e)[:200]
+        result['gemini_sdk'] = f'ERROR: {str(e)[:100]}'
 
-    # Always return 200 OK
     return {
         'statusCode': 200,
-        'headers': {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-        },
-        'body': json.dumps({
-            'status': 'healthy',
-            'timestamp': datetime.utcnow().isoformat(),
-            'model': 'ai-opus-4-5',
-            'bedrock_available': True,
-            'multi_ai_pipeline': multi_ai_status
-        })
+        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+        'body': json.dumps(result)
     }
 
 
