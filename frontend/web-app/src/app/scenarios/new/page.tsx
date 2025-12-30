@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { apiClient, type ScenarioGenerationRequest, type ScenarioSet } from '@/lib/api-client';
 import { GlassCard, GlassButton, GlassInput } from '@/components/GlassCard';
 import { CompanyAutocomplete } from '@/components/CompanyAutocomplete';
+import { ParticleLoader } from '@/components/ParticleLoader';
 import { formatCurrency, formatDuration, cn } from '@/lib/utils';
 import { ArrowLeft, Sparkles, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
@@ -119,18 +120,27 @@ export default function NewScenarioPage() {
     <div className="min-h-screen bg-[var(--bg)]">
       <main className="pt-16 pb-16 max-w-4xl mx-auto px-6 lg:px-8">
         {/* Page Header */}
-        <div className="mb-8">
+        <div className="mb-10">
           <h1 className="text-3xl font-light text-[var(--text-primary)] mb-3 tracking-tight">
             Generate Scenario Set
           </h1>
-          <p className="text-[var(--text-secondary)] font-light">
-            Configure parameters for comprehensive strategic foresight analysis
+          <p className="text-sm text-[var(--text-secondary)] font-light">
+            Configure parameters for comprehensive strategic foresight analysis powered by multi-agent AI
           </p>
         </div>
         {stage === 'idle' && (
           <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
             {/* Configuration Panel */}
             <GlassCard>
+              <div className="mb-6 pb-4 border-b border-[var(--border)]">
+                <h2 className="text-base font-semibold text-[var(--text-primary)] mb-1">
+                  Basic Configuration
+                </h2>
+                <p className="text-xs text-[var(--text-secondary)] font-light">
+                  Define the scope and context for your strategic analysis
+                </p>
+              </div>
+
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
@@ -178,60 +188,65 @@ export default function NewScenarioPage() {
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">
                     Planning Horizon
+                    <span className="ml-2 text-xs text-[var(--text-tertiary)] font-normal">
+                      Define your strategic time frame
+                    </span>
                   </label>
 
-                  <div className="grid grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div>
-                      <label className="block text-xs text-[var(--text-secondary)] mb-1.5">Years</label>
+                      <label className="block text-xs font-medium text-[var(--text-secondary)] mb-2">Years</label>
                       <input
                         type="number"
                         min="0"
                         max="50"
                         value={formData.horizon_years}
                         onChange={(e) => setFormData({ ...formData, horizon_years: parseInt(e.target.value) || 0 })}
-                        className="w-full glass-panel px-3 py-2 rounded text-sm text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-accent-500"
+                        className="w-full glass-panel px-3 py-2.5 rounded-lg text-sm text-[var(--text-primary)] text-center font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-[var(--text-secondary)] mb-1.5">Months</label>
+                      <label className="block text-xs font-medium text-[var(--text-secondary)] mb-2">Months</label>
                       <input
                         type="number"
                         min="0"
                         max="11"
                         value={formData.horizon_months}
                         onChange={(e) => setFormData({ ...formData, horizon_months: parseInt(e.target.value) || 0 })}
-                        className="w-full glass-panel px-3 py-2 rounded text-sm text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-accent-500"
+                        className="w-full glass-panel px-3 py-2.5 rounded-lg text-sm text-[var(--text-primary)] text-center font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-[var(--text-secondary)] mb-1.5">Weeks</label>
+                      <label className="block text-xs font-medium text-[var(--text-secondary)] mb-2">Weeks</label>
                       <input
                         type="number"
                         min="0"
                         max="4"
                         value={formData.horizon_weeks}
                         onChange={(e) => setFormData({ ...formData, horizon_weeks: parseInt(e.target.value) || 0 })}
-                        className="w-full glass-panel px-3 py-2 rounded text-sm text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-accent-500"
+                        className="w-full glass-panel px-3 py-2.5 rounded-lg text-sm text-[var(--text-primary)] text-center font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-[var(--text-secondary)] mb-1.5">Days</label>
+                      <label className="block text-xs font-medium text-[var(--text-secondary)] mb-2">Days</label>
                       <input
                         type="number"
                         min="0"
                         max="6"
                         value={formData.horizon_days}
                         onChange={(e) => setFormData({ ...formData, horizon_days: parseInt(e.target.value) || 0 })}
-                        className="w-full glass-panel px-3 py-2 rounded text-sm text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-accent-500"
+                        className="w-full glass-panel px-3 py-2.5 rounded-lg text-sm text-[var(--text-primary)] text-center font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                       />
                     </div>
                   </div>
 
-                  <div className="mt-2 text-center">
-                    <span className="text-xs text-[var(--text-tertiary)]">Total: </span>
-                    <span className="text-sm font-medium text-accent-600">
-                      {formData.horizon_years}y {formData.horizon_months}m {formData.horizon_weeks}w {formData.horizon_days}d
-                    </span>
+                  <div className="mt-3 p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
+                    <div className="flex items-center justify-center space-x-2">
+                      <span className="text-xs text-[var(--text-secondary)]">Total Planning Horizon:</span>
+                      <span className="text-sm font-semibold text-blue-500">
+                        {formData.horizon_years}y {formData.horizon_months}m {formData.horizon_weeks}w {formData.horizon_days}d
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -239,10 +254,18 @@ export default function NewScenarioPage() {
 
             {/* Strategic Context - Enterprise Intelligence */}
             <GlassCard>
+              <div className="mb-6 pb-4 border-b border-[var(--border)]">
+                <h2 className="text-base font-semibold text-[var(--text-primary)] mb-1">
+                  Strategic Context & Intelligence Briefing
+                </h2>
+                <p className="text-xs text-[var(--text-secondary)] font-light">
+                  Critical for precision targeting - The more detail you provide, the more relevant your scenarios
+                </p>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                  Strategic Context & Intelligence Briefing
-                  <span className="ml-2 text-xs text-[var(--text-tertiary)] font-normal">(Critical for precision targeting)</span>
+                  Provide Strategic Details
                 </label>
                 <textarea
                   value={formData.strategic_context}
@@ -265,16 +288,33 @@ export default function NewScenarioPage() {
             </GlassCard>
 
             {/* Info Panel */}
-            <div className="glass-panel rounded-lg p-4 border-l-4 border-accent-600">
-              <p className="text-sm text-[var(--text-secondary)] font-light">
-                <span className="font-medium text-[var(--text-primary)]">Multi-Agent Analysis:</span> Seven specialized AI modules will execute a comprehensive foresight workflow.
-                Estimated completion: 2-5 minutes. Processing cost: $0.10-0.30 per analysis
-              </p>
+            <div className="glass-panel rounded-lg p-5 border-l-4 border-blue-500">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center mt-0.5">
+                  <Sparkles className="w-4 h-4 text-blue-500" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-1">
+                    Multi-Agent AI Analysis
+                  </h3>
+                  <p className="text-xs text-[var(--text-secondary)] font-light leading-relaxed">
+                    Seven specialized AI agents will execute a comprehensive foresight workflow, analyzing signals, extracting drivers, constructing scenarios, and generating actionable intelligence.
+                  </p>
+                  <div className="mt-3 flex items-center space-x-4 text-xs">
+                    <span className="text-[var(--text-tertiary)]">
+                      <span className="font-medium text-[var(--text-secondary)]">Time:</span> 2-5 minutes
+                    </span>
+                    <span className="text-[var(--text-tertiary)]">
+                      <span className="font-medium text-[var(--text-secondary)]">Cost:</span> $0.10-0.30
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Submit Button */}
-            <GlassButton type="submit" variant="primary" size="lg" className="w-full">
-              <Sparkles className="w-4 h-4 mr-2" />
+            <GlassButton type="submit" variant="primary" size="lg" className="w-full group">
+              <Sparkles className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
               Generate Scenario Set
             </GlassButton>
           </form>
@@ -284,7 +324,9 @@ export default function NewScenarioPage() {
           <div className="space-y-6 animate-fade-in">
             <GlassCard>
               <div className="text-center mb-8">
-                <Loader2 className="w-12 h-12 text-accent-600 animate-spin mx-auto mb-4" />
+                <div className="mb-6">
+                  <ParticleLoader size={140} />
+                </div>
                 <h2 className="text-xl font-medium text-[var(--text-primary)] mb-2 tracking-tight">
                   Processing Strategic Analysis
                 </h2>
@@ -329,22 +371,41 @@ export default function NewScenarioPage() {
         {stage === 'success' && result && (
           <div className="space-y-6 animate-fade-in">
             {/* Success Header */}
-            <div className="glass-panel rounded-lg p-4 border-l-4 border-green-500">
-              <div className="flex items-start space-x-3">
-                <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5" />
+            <div className="glass-panel rounded-lg p-6 border-l-4 border-green-500">
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
+                  <CheckCircle2 className="w-6 h-6 text-green-500" />
+                </div>
                 <div className="flex-1">
-                  <h2 className="text-base font-medium text-[var(--text-primary)] mb-2">
+                  <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-3">
                     Strategic Analysis Complete
                   </h2>
-                  <div className="flex items-center space-x-6 text-sm text-[var(--text-secondary)]">
-                    <span>Processing Time: {formatDuration(result.generation_time_seconds)}</span>
-                    <span>Analysis Cost: {formatCurrency(result.total_cost_usd)}</span>
-                    <span>Scenarios Developed: {result.scenarios.length}</span>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                      <span className="text-[var(--text-secondary)]">
+                        <span className="font-medium text-[var(--text-primary)]">Time:</span> {formatDuration(result.generation_time_seconds)}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                      <span className="text-[var(--text-secondary)]">
+                        <span className="font-medium text-[var(--text-primary)]">Cost:</span> {formatCurrency(result.total_cost_usd)}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                      <span className="text-[var(--text-secondary)]">
+                        <span className="font-medium text-[var(--text-primary)]">Scenarios:</span> {result.scenarios.length}
+                      </span>
+                    </div>
                   </div>
                   {redirectCountdown !== null && redirectCountdown > 0 && (
-                    <p className="mt-3 text-sm text-accent-600 font-medium">
-                      Redirecting to Scenario Library in {redirectCountdown} seconds...
-                    </p>
+                    <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                      <p className="text-sm text-blue-500 font-medium">
+                        Redirecting to Scenario Library in {redirectCountdown} seconds...
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>
@@ -372,17 +433,22 @@ export default function NewScenarioPage() {
         {stage === 'error' && (
           <div className="space-y-6 animate-fade-in">
             <div className="glass-panel rounded-lg p-6 border-l-4 border-red-500">
-              <div className="flex items-start space-x-3">
-                <AlertCircle className="w-5 h-5 text-red-500 mt-0.5" />
-                <div>
-                  <h2 className="text-base font-medium text-[var(--text-primary)] mb-2">
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
+                  <AlertCircle className="w-6 h-6 text-red-500" />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-3">
                     Analysis Processing Error
                   </h2>
-                  <p className="text-sm text-red-500 font-light">{error}</p>
+                  <p className="text-sm text-red-500 font-light leading-relaxed">{error}</p>
+                  <p className="mt-3 text-xs text-[var(--text-tertiary)]">
+                    Please review your inputs and try again. If the problem persists, contact support.
+                  </p>
                 </div>
               </div>
             </div>
-            <GlassButton onClick={() => { setStage('idle'); setError(null); }} variant="primary">
+            <GlassButton onClick={() => { setStage('idle'); setError(null); }} variant="primary" size="lg">
               Try Again
             </GlassButton>
           </div>

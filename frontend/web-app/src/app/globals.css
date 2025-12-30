@@ -2,23 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Light theme (default) */
+/* Light theme - Egg white & Grey */
 :root {
-  --bg: #f7f7f7;
-  --surface: #fafafa;
-  --panel: #ffffff;
-  --border: #e5e5e5;
+  --bg: #faf8f3;           /* Egg white (dull) */
+  --surface: #e8e8e8;      /* Grey */
+  --panel: #f5f5f5;        /* Light grey */
+  --border: #d4d4d4;       /* Border grey */
   --text-primary: #171717;
   --text-secondary: #525252;
   --text-tertiary: #737373;
 }
 
-/* Dark theme (OLED black) */
+/* Dark theme - OLED & Tar Black */
 .dark {
-  --bg: #000000;
-  --surface: #0a0a0a;
-  --panel: #111111;
-  --border: #1a1a1a;
+  --bg: #000000;           /* OLED black */
+  --surface: #0d0d0d;      /* Tar black */
+  --panel: #1a1a1a;        /* Darker tar */
+  --border: #262626;       /* Subtle border */
   --text-primary: #e8e8e8;
   --text-secondary: #a0a0a0;
   --text-tertiary: #6b6b6b;
@@ -28,9 +28,9 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #000000;
-    --surface: #0a0a0a;
-    --panel: #111111;
-    --border: #1a1a1a;
+    --surface: #0d0d0d;
+    --panel: #1a1a1a;
+    --border: #262626;
     --text-primary: #e8e8e8;
     --text-secondary: #a0a0a0;
     --text-tertiary: #6b6b6b;
@@ -44,7 +44,7 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: 14px;  /* Reduced for more professional proportions */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

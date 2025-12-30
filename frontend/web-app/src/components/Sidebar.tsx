@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -20,6 +20,12 @@ import {
   LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  ForesightLogo,
+  ScenarioIcon,
+  InsightsIcon,
+  DocumentIcon
+} from './CustomIcons';
 
 interface SidebarProps {
   className?: string;
@@ -31,17 +37,33 @@ export function Sidebar({ className }: SidebarProps) {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const pathname = usePathname();
 
+  // Initialize theme from localStorage on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    } else {
+      // Check system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const initialTheme = prefersDark ? 'dark' : 'light';
+      setTheme(initialTheme);
+      document.documentElement.classList.toggle('dark', initialTheme === 'dark');
+    }
+  }, []);
+
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
-    { name: 'Scenario Library', href: '/scenarios', icon: FileText },
-    { name: 'Generate Scenarios', href: '/scenarios/new', icon: Sparkles },
-    { name: 'Analytics', href: '/analytics', icon: TrendingUp },
+    { name: 'Scenario Library', href: '/scenarios', icon: DocumentIcon },
+    { name: 'Generate Scenarios', href: '/scenarios/new', icon: ScenarioIcon },
+    { name: 'Analytics', href: '/analytics', icon: InsightsIcon },
   ];
 
   const bottomNavigation = [
@@ -86,13 +108,13 @@ export function Sidebar({ className }: SidebarProps) {
         )}>
           {!isCollapsed && (
             <div className="flex items-center space-x-3">
-              <Sparkles className="w-6 h-6 text-accent-600" />
+              <ForesightLogo size={28} className="text-blue-500" />
               <span className="text-base font-medium text-[var(--text-primary)] tracking-tight">
                 AI Foresight
               </span>
             </div>
           )}
-          {isCollapsed && <Sparkles className="w-6 h-6 text-accent-600" />}
+          {isCollapsed && <ForesightLogo size={28} className="text-blue-500" />}
 
           {/* Desktop Collapse Toggle */}
           <button
