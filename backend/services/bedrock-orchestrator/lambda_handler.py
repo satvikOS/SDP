@@ -10,23 +10,8 @@ from typing import Dict, List, Any
 from datetime import datetime
 from decimal import Decimal
 
-# Import multi-AI pipeline for enhanced scenario generation
-MULTI_AI_IMPORT_ERROR = None
-try:
-    from multi_ai_pipeline import MultiAIPipeline
-    MULTI_AI_ENABLED = True
-    logger_init = logging.getLogger()
-    logger_init.info("Multi-AI pipeline imported successfully")
-except ImportError as e:
-    MULTI_AI_ENABLED = False
-    MULTI_AI_IMPORT_ERROR = f"ImportError: {str(e)}"
-    logger_init = logging.getLogger()
-    logger_init.warning(f"Multi-AI pipeline not available: {e}")
-except Exception as e:
-    MULTI_AI_ENABLED = False
-    MULTI_AI_IMPORT_ERROR = f"Exception: {str(e)}"
-    logger_init = logging.getLogger()
-    logger_init.error(f"Multi-AI pipeline import failed: {e}")
+# Multi-AI pipeline will be imported dynamically when needed
+MULTI_AI_ENABLED = os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == 'true'
 
 logger = logging.getLogger()
 logger.setLevel(os.getenv('LOG_LEVEL', 'INFO'))
@@ -83,14 +68,18 @@ def health(event, context):
             result['multi_ai_enabled'] = False
 
         try:
-            result['multi_ai_import_error'] = MULTI_AI_IMPORT_ERROR if MULTI_AI_IMPORT_ERROR else 'NONE'
-        except:
-            result['multi_ai_import_error'] = 'ERROR'
-
-        try:
             result['env_pipeline'] = os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'NOT_SET')
         except:
             result['env_pipeline'] = 'ERROR'
+
+        # Try importing MultiAIPipeline to verify it works
+        try:
+            from multi_ai_pipeline import MultiAIPipeline
+            result['pipeline_import'] = 'SUCCESS'
+        except ImportError as e:
+            result['pipeline_import'] = f'IMPORT_ERROR: {str(e)[:100]}'
+        except Exception as e:
+            result['pipeline_import'] = f'ERROR: {str(e)[:100]}'
 
         try:
             result['env_google_key'] = 'SET' if os.getenv('GOOGLE_API_KEY') else 'NOT_SET'
@@ -542,6 +531,8 @@ def generate_scenario_async_worker(event, context):
             logger.info(f"[Job {job_id}] Starting multi-AI pipeline enhancement (Claude Opus → Gemini → Claude Sonnet → Claude Opus)")
 
             try:
+                # Import dynamically to avoid module-level import issues
+                from multi_ai_pipeline import MultiAIPipeline
                 pipeline = MultiAIPipeline()
 
                 enhanced_result = pipeline.execute_pipeline(
