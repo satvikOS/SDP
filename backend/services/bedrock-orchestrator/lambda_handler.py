@@ -66,11 +66,29 @@ def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
 
 def health(event, context):
     try:
+        # Check Multi-AI Pipeline status
+        multi_ai_status = {
+            'enabled': MULTI_AI_ENABLED,
+            'env_var_set': os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'false').lower() == 'true',
+            'google_api_key_set': bool(os.getenv('GOOGLE_API_KEY'))
+        }
+
+        # Try to import google-generativeai to verify it's installed
+        gemini_available = False
+        try:
+            import google.generativeai as genai
+            gemini_available = True
+        except ImportError:
+            gemini_available = False
+
+        multi_ai_status['gemini_sdk_installed'] = gemini_available
+
         return _response(200, {
             'status': 'healthy',
             'timestamp': datetime.utcnow().isoformat(),
             'model': 'ai-opus-4-5',
-            'bedrock_available': True
+            'bedrock_available': True,
+            'multi_ai_pipeline': multi_ai_status
         })
     except Exception as e:
         logger.error(f"Health error: {e}")
