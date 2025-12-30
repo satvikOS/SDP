@@ -10,6 +10,17 @@ from typing import Dict, List, Any
 from datetime import datetime
 from decimal import Decimal
 
+# Import multi-AI pipeline for enhanced scenario generation
+try:
+    from multi_ai_pipeline import MultiAIPipeline
+    MULTI_AI_ENABLED = True
+    logger_init = logging.getLogger()
+    logger_init.info("Multi-AI pipeline imported successfully")
+except ImportError as e:
+    MULTI_AI_ENABLED = False
+    logger_init = logging.getLogger()
+    logger_init.warning(f"Multi-AI pipeline not available: {e}")
+
 logger = logging.getLogger()
 logger.setLevel(os.getenv('LOG_LEVEL', 'INFO'))
 
