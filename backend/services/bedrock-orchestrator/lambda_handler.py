@@ -57,61 +57,16 @@ def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def health(event, context):
-    """Health check - ABSOLUTE FAILSAFE - will never crash."""
-    try:
-        result = {'status': 'healthy'}
-
-        # Check all components safely
-        try:
-            result['multi_ai_enabled'] = bool(MULTI_AI_ENABLED)
-        except:
-            result['multi_ai_enabled'] = False
-
-        try:
-            result['env_pipeline'] = os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'NOT_SET')
-        except:
-            result['env_pipeline'] = 'ERROR'
-
-        # Try importing MultiAIPipeline to verify it works
-        try:
-            from multi_ai_pipeline import MultiAIPipeline
-            result['pipeline_import'] = 'SUCCESS'
-        except ImportError as e:
-            result['pipeline_import'] = f'IMPORT_ERROR: {str(e)[:100]}'
-        except Exception as e:
-            result['pipeline_import'] = f'ERROR: {str(e)[:100]}'
-
-        try:
-            result['env_google_key'] = 'SET' if os.getenv('GOOGLE_API_KEY') else 'NOT_SET'
-        except:
-            result['env_google_key'] = 'ERROR'
-
-        # Try importing google-generativeai
-        try:
-            import google.generativeai
-            result['gemini_sdk'] = 'INSTALLED'
-        except ImportError as e:
-            result['gemini_sdk'] = f'MISSING: {str(e)[:100]}'
-        except Exception as e:
-            result['gemini_sdk'] = f'ERROR: {str(e)[:100]}'
-
-        return {
-            'statusCode': 200,
-            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps(result)
-        }
-    except Exception as e:
-        # If ANYTHING fails, return the error message
-        import traceback
-        return {
-            'statusCode': 200,
-            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({
-                'status': 'error',
-                'error': str(e),
-                'traceback': traceback.format_exc()[:500]
-            })
-        }
+    """Minimal health check - imports json locally to avoid any module issues."""
+    import json as json_lib
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': json_lib.dumps({'status': 'ok', 'timestamp': str(context.request_id) if context else 'test'})
+    }
 
 
 def list_agents(event, context):
