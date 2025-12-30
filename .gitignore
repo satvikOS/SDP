@@ -63,3 +63,4 @@ htmlcov/
 .aws-sam/
 samconfig.toml
 .sst/
+.requirements.zip
