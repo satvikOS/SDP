@@ -9,12 +9,18 @@
     "remove:dev": "serverless remove --stage dev",
     "remove:prod": "serverless remove --stage prod",
     "logs": "serverless logs -f executeAgent --stage dev --tail",
-    "test": "echo \"Tests coming soon\" && exit 0"
+    "test": "echo \"Tests coming soon\" && exit 0",
+    "sst:deploy": "sst deploy --stage dev",
+    "sst:deploy:prod": "sst deploy --stage production",
+    "sst:dev": "sst dev",
+    "sst:remove": "sst remove --stage dev"
   },
   "devDependencies": {
+    "aws-cdk-lib": "^2.233.0",
     "serverless": "^3.38.0",
+    "serverless-offline": "^13.3.0",
     "serverless-python-requirements": "^6.1.0",
-    "serverless-offline": "^13.3.0"
+    "sst": "^3.17.25"
   },
   "engines": {
     "node": ">=18.0.0",

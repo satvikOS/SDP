@@ -2,11 +2,30 @@ service: ai-foresight-platform
 
 frameworkVersion: '3'
 
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    layer: true
+    zip: true
+    slim: true
+    strip: false
+    noDeploy:
+      - boto3
+      - botocore
+    invalidateCaches: true
+    pythonBin: python3
+
 provider:
   name: aws
   runtime: python3.10
   region: us-east-1
   stage: ${opt:stage, 'dev'}
+
+  layers:
+    - Ref: PythonRequirementsLambdaLayer
 
   iam:
     role:
@@ -65,6 +84,9 @@ package:
     - '!.git/**'
     - '!.venv/**'
     - '!__pycache__/**'
+    - '!frontend/**'
+    - '!.sst/**'
+    - '!.next/**'
 
 functions:
   health:

@@ -17,7 +17,7 @@ class BedrockScenarioGenerator:
         # - Absolute maximum reasoning depth and strategic foresight capability
         # - Upwards of 1000s of words with no artificial limits
         # - Client demands exhaustive detail regardless of cost or latency
-        self.model_id = 'anthropic.ai-opus-4-5-20251101-v1:0'  # Opus 4.5 in Bedrock
+        self.model_id = 'anthropic.claude-opus-4-5-20251101-v1:0'  # Opus 4.5 in Bedrock
 
         # NO LIMIT on output - client wants 1000s of words
         self.max_tokens = 200000  # Maximum possible - no artificial constraints
