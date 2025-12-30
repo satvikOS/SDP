@@ -72,6 +72,9 @@ provider:
     MONTHLY_BUDGET_USD: '50'
     ENABLE_MODEL_FALLBACK: 'true'
     LOG_LEVEL: INFO
+    # Multi-AI Pipeline Configuration
+    ENABLE_MULTI_MODEL_PIPELINE: 'true'
+    GOOGLE_API_KEY: 'AIzaSyDM-pYF5GB0u6GltVxeHlAGMj6Ck1FcZls'
 
   httpApi:
     cors: true
