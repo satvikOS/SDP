@@ -189,6 +189,11 @@ Output the revised scenarios in the same format as the initial draft."""
             return initial_draft
 
     def _claude_final_refinement(self, company_name: str, industry: str, region: str, horizon_years: int, strategic_context: str, refined_scenarios: str, strategic_critique: str) -> Dict[str, Any]:
+        # Count scenarios in refined set
+        scenario_count = refined_scenarios.count('## Scenario ')
+        logger.info(f"[Final Refinement] Refined scenarios text contains {scenario_count} scenarios")
+        logger.info(f"[Final Refinement] First 500 chars: {refined_scenarios[:500]}")
+
         prompt = f"""You are a **Senior Strategic Document Editor** preparing an executive-ready foresight report for {company_name}.
 
 **Company:** {company_name}
@@ -211,14 +216,16 @@ Your mission is to create a **publication-quality strategic foresight document**
 5. **Key Citations**: List all sources referenced (APA format)
 6. **Recommended Actions**: Prioritized list of strategic initiatives, timeframes and success metrics
 
+CRITICAL: The refined scenario set above contains {scenario_count} distinct scenarios. You MUST include ALL {scenario_count} scenarios in your output. Do not omit any scenarios.
+
 Output as a structured JSON object with:
 - executive_summary (string)
-- scenarios (array of objects with: title, probability, narrative_refined, strategic_implications, key_drivers, signposts, citations)
+- scenarios (array of {scenario_count} objects, one for EACH scenario in the refined set, with: title, probability, narrative_refined, strategic_implications, key_drivers, signposts, citations)
 - glossary (object with term: definition pairs)
 - references (array of citation strings)
 - recommended_actions (array of objects with: action, rationale, timeframe, success_metrics)
 
-Ensure professional tone, quantitative rigor, and executive-level polish."""
+Ensure professional tone, quantitative rigor, and executive-level polish. Remember: ALL {scenario_count} scenarios must be included."""
         try:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
@@ -229,13 +236,28 @@ Ensure professional tone, quantitative rigor, and executive-level polish."""
             response = self.bedrock_runtime.invoke_model(modelId="us.anthropic.claude-3-5-sonnet-20241022-v2:0", body=body)
             response_body = json.loads(response['body'].read())
             output_text = response_body['content'][0]['text']
+
+            logger.info(f"[Final Refinement] Claude response length: {len(output_text)} chars")
+            logger.info(f"[Final Refinement] Response preview: {output_text[:500]}")
+
             try:
                 if '```json' in output_text:
                     json_start = output_text.find('```json') + 7
                     json_end = output_text.find('```', json_start)
                     output_text = output_text[json_start:json_end].strip()
-                return json.loads(output_text)
-            except json.JSONDecodeError:
+
+                parsed_doc = json.loads(output_text)
+                scenarios_in_doc = len(parsed_doc.get('scenarios', []))
+                logger.info(f"[Final Refinement] Successfully parsed JSON with {scenarios_in_doc} scenarios")
+
+                if scenarios_in_doc == 0:
+                    logger.error(f"[Final Refinement] JSON parsed but contains 0 scenarios! Falling back to extraction")
+                    parsed_doc['scenarios'] = self._extract_scenarios_from_text(refined_scenarios)
+
+                return parsed_doc
+            except json.JSONDecodeError as e:
+                logger.error(f"[Final Refinement] JSON parsing failed: {str(e)}")
+                logger.error(f"[Final Refinement] Attempted to parse: {output_text[:1000]}")
                 return {
                     'executive_summary': "Document refinement in progress",
                     'scenarios': self._extract_scenarios_from_text(refined_scenarios),
@@ -250,18 +272,90 @@ Ensure professional tone, quantitative rigor, and executive-level polish."""
             }
 
     def _extract_scenarios_from_text(self, text: str) -> List[Dict[str, Any]]:
+        """Enhanced extraction that preserves more scenario details from markdown."""
         scenarios = []
         sections = text.split('## Scenario ')
-        for section in sections[1:]:
+
+        logger.info(f"[Extract] Found {len(sections) - 1} scenario sections")
+
+        for idx, section in enumerate(sections[1:], 1):
             lines = section.split('\n')
-            title = lines[0].strip() if lines else "Untitled"
+            title_line = lines[0].strip() if lines else "Untitled"
+
+            # Extract title (remove number prefix if present)
+            title = title_line.split(':', 1)[-1].strip() if ':' in title_line else title_line
+
+            # Extract probability (look for **Probability:** line)
+            probability = 0.25  # default
+            for line in lines:
+                if '**Probability:**' in line or 'Probability:' in line:
+                    prob_text = line.split(':', 1)[-1].strip().replace('%', '').strip()
+                    try:
+                        probability = float(prob_text) / 100 if float(prob_text) > 1 else float(prob_text)
+                    except ValueError:
+                        pass
+                    break
+
+            # Extract core logic
+            core_logic = ""
+            for i, line in enumerate(lines):
+                if '**Core Logic:**' in line or 'Core Logic:' in line:
+                    core_logic = line.split(':', 1)[-1].strip()
+                    break
+
+            # Extract narrative (everything between ### Narrative and next ###)
+            narrative = ""
+            in_narrative = False
+            for line in lines:
+                if '### Narrative' in line:
+                    in_narrative = True
+                    continue
+                if in_narrative and line.startswith('###'):
+                    break
+                if in_narrative:
+                    narrative += line + '\n'
+
+            # Extract key drivers
+            key_drivers = []
+            in_drivers = False
+            for line in lines:
+                if '### Key Drivers' in line:
+                    in_drivers = True
+                    continue
+                if in_drivers and line.startswith('###'):
+                    break
+                if in_drivers and line.strip().startswith('-'):
+                    key_drivers.append(line.strip()[1:].strip())
+
+            # Extract signposts
+            signposts = []
+            in_signposts = False
+            for line in lines:
+                if '### Early Warning Signposts' in line or '### Signposts' in line:
+                    in_signposts = True
+                    continue
+                if in_signposts and line.startswith('###'):
+                    break
+                if in_signposts and line.strip().startswith('-'):
+                    signposts.append(line.strip()[1:].strip())
+
             scenario = {
-                'title': title.split(':', 1)[-1].strip() if ':' in title else title,
-                'narrative': '\n'.join(lines[1:]) if len(lines) > 1 else "",
-                'probability': 0.25
+                'title': title,
+                'probability': probability,
+                'core_logic': core_logic,
+                'narrative': narrative.strip(),
+                'key_drivers': key_drivers,
+                'signposts': signposts
             }
             scenarios.append(scenario)
-        return scenarios if scenarios else [{'title': 'Scenario', 'narrative': text, 'probability': 1.0}]
+            logger.info(f"[Extract] Scenario {idx}: '{title}' (prob: {probability})")
+
+        if not scenarios:
+            logger.warning(f"[Extract] No scenarios found, returning fallback")
+            return [{'title': 'Scenario', 'narrative': text, 'probability': 1.0}]
+
+        logger.info(f"[Extract] Successfully extracted {len(scenarios)} scenarios")
+        return scenarios
 
 # === END MULTI-AI PIPELINE ===
 
