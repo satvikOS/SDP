@@ -198,6 +198,9 @@ functions:
     package:
       patterns:
         - backend/services/bedrock-orchestrator/**
+        - backend/services/bedrock-orchestrator/*.py
+        - backend/services/bedrock-orchestrator/multi_ai_pipeline.py
+        - '!backend/services/bedrock-orchestrator/__pycache__/**'
 
   transformToBoardroom:
     handler: backend/services/bedrock-orchestrator/lambda_handler_br_transform.transform_to_boardroom
