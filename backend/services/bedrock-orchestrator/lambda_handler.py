@@ -152,6 +152,10 @@ Provide your critique in a structured format with specific, actionable feedback.
             return f"Strategic review unavailable: {str(e)}"
 
     def _claude_sonnet_due_diligence(self, company_name: str, industry: str, region: str, horizon_years: int, strategic_context: str, initial_draft: str, strategic_critique: str) -> str:
+        # Count scenarios in initial draft
+        scenario_count = initial_draft.count('## Scenario ')
+        logger.info(f"[Due Diligence] Initial draft contains {scenario_count} scenarios")
+
         prompt = f"""You are the **Chief Analyst** conducting due diligence on strategic scenarios for {company_name}, a {industry} company in {region} with a {horizon_years}-year horizon.
 
 **Strategic Context:**
@@ -171,19 +175,67 @@ Your mission is to:
 5. **Add evidence**: Reference real-world precedents, analogies, and data points
 6. **Improve coherence**: Ensure scenarios are internally consistent and mutually distinct
 
-**Rewrite the scenario set** with these improvements integrated. Each scenario should be more specific, quantitatively grounded, linked to concrete evidence, addressing all strategic critique points, and operationally actionable.
+CRITICAL INSTRUCTIONS:
+- The initial draft contains {scenario_count} scenarios
+- You MUST output ALL {scenario_count} scenarios in your response
+- DO NOT ask questions or request clarification - output the revised scenarios directly
+- DO NOT write conversational text like "I'll help revise..." or "Would you like me to..."
+- START your response immediately with the scenarios in markdown format
 
-Output the revised scenarios in the same format as the initial draft."""
+REQUIRED OUTPUT FORMAT (use this exact structure):
+
+# INITIAL SCENARIO SET
+
+## Scenario 1: [Title]
+
+**Probability:** [X]%
+
+**Core Logic:** [Brief statement]
+
+### Narrative
+[Improved narrative addressing all critique points - 2000+ words]
+
+### Key Drivers
+- [Driver 1]
+- [Driver 2]
+...
+
+### Early Warning Signposts
+- [Signpost 1]
+- [Signpost 2]
+...
+
+---
+
+## Scenario 2: [Title]
+[Continue same format for all {scenario_count} scenarios]
+
+Begin your response with "# INITIAL SCENARIO SET" and output all {scenario_count} revised scenarios immediately."""
         try:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 8000,
+                "max_tokens": 16000,  # Increased for detailed scenarios
                 "temperature": 0.7,
                 "messages": [{"role": "user", "content": prompt}]
             })
             response = self.bedrock_runtime.invoke_model(modelId=self.claude_sonnet, body=body)
             response_body = json.loads(response['body'].read())
-            return response_body['content'][0]['text']
+            refined_text = response_body['content'][0]['text']
+
+            # Validate output contains scenarios
+            output_scenario_count = refined_text.count('## Scenario ')
+            logger.info(f"[Due Diligence] Output contains {output_scenario_count} scenarios")
+            logger.info(f"[Due Diligence] First 500 chars: {refined_text[:500]}")
+
+            if output_scenario_count == 0:
+                logger.error(f"[Due Diligence] Claude Sonnet returned conversational response instead of scenarios!")
+                logger.error(f"[Due Diligence] Falling back to initial draft")
+                return initial_draft
+
+            if output_scenario_count < scenario_count:
+                logger.warning(f"[Due Diligence] Expected {scenario_count} scenarios but got {output_scenario_count}")
+
+            return refined_text
         except Exception as e:
             logger.error(f"Claude Sonnet due diligence failed: {str(e)}")
             return initial_draft
@@ -229,7 +281,7 @@ Ensure professional tone, quantitative rigor, and executive-level polish. Rememb
         try:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 8000,
+                "max_tokens": 16000,  # Increased for comprehensive professional document
                 "temperature": 0.7,
                 "messages": [{"role": "user", "content": prompt}]
             })
