@@ -270,14 +270,39 @@ Your mission is to create a **publication-quality strategic foresight document**
 
 CRITICAL: The refined scenario set above contains {scenario_count} distinct scenarios. You MUST include ALL {scenario_count} scenarios in your output. Do not omit any scenarios.
 
-Output as a structured JSON object with:
-- executive_summary (string)
-- scenarios (array of {scenario_count} objects, one for EACH scenario in the refined set, with: title, probability, narrative_refined, strategic_implications, key_drivers, signposts, citations)
-- glossary (object with term: definition pairs)
-- references (array of citation strings)
-- recommended_actions (array of objects with: action, rationale, timeframe, success_metrics)
+Output as a structured JSON object with this EXACT schema:
 
-Ensure professional tone, quantitative rigor, and executive-level polish. Remember: ALL {scenario_count} scenarios must be included."""
+{{
+  "executive_summary": "string",
+  "scenarios": [
+    {{
+      "title": "string",
+      "probability": 0.25,
+      "core_logic": "string",
+      "narrative": "string - comprehensive refined narrative",
+      "strategic_implications": "string",
+      "key_drivers": ["string", "string", ...],  // MUST be array of strings
+      "signposts": ["string", "string", ...],     // MUST be array of strings
+      "citations": ["string", "string", ...]      // MUST be array of strings
+    }}
+    // ... repeat for ALL {scenario_count} scenarios
+  ],
+  "glossary": {{"term": "definition"}},
+  "references": ["citation string", ...],
+  "recommended_actions": [
+    {{
+      "action": "string",
+      "rationale": "string",
+      "timeframe": "string",
+      "success_metrics": ["string", ...]
+    }}
+  ]
+}}
+
+CRITICAL:
+- key_drivers, signposts, citations MUST be arrays of strings, NOT comma-separated strings
+- Include ALL {scenario_count} scenarios in the scenarios array
+- Ensure professional tone, quantitative rigor, and executive-level polish"""
         try:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
@@ -304,24 +329,82 @@ Ensure professional tone, quantitative rigor, and executive-level polish. Rememb
 
                 if scenarios_in_doc == 0:
                     logger.error(f"[Final Refinement] JSON parsed but contains 0 scenarios! Falling back to extraction")
-                    parsed_doc['scenarios'] = self._extract_scenarios_from_text(refined_scenarios)
+                    extracted = self._extract_scenarios_from_text(refined_scenarios)
+                    parsed_doc['scenarios'] = self._normalize_scenarios(extracted)
+                else:
+                    # Normalize scenario data to ensure arrays are arrays
+                    parsed_doc['scenarios'] = self._normalize_scenarios(parsed_doc['scenarios'])
+                    logger.info(f"[Final Refinement] Scenarios normalized successfully")
 
                 return parsed_doc
             except json.JSONDecodeError as e:
                 logger.error(f"[Final Refinement] JSON parsing failed: {str(e)}")
                 logger.error(f"[Final Refinement] Attempted to parse: {output_text[:1000]}")
+                extracted = self._extract_scenarios_from_text(refined_scenarios)
+                normalized = self._normalize_scenarios(extracted)
                 return {
                     'executive_summary': "Document refinement in progress",
-                    'scenarios': self._extract_scenarios_from_text(refined_scenarios),
+                    'scenarios': normalized,
                     'raw_output': output_text
                 }
         except Exception as e:
             logger.error(f"Claude final refinement failed: {str(e)}")
+            extracted = self._extract_scenarios_from_text(refined_scenarios)
+            normalized = self._normalize_scenarios(extracted)
             return {
                 'executive_summary': "Final refinement unavailable",
-                'scenarios': self._extract_scenarios_from_text(refined_scenarios),
+                'scenarios': normalized,
                 'error': str(e)
             }
+
+    def _normalize_scenarios(self, scenarios: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Normalize scenario data to ensure all fields are in correct format for frontend."""
+        normalized = []
+        for scenario in scenarios:
+            # Ensure key_drivers is an array
+            if 'key_drivers' in scenario:
+                if isinstance(scenario['key_drivers'], str):
+                    # Convert comma-separated string to array
+                    scenario['key_drivers'] = [d.strip() for d in scenario['key_drivers'].split(',') if d.strip()]
+                elif not isinstance(scenario['key_drivers'], list):
+                    scenario['key_drivers'] = []
+            else:
+                scenario['key_drivers'] = []
+
+            # Ensure signposts is an array
+            if 'signposts' in scenario:
+                if isinstance(scenario['signposts'], str):
+                    # Convert comma-separated string to array
+                    scenario['signposts'] = [s.strip() for s in scenario['signposts'].split(',') if s.strip()]
+                elif not isinstance(scenario['signposts'], list):
+                    scenario['signposts'] = []
+            else:
+                scenario['signposts'] = []
+
+            # Ensure citations is an array
+            if 'citations' in scenario:
+                if isinstance(scenario['citations'], str):
+                    scenario['citations'] = [c.strip() for c in scenario['citations'].split(',') if c.strip()]
+                elif not isinstance(scenario['citations'], list):
+                    scenario['citations'] = []
+            else:
+                scenario['citations'] = []
+
+            # Ensure narrative field exists (might be narrative_refined from JSON)
+            if 'narrative_refined' in scenario and 'narrative' not in scenario:
+                scenario['narrative'] = scenario['narrative_refined']
+
+            # Ensure probability is a float
+            if 'probability' in scenario:
+                try:
+                    scenario['probability'] = float(scenario['probability'])
+                except (ValueError, TypeError):
+                    scenario['probability'] = 0.25
+
+            normalized.append(scenario)
+            logger.info(f"[Normalize] Scenario '{scenario.get('title', 'Unknown')}': drivers={len(scenario['key_drivers'])}, signposts={len(scenario['signposts'])}")
+
+        return normalized
 
     def _extract_scenarios_from_text(self, text: str) -> List[Dict[str, Any]]:
         """Enhanced extraction that preserves more scenario details from markdown."""
