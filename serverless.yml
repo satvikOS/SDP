@@ -195,8 +195,6 @@ functions:
     handler: backend/services/bedrock-orchestrator/lambda_handler.generate_scenario_async_worker
     timeout: 900
     memorySize: 3008
-    package:
-      individually: false
 
   transformToBoardroom:
     handler: backend/services/bedrock-orchestrator/lambda_handler_br_transform.transform_to_boardroom
