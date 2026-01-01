@@ -755,9 +755,15 @@ def generate_scenario_async_worker(event, context):
                 )
 
                 # Use enhanced results
+                logger.info(f"[Job {job_id}] Enhanced result keys: {list(enhanced_result.keys())}")
+                logger.info(f"[Job {job_id}] Number of scenarios in enhanced result: {len(enhanced_result.get('scenarios', []))}")
+
                 if 'professional_document' in enhanced_result:
                     parsed_result = enhanced_result['professional_document']
                     scenarios = enhanced_result.get('scenarios', scenarios)
+                    logger.info(f"[Job {job_id}] Using enhanced scenarios, count: {len(scenarios)}")
+                else:
+                    logger.warning(f"[Job {job_id}] No professional_document in enhanced result!")
 
                 pipeline_metadata = enhanced_result.get('pipeline_metadata', {})
                 strategic_critique = enhanced_result.get('strategic_critique', '')
