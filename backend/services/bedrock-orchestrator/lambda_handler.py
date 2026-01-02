@@ -193,7 +193,7 @@ REQUIRED OUTPUT FORMAT (use this exact structure):
 **Core Logic:** [Brief statement]
 
 ### Narrative
-[Improved narrative addressing all critique points - 2000+ words]
+[Improved narrative addressing all critique points - 800-1200 words, concise and focused]
 
 ### Key Drivers
 - [Driver 1]
@@ -210,11 +210,13 @@ REQUIRED OUTPUT FORMAT (use this exact structure):
 ## Scenario 2: [Title]
 [Continue same format for all {scenario_count} scenarios]
 
-Begin your response with "# INITIAL SCENARIO SET" and output all {scenario_count} revised scenarios immediately."""
+Begin your response with "# INITIAL SCENARIO SET" and output all {scenario_count} revised scenarios immediately.
+
+IMPORTANT: Keep each scenario narrative concise (800-1200 words) to ensure ALL {scenario_count} scenarios fit in the response. Quality over quantity - focus on the most critical improvements."""
         try:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 16000,  # Increased for detailed scenarios
+                "max_tokens": 8000,  # Claude Sonnet 3.5 v2 limit is 8192
                 "temperature": 0.7,
                 "messages": [{"role": "user", "content": prompt}]
             })
@@ -302,11 +304,12 @@ Output as a structured JSON object with this EXACT schema:
 CRITICAL:
 - key_drivers, signposts, citations MUST be arrays of strings, NOT comma-separated strings
 - Include ALL {scenario_count} scenarios in the scenarios array
+- Keep scenario narratives focused and concise to ensure all scenarios fit in the 8000 token response limit
 - Ensure professional tone, quantitative rigor, and executive-level polish"""
         try:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 16000,  # Increased for comprehensive professional document
+                "max_tokens": 8000,  # Claude Sonnet 3.5 v2 limit is 8192
                 "temperature": 0.7,
                 "messages": [{"role": "user", "content": prompt}]
             })
