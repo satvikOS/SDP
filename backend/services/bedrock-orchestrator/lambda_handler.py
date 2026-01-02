@@ -925,12 +925,13 @@ def generate_scenario_async_worker(event, context):
 
         # Configure boto3 with optimized timeout for fast generation (<15 min total)
         boto_config = Config(
-            read_timeout=180,  # 3 minutes per model call (4 models = 12 min + overhead)
+            read_timeout=360,  # 6 minutes for initial comprehensive generation
             connect_timeout=10,
             retries={'max_attempts': 2}
         )
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1', config=boto_config)
-        model_id = 'us.anthropic.claude-opus-4-5-20251101-v1:0'
+        # Use Claude Sonnet 3.5 v2 for initial draft (MUCH faster than Opus 4.5)
+        model_id = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
@@ -950,7 +951,7 @@ def generate_scenario_async_worker(event, context):
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
-            'max_tokens': 16000,  # Reduced for faster generation (<3 min per call)
+            'max_tokens': 8000,  # Sonnet 3.5 v2 limit (8K max output)
             'temperature': 0.7,
             'messages': [{'role': 'user', 'content': prompt}]
         }

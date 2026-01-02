@@ -155,20 +155,20 @@ CRITICAL: Must be ORTHOGONAL and GENUINELY UNKNOWABLE (not optimistic vs. pessim
 
 For EACH scenario (Bottom-Left, Bottom-Right, Top-Left, Top-Right):
 
-**A. SCENARIO NARRATIVE** (1500-2000 words):
+**A. SCENARIO NARRATIVE** (600-800 words - CONCISE & FOCUSED):
 
-1. **Core Logic** (150-200 words):
+1. **Core Logic** (80-100 words):
    - What PHYSICS or ECONOMICS makes this world stable?
    - What VALUE SHIFT occurs?
    - Why is this different from trend extrapolation?
 
-2. **Structural Breaks** (200-300 words):
+2. **Structural Breaks** (120-150 words):
    - What 2-3 DISCONTINUITIES create this world?
    - What TRIGGERS each shift? (technology threshold, geopolitical crisis, economic tipping point)
    - Timeframes: YYYY-YYYY ranges
    - Cite 2-3 sources on precedents or trajectories
 
-3. **Geopolitical & Macroeconomic Environment** (300-400 words):
+3. **Geopolitical & Macroeconomic Environment** (120-150 words):
    - Power structures enabling/constraining value creation
    - GDP growth RANGES by region (X-Y%)
    - Cost of capital RANGES by risk profile
@@ -176,7 +176,7 @@ For EACH scenario (Bottom-Left, Bottom-Right, Top-Left, Top-Right):
    - Capital flow patterns: Who can access capital? At what cost?
    - Cite IMF, BIS, World Bank, think tanks (3-4 sources)
 
-4. **Industry Physics & Market Dynamics** (300-400 words):
+4. **Industry Physics & Market Dynamics** (120-150 words):
    - Market size: Use ACTUAL ranges (e.g., "grows from $850B to $1.2-1.4T" NOT "$AA-BB B to $XX-YY B")
    - Margin pool distribution by value chain segment (e.g., "R&D 60-65%, manufacturing 15-20%, distribution 10-12%")
    - Market structure: HHI ranges, # of players, winner-take-most vs. fragmented (e.g., "HHI 1800-2200, top 4 players, winner-take-most")
@@ -192,9 +192,9 @@ For EACH scenario (Bottom-Left, Bottom-Right, Top-Left, Top-Right):
    - Regulatory dynamics: (e.g., "market-driven 70-75% vs. state-directed 25-30%")
    - Cite ACTUAL company filings, analyst reports (3-4 real sources)
 
-**B. STRATEGIC IMPLICATIONS FOR {company_name}** (600-800 words):
+**B. STRATEGIC IMPLICATIONS FOR {company_name}** (350-450 words total):
 
-6. **What BREAKS** (300-400 words):
+6. **What BREAKS** (120-150 words):
    - Name ACTUAL products/assets/facilities that become OBSOLETE (e.g., "15 coal plants in Midwest", "legacy COBOL mainframes", "gasoline F-150 production lines")
    - Why? (Technology shift? Regulatory change? Value migration?) Be specific (e.g., "EPA carbon tax $50-80/ton makes uneconomic by 2028")
    - Quantify with REAL ranges (NOT placeholders):
@@ -205,7 +205,7 @@ For EACH scenario (Bottom-Left, Bottom-Right, Top-Left, Top-Right):
    - Cumulative impact: (e.g., "total revenue at risk $12-18B, 18-25% of 2024 base")
    - Cite REAL industry benchmarks (2-3 actual sources with titles)
 
-7. **What SURVIVES & THRIVES** (300-400 words):
+7. **What SURVIVES & THRIVES** (120-150 words):
    - Name ACTUAL capabilities creating ASYMMETRIC ADVANTAGE (e.g., "Nvidia CUDA ecosystem", "Coca-Cola fountain contracts", "AWS's 200+ services")
    - What makes them defensible? Use REAL numbers:
      - Ecosystem lock-in: ACTUAL costs (e.g., "$20-30B to replicate, 6-8 years, 85-90% developer dependency" NOT "$XXB, X years, YY%")
@@ -281,11 +281,11 @@ Return ONLY valid JSON with this EXACT structure:
     {{
       "title": "[5-7 words revealing strategic insight, not description]",
       "tagline": "[One-sentence STRATEGIC thesis]",
-      "core_logic": "[150-200 words: PHYSICS/ECONOMICS making this stable + VALUE SHIFT]",
+      "core_logic": "[80-100 words: PHYSICS/ECONOMICS making this stable + VALUE SHIFT]",
       "probability": 0.15-0.35,
       "quadrant": "Bottom-Left|Bottom-Right|Top-Left|Top-Right",
 
-      "narrative": "[COMPLETE STRATEGIC ANALYSIS - 1500-2000 words following structure above:
+      "narrative": "[COMPLETE STRATEGIC ANALYSIS - 600-800 words following structure above:
       - Core logic and value shift
       - Structural breaks with triggers and timeframes
       - Geopolitical/macro environment with GDP, capital flows, power structures
@@ -339,7 +339,7 @@ Before submitting, verify:
 ✓ **APA Citations**: 8-12 per scenario inline in narrative
 ✓ **Professional Tone**: Board-level document, not marketing fluff
 ✓ **Complete JSON**: All fields filled, valid JSON structure
-✓ **Word Counts**: Each narrative 1500-2000 words
+✓ **Word Counts**: Each narrative 600-800 words (concise & focused)
 ✓ **Probabilities Sum**: 4 scenario probabilities sum to ~1.0
 ✓ **Specific Assets**: Named actual products/facilities/capabilities (not generic)
 
