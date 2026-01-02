@@ -116,7 +116,7 @@ class ApiClient {
 
     // Poll for completion
     const pollInterval = 3000; // 3 seconds (reduce server load)
-    const maxAttempts = 500; // 25 minutes max (500 * 3s = 1500s) - generous buffer for 4 comprehensive scenarios
+    const maxAttempts = 1200; // 60 minutes max (1200 * 3s = 3600s) - extended for Claude Opus 4.5 comprehensive scenarios
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       await new Promise(resolve => setTimeout(resolve, pollInterval));
@@ -133,7 +133,7 @@ class ApiClient {
       // Status 202 means still processing, continue polling
     }
 
-    throw new Error('Scenario generation timed out after 25 minutes');
+    throw new Error('Scenario generation timed out after 60 minutes');
   }
 
   /**
