@@ -41,7 +41,8 @@ class MultiAIPipeline:
         """Initialize multi-AI pipeline with Bedrock and Google AI clients."""
         self.bedrock_runtime = boto3.client('bedrock-runtime', region_name='us-east-1')
         self.claude_opus = "us.anthropic.claude-opus-4-5-20251101-v1:0"
-        self.claude_sonnet = "us.anthropic.claude-3-5-sonnet-20241022-v2:0"
+        # Use Opus 4.5 for both due diligence and final refinement (64K token output limit)
+        self.claude_sonnet = "us.anthropic.claude-opus-4-5-20251101-v1:0"  # Changed to Opus 4.5
         self.google_api_key = os.getenv('GOOGLE_API_KEY', 'AIzaSyDM-pYF5GB0u6GltVxeHlAGMj6Ck1FcZls')
         self.google_client = None
 
@@ -56,7 +57,7 @@ class MultiAIPipeline:
         else:
             logger.warning("GOOGLE_API_KEY not set. Gemini review will be skipped.")
 
-        logger.info("Multi-AI pipeline initialized (Claude Opus → Gemini → Claude Sonnet → Claude Opus)")
+        logger.info("Multi-AI pipeline initialized (Claude Opus 4.5 → Gemini 1.5 Pro → Claude Opus 4.5 → Claude Opus 4.5)")
 
     def execute_pipeline(self, company_name: str, industry: str, region: str, horizon_years: int, strategic_context: str, multi_agent_output: Dict[str, Any]) -> Dict[str, Any]:
         """Execute the full multi-AI pipeline."""
@@ -74,14 +75,14 @@ class MultiAIPipeline:
             logger.info("Step 1/4: Initial draft formatted")
 
             strategic_critique = self._gemini_strategic_review(company_name, industry, region, horizon_years, strategic_context, initial_draft)
-            pipeline_metadata['models_used'].append('gemini-3-pro')
+            pipeline_metadata['models_used'].append('gemini-1.5-pro')
             pipeline_metadata['review_layers'].append('strategic_review')
-            logger.info("Step 2/4: Gemini strategic review completed")
+            logger.info("Step 2/4: Gemini 1.5 Pro strategic review completed")
 
             refined_scenarios = self._claude_sonnet_due_diligence(company_name, industry, region, horizon_years, strategic_context, initial_draft, strategic_critique)
-            pipeline_metadata['models_used'].append('claude-sonnet-4.5')
+            pipeline_metadata['models_used'].append('claude-opus-4.5')
             pipeline_metadata['review_layers'].append('due_diligence')
-            logger.info("Step 3/4: Claude Sonnet due diligence completed")
+            logger.info("Step 3/4: Claude Opus 4.5 due diligence completed")
 
             final_document = self._claude_final_refinement(company_name, industry, region, horizon_years, strategic_context, refined_scenarios, strategic_critique)
             pipeline_metadata['review_layers'].append('final_refinement')
@@ -144,7 +145,8 @@ Provide your critique in a structured format with specific, actionable feedback.
         try:
             if not self.google_client:
                 return "Gemini review skipped: Google AI client not available"
-            model = self.google_client.GenerativeModel('gemini-2.0-flash-exp')
+            # Use Gemini 1.5 Pro for better reasoning and 8K output tokens
+            model = self.google_client.GenerativeModel('gemini-1.5-pro')
             response = model.generate_content(prompt)
             return response.text
         except Exception as e:
@@ -193,7 +195,7 @@ REQUIRED OUTPUT FORMAT (use this exact structure):
 **Core Logic:** [Brief statement]
 
 ### Narrative
-[Improved narrative addressing all critique points - 800-1200 words, concise and focused]
+[Improved narrative addressing all critique points - 1500-2500 words with comprehensive detail]
 
 ### Key Drivers
 - [Driver 1]
@@ -212,11 +214,11 @@ REQUIRED OUTPUT FORMAT (use this exact structure):
 
 Begin your response with "# INITIAL SCENARIO SET" and output all {scenario_count} revised scenarios immediately.
 
-IMPORTANT: Keep each scenario narrative concise (800-1200 words) to ensure ALL {scenario_count} scenarios fit in the response. Quality over quantity - focus on the most critical improvements."""
+IMPORTANT: With Claude Opus 4.5's extended context, you can provide comprehensive detail for all {scenario_count} scenarios. Aim for 1500-2500 words per scenario narrative to ensure executive-level depth."""
         try:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 8000,  # Claude Sonnet 3.5 v2 limit is 8192
+                "max_tokens": 64000,  # Claude Opus 4.5 supports up to 64K output tokens
                 "temperature": 0.7,
                 "messages": [{"role": "user", "content": prompt}]
             })
@@ -304,16 +306,16 @@ Output as a structured JSON object with this EXACT schema:
 CRITICAL:
 - key_drivers, signposts, citations MUST be arrays of strings, NOT comma-separated strings
 - Include ALL {scenario_count} scenarios in the scenarios array
-- Keep scenario narratives focused and concise to ensure all scenarios fit in the 8000 token response limit
+- With Claude Opus 4.5's 64K token capacity, provide comprehensive detail for all scenarios
 - Ensure professional tone, quantitative rigor, and executive-level polish"""
         try:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 8000,  # Claude Sonnet 3.5 v2 limit is 8192
+                "max_tokens": 64000,  # Claude Opus 4.5 supports up to 64K output tokens
                 "temperature": 0.7,
                 "messages": [{"role": "user", "content": prompt}]
             })
-            response = self.bedrock_runtime.invoke_model(modelId="us.anthropic.claude-3-5-sonnet-20241022-v2:0", body=body)
+            response = self.bedrock_runtime.invoke_model(modelId=self.claude_opus, body=body)
             response_body = json.loads(response['body'].read())
             output_text = response_body['content'][0]['text']
 
@@ -969,7 +971,7 @@ def generate_scenario_async_worker(event, context):
 
         if MULTI_AI_ENABLED and os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == 'true':
             logger.info(f"[Job {job_id}] ✓ Multi-AI pipeline ENABLED - starting enhancement")
-            logger.info(f"[Job {job_id}] Pipeline: Claude Opus → Gemini 3 Pro → Claude Sonnet → Claude Opus")
+            logger.info(f"[Job {job_id}] Pipeline: Claude Opus 4.5 → Gemini 1.5 Pro → Claude Opus 4.5 (Due Diligence) → Claude Opus 4.5 (Final)")
 
             try:
                 # MultiAIPipeline is now inlined in this file (no import needed)
@@ -1045,11 +1047,10 @@ def generate_scenario_async_worker(event, context):
 
         # Determine generation method based on pipeline usage
         if MULTI_AI_ENABLED and os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == 'true':
-            generation_method = 'Multi-AI Pipeline: Claude Opus → Gemini → Claude Sonnet → Claude Opus'
+            generation_method = 'Multi-AI Pipeline: Claude Opus 4.5 → Gemini 1.5 Pro → Claude Opus 4.5 → Claude Opus 4.5'
             models_used = {
-                'claude-opus-4.5': 2,  # Initial + Final
-                'gemini-3-pro': 1,     # Strategic review
-                'claude-sonnet-4.5': 1  # Due diligence
+                'claude-opus-4.5': 3,  # Initial + Due Diligence + Final
+                'gemini-1.5-pro': 1    # Strategic review
             }
         else:
             generation_method = 'AI Opus 4.5 - 2x2 Matrix Scenario Planning'
