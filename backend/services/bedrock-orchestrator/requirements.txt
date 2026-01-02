@@ -10,8 +10,8 @@ tenacity>=8.2.0
 python-dotenv>=1.0.0
 httpx>=0.24.0
 
-# Multi-AI Pipeline - Google Gemini Integration
-google-generativeai>=0.4.0
+# Multi-AI Pipeline - Google Gemini Integration (NEW SDK)
+google-genai>=0.2.0
 
 # Document export libraries
 reportlab>=4.0.0

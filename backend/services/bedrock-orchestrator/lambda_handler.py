@@ -41,23 +41,22 @@ class MultiAIPipeline:
         """Initialize multi-AI pipeline with Bedrock and Google AI clients."""
         self.bedrock_runtime = boto3.client('bedrock-runtime', region_name='us-east-1')
         self.claude_opus = "us.anthropic.claude-opus-4-5-20251101-v1:0"
-        # Use Opus 4.5 for both due diligence and final refinement (64K token output limit)
-        self.claude_sonnet = "us.anthropic.claude-opus-4-5-20251101-v1:0"  # Changed to Opus 4.5
+        # Use Llama 4 Maverick for due diligence (faster than Opus)
+        self.llama_maverick = "us.meta.llama4-maverick-17b-instruct-v1:0"
         self.google_api_key = os.getenv('GOOGLE_API_KEY', 'AIzaSyDM-pYF5GB0u6GltVxeHlAGMj6Ck1FcZls')
         self.google_client = None
 
         if self.google_api_key:
             try:
-                import google.generativeai as genai
-                genai.configure(api_key=self.google_api_key)
-                self.google_client = genai
-                logger.info("Google Gemini client initialized successfully")
-            except ImportError:
-                logger.warning("google-generativeai package not installed. Gemini review will be skipped.")
+                from google import genai
+                self.google_client = genai.Client(api_key=self.google_api_key)
+                logger.info("Google Gemini client initialized successfully (google-genai SDK)")
+            except ImportError as e:
+                logger.warning(f"google-genai package not installed: {e}. Gemini review will be skipped.")
         else:
             logger.warning("GOOGLE_API_KEY not set. Gemini review will be skipped.")
 
-        logger.info("Multi-AI pipeline initialized (Claude Opus 4.5 → Gemini 3 Pro → Claude Opus 4.5 → Claude Opus 4.5)")
+        logger.info("Multi-AI pipeline initialized (Claude Opus 4.5 → Gemini 1.5 Pro → Llama 4 Maverick → Claude Opus 4.5)")
 
     def execute_pipeline(self, company_name: str, industry: str, region: str, horizon_years: int, strategic_context: str, multi_agent_output: Dict[str, Any]) -> Dict[str, Any]:
         """Execute the full multi-AI pipeline."""
@@ -75,14 +74,14 @@ class MultiAIPipeline:
             logger.info("Step 1/4: Initial draft formatted")
 
             strategic_critique = self._gemini_strategic_review(company_name, industry, region, horizon_years, strategic_context, initial_draft)
-            pipeline_metadata['models_used'].append('gemini-3-pro')
+            pipeline_metadata['models_used'].append('gemini-1.5-pro')
             pipeline_metadata['review_layers'].append('strategic_review')
-            logger.info("Step 2/4: Gemini 3 Pro strategic review completed")
+            logger.info("Step 2/4: Gemini 1.5 Pro strategic review completed")
 
-            refined_scenarios = self._claude_sonnet_due_diligence(company_name, industry, region, horizon_years, strategic_context, initial_draft, strategic_critique)
-            pipeline_metadata['models_used'].append('claude-opus-4.5')
+            refined_scenarios = self._llama_due_diligence(company_name, industry, region, horizon_years, strategic_context, initial_draft, strategic_critique)
+            pipeline_metadata['models_used'].append('llama-4-maverick-17b')
             pipeline_metadata['review_layers'].append('due_diligence')
-            logger.info("Step 3/4: Claude Opus 4.5 due diligence completed")
+            logger.info("Step 3/4: Llama 4 Maverick due diligence completed")
 
             final_document = self._claude_final_refinement(company_name, industry, region, horizon_years, strategic_context, refined_scenarios, strategic_critique)
             pipeline_metadata['review_layers'].append('final_refinement')
@@ -168,18 +167,20 @@ Provide your critique in a structured format with specific, actionable feedback.
         try:
             if not self.google_client:
                 return "Gemini review skipped: Google AI client not available"
-            # Use Gemini 3 Pro (confirmed available in user's API quota)
-            model = self.google_client.GenerativeModel('gemini-3-pro')
-            response = model.generate_content(prompt)
+            # Use Gemini 1.5 Pro (proven to work, fast generation)
+            response = self.google_client.models.generate_content(
+                model='gemini-1.5-pro',
+                contents=prompt
+            )
             return response.text
         except Exception as e:
             logger.error(f"Gemini strategic review failed: {str(e)}")
             return f"Strategic review unavailable: {str(e)}"
 
-    def _claude_sonnet_due_diligence(self, company_name: str, industry: str, region: str, horizon_years: int, strategic_context: str, initial_draft: str, strategic_critique: str) -> str:
+    def _llama_due_diligence(self, company_name: str, industry: str, region: str, horizon_years: int, strategic_context: str, initial_draft: str, strategic_critique: str) -> str:
         # Count scenarios in initial draft
         scenario_count = initial_draft.count('## Scenario ')
-        logger.info(f"[Due Diligence] Initial draft contains {scenario_count} scenarios")
+        logger.info(f"[Due Diligence - Llama 4 Maverick] Initial draft contains {scenario_count} scenarios")
 
         prompt = f"""You are the **Chief Analyst** conducting due diligence on strategic scenarios for {company_name}, a {industry} company in {region} with a {horizon_years}-year horizon.
 
@@ -263,14 +264,14 @@ Begin your response with "# INITIAL SCENARIO SET" and output all {scenario_count
 IMPORTANT: Keep scenarios focused and concise (800-1200 words per narrative) to ensure timely delivery while maintaining executive quality."""
         try:
             body = json.dumps({
-                "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 32000,  # Reduced for faster generation
+                "prompt": prompt,
+                "max_gen_len": 16000,  # Reduced for faster generation
                 "temperature": 0.7,
-                "messages": [{"role": "user", "content": prompt}]
+                "top_p": 0.9
             })
-            response = self.bedrock_runtime.invoke_model(modelId=self.claude_sonnet, body=body)
+            response = self.bedrock_runtime.invoke_model(modelId=self.llama_maverick, body=body)
             response_body = json.loads(response['body'].read())
-            refined_text = response_body['content'][0]['text']
+            refined_text = response_body.get('generation', '')
 
             # Validate output contains scenarios
             output_scenario_count = refined_text.count('## Scenario ')
@@ -366,7 +367,7 @@ CRITICAL:
         try:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 32000,  # Reduced for faster generation
+                "max_tokens": 16000,  # Reduced for faster generation (<3 min per call)
                 "temperature": 0.7,
                 "messages": [{"role": "user", "content": prompt}]
             })
@@ -922,9 +923,9 @@ def generate_scenario_async_worker(event, context):
 
         logger.info(f"[Job {job_id}] Generating for {company_name}")
 
-        # Configure boto3 with extended timeout for long-running AI Opus 4.5 requests
+        # Configure boto3 with optimized timeout for fast generation (<15 min total)
         boto_config = Config(
-            read_timeout=600,  # 10 minutes for comprehensive scenario generation
+            read_timeout=180,  # 3 minutes per model call (4 models = 12 min + overhead)
             connect_timeout=10,
             retries={'max_attempts': 2}
         )
@@ -949,13 +950,8 @@ def generate_scenario_async_worker(event, context):
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
-            'max_tokens': 64000,  # Maximum for Opus 4.5
-            'temperature': 1.0,  # Must be 1.0 when thinking is enabled
-            # top_k is not allowed when thinking is enabled
-            'thinking': {
-                'type': 'enabled',
-                'budget_tokens': 10000  # Extended thinking for complex scenario reasoning
-            },
+            'max_tokens': 16000,  # Reduced for faster generation (<3 min per call)
+            'temperature': 0.7,
             'messages': [{'role': 'user', 'content': prompt}]
         }
 
@@ -969,16 +965,8 @@ def generate_scenario_async_worker(event, context):
 
         response_body = json.loads(response['body'].read())
 
-        # When thinking is enabled, response contains multiple content blocks
-        # Find the text block (thinking blocks are type='thinking', text blocks are type='text')
-        ai_response = None
-        for block in response_body.get('content', []):
-            if block.get('type') == 'text':
-                ai_response = block.get('text')
-                break
-
-        if not ai_response:
-            raise ValueError("No text content found in response")
+        # Extract text from response
+        ai_response = response_body['content'][0]['text']
 
         # Parse JSON from response - handle markdown code blocks if present
         # Remove markdown code fences if they exist
