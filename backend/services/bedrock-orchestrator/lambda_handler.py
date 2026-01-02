@@ -57,7 +57,7 @@ class MultiAIPipeline:
         else:
             logger.warning("GOOGLE_API_KEY not set. Gemini review will be skipped.")
 
-        logger.info("Multi-AI pipeline initialized (Claude Opus 4.5 → Gemini 3 Pro → Claude Opus 4.5 → Claude Opus 4.5)")
+        logger.info("Multi-AI pipeline initialized (Claude Opus 4.5 → Gemini 1.5 Pro → Claude Opus 4.5 → Claude Opus 4.5)")
 
     def execute_pipeline(self, company_name: str, industry: str, region: str, horizon_years: int, strategic_context: str, multi_agent_output: Dict[str, Any]) -> Dict[str, Any]:
         """Execute the full multi-AI pipeline."""
@@ -75,9 +75,9 @@ class MultiAIPipeline:
             logger.info("Step 1/4: Initial draft formatted")
 
             strategic_critique = self._gemini_strategic_review(company_name, industry, region, horizon_years, strategic_context, initial_draft)
-            pipeline_metadata['models_used'].append('gemini-3-pro')
+            pipeline_metadata['models_used'].append('gemini-1.5-pro')
             pipeline_metadata['review_layers'].append('strategic_review')
-            logger.info("Step 2/4: Gemini 3 Pro strategic review completed")
+            logger.info("Step 2/4: Gemini 1.5 Pro strategic review completed")
 
             refined_scenarios = self._claude_sonnet_due_diligence(company_name, industry, region, horizon_years, strategic_context, initial_draft, strategic_critique)
             pipeline_metadata['models_used'].append('claude-opus-4.5')
@@ -145,8 +145,8 @@ Provide your critique in a structured format with specific, actionable feedback.
         try:
             if not self.google_client:
                 return "Gemini review skipped: Google AI client not available"
-            # Use Gemini 3 Pro as specified
-            model = self.google_client.GenerativeModel('gemini-3-pro')
+            # Use Gemini 1.5 Pro (gemini-3-pro doesn't exist yet)
+            model = self.google_client.GenerativeModel('gemini-1.5-pro')
             response = model.generate_content(prompt)
             return response.text
         except Exception as e:
@@ -195,7 +195,7 @@ REQUIRED OUTPUT FORMAT (use this exact structure):
 **Core Logic:** [Brief statement]
 
 ### Narrative
-[Improved narrative addressing all critique points - 1500-2500 words with comprehensive detail]
+[Improved narrative addressing all critique points - 800-1200 words, focused and executive-ready]
 
 ### Key Drivers
 - [Driver 1]
@@ -214,30 +214,17 @@ REQUIRED OUTPUT FORMAT (use this exact structure):
 
 Begin your response with "# INITIAL SCENARIO SET" and output all {scenario_count} revised scenarios immediately.
 
-IMPORTANT: With Claude Opus 4.5's extended context, you can provide comprehensive detail for all {scenario_count} scenarios. Aim for 1500-2500 words per scenario narrative to ensure executive-level depth."""
+IMPORTANT: Keep scenarios focused and concise (800-1200 words per narrative) to ensure timely delivery while maintaining executive quality."""
         try:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 64000,  # Claude Opus 4.5 supports up to 64K output tokens
-                "temperature": 1.0,  # Must be 1.0 when thinking is enabled
-                "thinking": {
-                    "type": "enabled",
-                    "budget_tokens": 8000  # Extended thinking for scenario analysis and critique integration
-                },
+                "max_tokens": 32000,  # Reduced for faster generation
+                "temperature": 0.7,
                 "messages": [{"role": "user", "content": prompt}]
             })
             response = self.bedrock_runtime.invoke_model(modelId=self.claude_sonnet, body=body)
             response_body = json.loads(response['body'].read())
-
-            # Extract text content (skip thinking blocks)
-            refined_text = None
-            for block in response_body.get('content', []):
-                if block.get('type') == 'text':
-                    refined_text = block.get('text')
-                    break
-
-            if not refined_text:
-                raise ValueError("No text content found in Claude response")
+            refined_text = response_body['content'][0]['text']
 
             # Validate output contains scenarios
             output_scenario_count = refined_text.count('## Scenario ')
@@ -319,31 +306,18 @@ Output as a structured JSON object with this EXACT schema:
 CRITICAL:
 - key_drivers, signposts, citations MUST be arrays of strings, NOT comma-separated strings
 - Include ALL {scenario_count} scenarios in the scenarios array
-- With Claude Opus 4.5's 64K token capacity, provide comprehensive detail for all scenarios
+- Keep scenarios focused and concise for timely delivery
 - Ensure professional tone, quantitative rigor, and executive-level polish"""
         try:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 64000,  # Claude Opus 4.5 supports up to 64K output tokens
-                "temperature": 1.0,  # Must be 1.0 when thinking is enabled
-                "thinking": {
-                    "type": "enabled",
-                    "budget_tokens": 10000  # Extended thinking for JSON structuring and citation quality
-                },
+                "max_tokens": 32000,  # Reduced for faster generation
+                "temperature": 0.7,
                 "messages": [{"role": "user", "content": prompt}]
             })
             response = self.bedrock_runtime.invoke_model(modelId=self.claude_opus, body=body)
             response_body = json.loads(response['body'].read())
-
-            # Extract text content (skip thinking blocks)
-            output_text = None
-            for block in response_body.get('content', []):
-                if block.get('type') == 'text':
-                    output_text = block.get('text')
-                    break
-
-            if not output_text:
-                raise ValueError("No text content found in Claude response")
+            output_text = response_body['content'][0]['text']
 
             logger.info(f"[Final Refinement] Claude response length: {len(output_text)} chars")
             logger.info(f"[Final Refinement] Response preview: {output_text[:500]}")
@@ -997,7 +971,7 @@ def generate_scenario_async_worker(event, context):
 
         if MULTI_AI_ENABLED and os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == 'true':
             logger.info(f"[Job {job_id}] ✓ Multi-AI pipeline ENABLED - starting enhancement")
-            logger.info(f"[Job {job_id}] Pipeline: Claude Opus 4.5 → Gemini 3 Pro → Claude Opus 4.5 (Due Diligence) → Claude Opus 4.5 (Final)")
+            logger.info(f"[Job {job_id}] Pipeline: Claude Opus 4.5 → Gemini 1.5 Pro → Claude Opus 4.5 (Due Diligence) → Claude Opus 4.5 (Final)")
 
             try:
                 # MultiAIPipeline is now inlined in this file (no import needed)
@@ -1073,10 +1047,10 @@ def generate_scenario_async_worker(event, context):
 
         # Determine generation method based on pipeline usage
         if MULTI_AI_ENABLED and os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == 'true':
-            generation_method = 'Multi-AI Pipeline: Claude Opus 4.5 → Gemini 3 Pro → Claude Opus 4.5 → Claude Opus 4.5'
+            generation_method = 'Multi-AI Pipeline: Claude Opus 4.5 → Gemini 1.5 Pro → Claude Opus 4.5 → Claude Opus 4.5'
             models_used = {
-                'claude-opus-4.5': 3,  # Initial + Due Diligence + Final
-                'gemini-3-pro': 1      # Strategic review
+                'claude-opus-4.5': 3,   # Initial + Due Diligence + Final
+                'gemini-1.5-pro': 1     # Strategic review
             }
         else:
             generation_method = 'AI Opus 4.5 - 2x2 Matrix Scenario Planning'
