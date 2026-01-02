@@ -81,6 +81,12 @@ provider:
   httpApi:
     cors: true
     metrics: true
+  apiGateway:
+    binaryMediaTypes:
+      - 'application/pdf'
+      - 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      - 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+      - 'application/epub+zip'
 
 package:
   individually: true

@@ -16,29 +16,89 @@ Classification: CONFIDENTIAL - STRATEGIC PLANNING USE ONLY
 PHASE 1: DEEP COMPANY RESEARCH (MANDATORY FIRST STEP)
 ═══════════════════════════════════════════════════════════════════
 
-Before building scenarios, RESEARCH {company_name} exhaustively using your knowledge:
+CRITICAL: Before writing ANY scenarios, you MUST research {company_name} using ALL your knowledge.
 
-**A. COMPANY FUNDAMENTALS**
-1. Business Model: Revenue streams, which 2-3 segments generate 60%+ of EBIT?
-2. Market Position: Market cap scale, annual revenue range, geographic footprint
-3. Strategic Assets: Key facilities, patents/IP, proprietary technologies, partnerships
-4. Financial Profile: Revenue/EBITDA/ROIC trends, capital structure, R&D intensity
-5. Competitive Position: Top 3-5 competitors, market share ranges, competitive advantages
+DO NOT PROCEED until you can answer:
+✓ What is {company_name}'s actual business model? (franchise, licensing, direct sales, B2B, B2C?)
+✓ What are their TOP 5 revenue-generating products/services by name?
+✓ Who are their TOP 5 competitors by name and approximate market share?
+✓ What is their approximate annual revenue? (e.g., $80-90B, not "$XX-YY B")
+✓ What specific technologies, facilities, or assets do they depend on?
+✓ What specific regulations govern their industry?
 
-**B. INDUSTRY DYNAMICS**
-1. Market Structure: Total market size, growth rates (5Y CAGR), concentration
-2. Value Chain: Where do margins concentrate? (R&D, manufacturing, distribution, data)
-3. Technology Trends: Technologies reshaping industry, adoption curves
-4. Regulatory Regime: Major regulations, policy trajectories, ESG requirements
-5. Disruption Vectors: New technologies, business models, or competitors threatening profit pools
+**A. COMPANY FUNDAMENTALS - USE ACTUAL KNOWLEDGE**
+1. Business Model:
+   - HOW does {company_name} make money? (franchise fees, product sales, licensing, subscriptions?)
+   - Name SPECIFIC revenue streams (e.g., "franchise bottler agreements", "syrup concentrate sales", "vending machines")
+   - Which segments generate 60%+ of profit?
+
+2. Market Position:
+   - Actual market cap range (e.g., "$250-280B" not "$XX-YY B")
+   - Annual revenue range (e.g., "$40-45B" not "$XX-YY B")
+   - Specific geographic markets (e.g., "North America 35% of revenue, EMEA 28%, Asia-Pacific 22%")
+
+3. Strategic Assets:
+   - Name ACTUAL facilities, R&D centers, or manufacturing sites
+   - Name ACTUAL patents, trademarks, or proprietary technologies
+   - Name ACTUAL partnerships or joint ventures
+
+4. Financial Profile:
+   - Recent revenue/EBITDA trends (e.g., "3-5% CAGR 2020-2025, EBITDA margin 25-28%")
+   - Capital structure (e.g., "debt-to-equity 1.5-1.8x")
+   - R&D intensity (e.g., "R&D spend 8-12% of revenue")
+
+5. Competitive Position:
+   - Name TOP 5 competitors (e.g., "PepsiCo 22% share, Coca-Cola 18% share, Dr Pepper 8%...")
+   - Actual competitive advantages (e.g., "brand equity worth $XX B", "10,000+ exclusive contracts")
+
+**B. INDUSTRY DYNAMICS - USE REAL DATA**
+1. Market Structure:
+   - Total addressable market (e.g., "$850-900B globally as of 2024")
+   - Growth rate (e.g., "2.5-3.5% CAGR 2020-2030")
+   - Concentration (e.g., "top 3 players control 55-65% share")
+
+2. Value Chain:
+   - Where do margins concentrate? (e.g., "R&D/IP licensing 60-70% margin, manufacturing 15-20%, distribution 8-12%")
+
+3. Technology Trends:
+   - Name SPECIFIC technologies (e.g., "AI-driven demand forecasting", "blockchain for supply chain", "mRNA vaccines")
+   - Adoption curves (e.g., "10% of plants using predictive maintenance in 2024 → 60-70% by 2030")
+
+4. Regulatory Regime:
+   - Name SPECIFIC regulations (e.g., "FDA approval timelines 8-12 years", "GDPR fines up to 4% revenue", "carbon tax $30-80/ton CO2")
+
+5. Disruption Vectors:
+   - Name SPECIFIC new entrants or technologies (e.g., "Tesla's 4680 battery cell", "OpenAI's GPT-5", "CRISPR gene editing")
 
 **C. STRATEGIC VULNERABILITIES**
-1. Critical Dependencies: Suppliers, technologies, regulations they don't control
-2. Stranded Asset Risk: Current assets that could become obsolete over {horizon_years} years
-3. Ecosystem Lock-in: Switching costs, who owns critical standards/platforms
+1. Critical Dependencies:
+   - Name SPECIFIC suppliers (e.g., "80% of chips from TSMC", "rare earth minerals from China")
+   - Name SPECIFIC technologies (e.g., "AWS cloud infrastructure", "Nvidia H100 GPUs")
+
+2. Stranded Asset Risk:
+   - Name ACTUAL assets at risk (e.g., "15 coal power plants worth $8-12B", "legacy COBOL systems processing $500M daily")
+
+3. Ecosystem Lock-in:
+   - Quantify switching costs (e.g., "$5-8B to migrate off SAP", "3-5 years to retrain workforce on new ERP")
+
+═══════════════════════════════════════════════════════════════════
+CRITICAL QUALITY STANDARDS - NO PLACEHOLDERS ALLOWED
+═══════════════════════════════════════════════════════════════════
+
+✗ NEVER write "Product X", "Competitor Y", "XX%", "$XX B", "Technology Z"
+✓ ALWAYS use actual names: "Coca-Cola Zero Sugar", "PepsiCo", "15-25%", "$80-90B", "AI-powered route optimization"
+
+✗ NEVER write vague statements like "significant growth" or "major impact"
+✓ ALWAYS quantify: "revenue grows from $40B to $65-75B (+60-85%)", "margin compression from 28% to 18-22% (-6 to -10 percentage points)"
+
+✗ NEVER make up physics-violating claims (e.g., "200% efficiency improvement", "zero energy cost")
+✓ ALWAYS respect physical limits (e.g., "efficiency improves from 85% to 90-92% approaching thermodynamic limits")
+
+✗ NEVER write generic citations (e.g., "Industry Report, 2024" or "Company X Analysis")
+✓ ALWAYS use real sources: "International Energy Agency. (2024). World Energy Outlook 2024. OECD Publishing."
 
 USE THIS RESEARCH to make scenarios HYPER-SPECIFIC to {company_name}.
-Mention actual product lines, facilities, competitors, technologies—NOT generic placeholders.
+Every sentence must reference ACTUAL products, competitors, technologies, regulations—NOT generic placeholders.
 
 {context_note}
 
@@ -117,71 +177,71 @@ For EACH scenario (Bottom-Left, Bottom-Right, Top-Left, Top-Right):
    - Cite IMF, BIS, World Bank, think tanks (3-4 sources)
 
 4. **Industry Physics & Market Dynamics** (300-400 words):
-   - Market size: Grows X-Yx from $AA-BB B to $XX-YY B
-   - Margin pool distribution by value chain segment (%)
-   - Market structure: HHI ranges, # of players, winner-take-most vs. fragmented
-   - Technology constraints: PHYSICS limits (power efficiency, cost floors, material properties)
-   - Customer behavior: What shifts willingness-to-pay?
-   - Cite industry reports, technology roadmaps (3-4 sources)
+   - Market size: Use ACTUAL ranges (e.g., "grows from $850B to $1.2-1.4T" NOT "$AA-BB B to $XX-YY B")
+   - Margin pool distribution by value chain segment (e.g., "R&D 60-65%, manufacturing 15-20%, distribution 10-12%")
+   - Market structure: HHI ranges, # of players, winner-take-most vs. fragmented (e.g., "HHI 1800-2200, top 4 players, winner-take-most")
+   - Technology constraints: PHYSICS limits (e.g., "efficiency ceiling at 92% due to thermodynamics", "cost floor $15-18/kg due to material properties")
+   - Customer behavior: What shifts willingness-to-pay? (e.g., "premium segment grows from 12% to 25-30% of revenue")
+   - Cite REAL industry reports, technology roadmaps (3-4 actual sources with authors/titles)
 
 5. **Competitive Landscape** (400-500 words):
-   - Name 3-5 specific competitors and their STRATEGIC POSITIONS
-   - Who has ECOSYSTEM LOCK-IN? Quantify switching costs: $XXB, X-Y years
-   - Who has PHYSICS ADVANTAGES? (2-5x manufacturing scale, XX% better efficiency)
-   - Profitability RANGES by player archetype (EBITDA %, ROIC %)
-   - Regulatory dynamics: Market-driven (XX%) vs. State-directed (YY%)
-   - Cite company filings, analyst reports (3-4 sources)
+   - Name 3-5 ACTUAL competitors and their positions (e.g., "PepsiCo 22% share vs. Coca-Cola 18%", "Tesla 65% EV share")
+   - Who has ECOSYSTEM LOCK-IN? Use REAL numbers (e.g., "$12-18B switching cost, 4-6 years" NOT "$XXB, X-Y years")
+   - Who has PHYSICS ADVANTAGES? (e.g., "TSMC 2-5x scale, 15-20% better efficiency than competitors")
+   - Profitability RANGES by player archetype (e.g., "platform players EBITDA 45-55%, ROIC 25-35% vs. commodity players EBITDA 8-12%, ROIC 6-9%")
+   - Regulatory dynamics: (e.g., "market-driven 70-75% vs. state-directed 25-30%")
+   - Cite ACTUAL company filings, analyst reports (3-4 real sources)
 
 **B. STRATEGIC IMPLICATIONS FOR {company_name}** (600-800 words):
 
 6. **What BREAKS** (300-400 words):
-   - Name SPECIFIC products/assets/facilities that become OBSOLETE
-   - Why? (Technology shift? Regulatory change? Value migration?)
-   - Quantify:
-     - Revenue loss: $XX-YY M annually
-     - Margin compression: from XX% to YY%
-     - Asset write-downs: $XX-YY M
-     - Stranded CapEx: $XX-YY M
-   - Cumulative impact: Total revenue at risk, % of 2024 base
-   - Cite industry benchmarks (2-3 sources)
+   - Name ACTUAL products/assets/facilities that become OBSOLETE (e.g., "15 coal plants in Midwest", "legacy COBOL mainframes", "gasoline F-150 production lines")
+   - Why? (Technology shift? Regulatory change? Value migration?) Be specific (e.g., "EPA carbon tax $50-80/ton makes uneconomic by 2028")
+   - Quantify with REAL ranges (NOT placeholders):
+     - Revenue loss: ACTUAL ranges (e.g., "$2.5-3.8B annually" NOT "$XX-YY M")
+     - Margin compression: ACTUAL numbers (e.g., "from 28% to 15-18%" NOT "XX% to YY%")
+     - Asset write-downs: (e.g., "$8-12B one-time charge")
+     - Stranded CapEx: (e.g., "$15-22B invested 2020-2025 now obsolete")
+   - Cumulative impact: (e.g., "total revenue at risk $12-18B, 18-25% of 2024 base")
+   - Cite REAL industry benchmarks (2-3 actual sources with titles)
 
 7. **What SURVIVES & THRIVES** (300-400 words):
-   - Name SPECIFIC capabilities creating ASYMMETRIC ADVANTAGE
-   - What makes them defensible?
-     - Ecosystem lock-in: "$XXB to replicate, X+ years, YY% dependency"
-     - Physics advantages: "XX% better efficiency due to material/scale"
-     - Regulatory moats: "XX-year approval timeline blocks entrants"
-   - Quantify upside:
-     - Revenue opportunity: $XX-YY B by {horizon_years} years
-     - Margin expansion: from XX% to YY%
-     - Market share gain: from XX% to YY%
-     - ROIC improvement: from XX% to YY%
-   - Hidden optionality: Can {company_name} LICENSE this at 95% margin?
-   - Cite growth projections (2-3 sources)
+   - Name ACTUAL capabilities creating ASYMMETRIC ADVANTAGE (e.g., "Nvidia CUDA ecosystem", "Coca-Cola fountain contracts", "AWS's 200+ services")
+   - What makes them defensible? Use REAL numbers:
+     - Ecosystem lock-in: ACTUAL costs (e.g., "$20-30B to replicate, 6-8 years, 85-90% developer dependency" NOT "$XXB, X years, YY%")
+     - Physics advantages: (e.g., "TSMC 18-25% better transistor density due to EUV lithography at scale")
+     - Regulatory moats: (e.g., "FDA 10-15 year approval timeline, $2-4B entry cost blocks generics until 2035")
+   - Quantify upside with REAL ranges:
+     - Revenue opportunity: (e.g., "$35-50B incremental by 2035" NOT "$XX-YY B")
+     - Margin expansion: (e.g., "from 32% to 42-48%")
+     - Market share gain: (e.g., "from 18% to 28-35%")
+     - ROIC improvement: (e.g., "from 12% to 22-28%")
+   - Hidden optionality: Can {company_name} LICENSE this at 90-95% margin? (e.g., "ARM licensing model generates 92% gross margin")
+   - Cite REAL growth projections (2-3 actual sources)
 
 8. **Strategic Verdict** (150-200 words):
-   - Financial impact:
-     - Revenue: Grows/shrinks from $XX-YY B to $XX-YY B (vs. baseline: +/- XX%)
-     - EBITDA margin: XX-YY% vs. current XX%
-     - ROIC: XX-YY% vs. current XX%
-   - Competitive position:
-     - vs. Competitor A: {company_name} surpasses/trails by XX-YY pp market share
-     - Overall ranking: Strengthens to #X / Weakens to #Y / Maintains #Z
+   - Financial impact using REAL ranges:
+     - Revenue: (e.g., "grows from $45B to $68-82B (+50-80% vs. baseline of $55B)")
+     - EBITDA margin: (e.g., "expands to 35-42% vs. current 28%")
+     - ROIC: (e.g., "improves to 18-24% vs. current 12%")
+   - Competitive position with ACTUAL competitors:
+     - vs. Competitor A: (e.g., "{company_name} surpasses PepsiCo by 5-8pp market share, reaching 25-28% vs. their 18-20%")
+     - Overall ranking: (e.g., "strengthens from #3 to #1-2 globally")
    - Capital allocation:
-     - Current CapEx productive: XX-YY%
-     - New investment required: $XX-YY B over {horizon_years} years
-     - Stranded capital: $XX-YY B write-offs
-   - Strategic positioning: Market Leader | Strong #2 | Challenger | Niche | Platform | Component Supplier
-   - Recommended decision: KILL [asset]? DOUBLE [capability]? HEDGE?
+     - Current CapEx productive: (e.g., "65-75% remains valuable, 25-35% obsolete")
+     - New investment required: (e.g., "$22-35B over 10 years in AI infrastructure")
+     - Stranded capital: (e.g., "$8-14B write-offs on legacy manufacturing")
+   - Strategic positioning: Market Leader | Strong #2 | Challenger | Niche Player | Platform Provider | Component Supplier
+   - Recommended decision: Name ACTUAL assets (e.g., "KILL coal plants? DOUBLE EV battery R&D? HEDGE with licensing model?")
 
 **C. SIGNPOSTS** (5-6 leading indicators):
 
-9. **Monitoring Dashboard**:
-   - Indicator: Specific measurable metric (e.g., "AI chip power efficiency >XX TOPS/Watt")
-   - Threshold: >XX or <YY or range
-   - Timeframe: 2026-2028 or specific quarter
-   - Significance: What this reveals about value migration/technology trajectory
-   - Data source: Where to track this (AnandTech, IEA, company filings, etc.)
+9. **Monitoring Dashboard** (5-6 indicators with ACTUAL metrics):
+   - Indicator: ACTUAL measurable metric (e.g., "AI chip power efficiency exceeds 150 TOPS/Watt" NOT ">XX TOPS/Watt")
+   - Threshold: REAL numbers (e.g., ">150", "<$500/kWh", "15-25% range")
+   - Timeframe: Specific dates (e.g., "Q2 2027", "2026-2028", "by end of 2029")
+   - Significance: What this reveals about value migration/technology trajectory (be specific)
+   - Data source: NAME the source (e.g., "AnandTech quarterly benchmarks", "IEA World Energy Outlook", "Tesla earnings calls")
 
 **D. REFERENCES** (8-12 APA citations):
 
@@ -235,9 +295,13 @@ Return ONLY valid JSON with this EXACT structure:
       - What survives/thrives (specific capabilities, quantified upside)
       - Strategic verdict (financials, competitive position, capital allocation)
 
-      Use RANGES not precision. Focus on PHYSICS and ECOSYSTEMS over policy.
-      Identify ASYMMETRIC ADVANTAGES. Cite 10-15 authoritative sources inline.
-      Target: Board members making $XXB irreversible capital allocation decisions.]",
+      Use ACTUAL RANGES (not placeholders):
+      - GOOD: "revenue $45B to $65-80B", "market share 18-23%", "CAGR 4-6%"
+      - BAD: "$XX B to $YY B", "XX%", "X-Y%"
+
+      Focus on PHYSICS and ECOSYSTEMS over speculation.
+      Identify ASYMMETRIC ADVANTAGES. Cite 10-15 REAL authoritative sources inline.
+      Target: Board members making multi-billion dollar irreversible capital decisions.]",
 
       "signposts": [
         {{
@@ -271,7 +335,7 @@ Before submitting, verify:
 ✓ **Exponential Dynamics**: Identified phase transitions, doublings (not 3% CAGR thinking)
 ✓ **Dual-Use TAM**: Blurred commercial/defense where relevant
 ✓ **Platform Strategies**: Considered licensing (95% margin), IP, platform models
-✓ **Quantified Ranges**: Used "X-Yx" and "$XX-YY B" (not "$67.3B")
+✓ **Quantified Ranges**: Used ACTUAL ranges like "$45-65B" and "18-25%" (NOT placeholders like "$XX-YY B" or "X-Y%")
 ✓ **APA Citations**: 8-12 per scenario inline in narrative
 ✓ **Professional Tone**: Board-level document, not marketing fluff
 ✓ **Complete JSON**: All fields filled, valid JSON structure

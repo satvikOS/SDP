@@ -129,17 +129,40 @@ Your mission is to provide the **harshest possible strategic critique** of these
 **Initial Scenario Set:**
 {initial_draft}
 
-As a battle-tested strategy executive, you must identify:
-1. **Critical Gaps**: What vital uncertainties or drivers are missing?
-2. **Unrealistic Assumptions**: Which scenarios rely on implausible assumptions?
-3. **Strategic Blindspots**: What threats or opportunities are overlooked?
-4. **Weak Quantitative Rigor**: Where are the numbers vague or unsupported?
-5. **Implementation Challenges**: What makes these scenarios difficult to operationalize?
-6. **Competitive Intelligence Gaps**: What about competitors' moves?
-7. **Regulatory/Geopolitical Risks**: Are these adequately considered?
-8. **Financial Viability**: Do the scenarios make economic sense?
+CRITICAL QUALITY CHECKS - Identify these FATAL flaws:
 
-Be **ruthlessly honest**. Your job is to stress-test these scenarios to destruction. Identify every flaw, weakness, and gap. No scenario should survive your critique unscathed.
+1. **PLACEHOLDER LANGUAGE** (UNACCEPTABLE):
+   - Are scenarios using "Product X", "Competitor Y", "XX%", "$XX B"?
+   - REQUIREMENT: Every scenario must name ACTUAL products, competitors, percentages, dollar amounts
+
+2. **GENERIC vs. COMPANY-SPECIFIC**:
+   - Does the analysis demonstrate deep knowledge of {company_name}'s actual business model?
+   - Are ACTUAL competitors named with market shares? (e.g., "PepsiCo 22%, Coca-Cola 18%")
+   - Are ACTUAL products/brands named? (not "flagship brand" but "Coca-Cola Zero Sugar")
+   - Are ACTUAL facilities/assets mentioned? (not "manufacturing plants" but "15 bottling plants in Southeast Asia")
+
+3. **PHYSICS VIOLATIONS** (FATAL):
+   - Do scenarios claim impossible efficiency gains? (e.g., ">100% efficiency", "zero energy cost")
+   - Are material/energy costs below physical minimums?
+   - Do technology curves violate thermodynamics or Moore's Law?
+
+4. **MISSING QUANTIFICATION**:
+   - Are ranges provided for revenue, margins, market share? (e.g., "$45-65B" NOT "$XX-YY B")
+   - Are competitive positions quantified? (e.g., "market share grows from 18% to 25-32%")
+   - Are switching costs quantified? (e.g., "$12-18B, 4-6 years" NOT "$XXB, X years")
+
+5. **CITATION QUALITY**:
+   - Are citations real and specific? (e.g., "IEA World Energy Outlook 2024" NOT "Industry Report 2024")
+   - Are 8-12 authoritative sources cited per scenario?
+
+6. **MISSING STRATEGIC ANALYSIS**:
+   - What vital uncertainties or drivers are missing?
+   - What threats or opportunities are overlooked?
+   - Are competitive moves considered?
+   - Are regulatory/geopolitical risks addressed?
+   - Do scenarios make economic sense?
+
+Be **ruthlessly honest**. Identify EVERY instance of placeholder language, generic statements, physics violations, and missing quantification. No scenario should survive your critique unscathed.
 
 Provide your critique in a structured format with specific, actionable feedback."""
         try:
@@ -169,13 +192,36 @@ Provide your critique in a structured format with specific, actionable feedback.
 **Strategic Critique from Head of Strategy:**
 {strategic_critique}
 
-Your mission is to:
-1. **Incorporate the strategic critique**: Address every gap, flaw, and weakness identified
-2. **Independent verification**: Apply your own analytical lens to validate or challenge assumptions
-3. **Strengthen quantitative rigor**: Add specific metrics, ranges, and confidence intervals where possible
-4. **Enhance actionability**: Make scenarios more concrete and operationalizable
-5. **Add evidence**: Reference real-world precedents, analogies, and data points
-6. **Improve coherence**: Ensure scenarios are internally consistent and mutually distinct
+Your mission is to ELIMINATE ALL QUALITY ISSUES from the critique:
+
+1. **REPLACE ALL PLACEHOLDERS** with actual company-specific content:
+   - BEFORE: "Product X", "Competitor Y", "XX%", "$XX B"
+   - AFTER: Name ACTUAL products (e.g., "Coca-Cola Zero Sugar"), competitors (e.g., "PepsiCo 22% share"), ranges (e.g., "$45-65B", "18-25%")
+
+2. **ADD DEEP COMPANY RESEARCH** for {company_name}:
+   - Use your knowledge to identify their actual business model, top products, main competitors
+   - Name specific facilities, technologies, partnerships
+   - Provide actual financial ranges based on your knowledge
+
+3. **FIX PHYSICS VIOLATIONS**:
+   - Ensure efficiency gains respect thermodynamic limits (e.g., max 90-95% for most systems)
+   - Ensure cost trajectories respect material/energy minimums
+   - Make technology curves realistic
+
+4. **ADD REAL QUANTIFICATION**:
+   - Revenue: "grows from $X to $Y-Z" (actual numbers, not placeholders)
+   - Margins: "EBITDA from A% to B-C%" (actual ranges)
+   - Market share: "from X% to Y-Z%" (actual ranges)
+   - Switching costs: "$X-Y B, Z-W years" (actual estimates)
+
+5. **ADD REAL CITATIONS** (8-12 per scenario):
+   - Use sources you know: IEA, IMF, McKinsey, Bloomberg, company 10-Ks
+   - Format: Author. (Year). Title. Publisher.
+
+6. **INCORPORATE STRATEGIC CRITIQUE**:
+   - Address every gap, flaw, weakness identified by the strategy review
+   - Add evidence with real-world precedents
+   - Ensure scenarios are internally consistent and mutually distinct
 
 CRITICAL INSTRUCTIONS:
 - The initial draft contains {scenario_count} scenarios
@@ -264,13 +310,22 @@ IMPORTANT: Keep scenarios focused and concise (800-1200 words per narrative) to 
 {"**Strategic Review Feedback:**" if strategic_critique else ""}
 {strategic_critique if strategic_critique else ""}
 
-Your mission is to create a **publication-quality strategic foresight document** with:
+Your mission is to create a **publication-quality strategic foresight document** with ZERO placeholder language:
+
+QUALITY STANDARDS (MANDATORY):
+✓ ZERO placeholders: No "Product X", "XX%", "$XX B" - everything must be actual and company-specific
+✓ Deep research evident: Every statement demonstrates knowledge of {company_name}'s actual business
+✓ Real quantification: All ranges use actual numbers (e.g., "$45-65B" not "$XX-YY B")
+✓ Physics compliance: No impossible efficiency gains or thermodynamic violations
+✓ Real citations: 8-12 APA sources per scenario (IEA, IMF, McKinsey, company 10-Ks, not "Industry Report 2024")
+
+DOCUMENT STRUCTURE:
 1. **Executive Summary** (2-3 paragraphs): Key findings, strategic implications, recommended actions
-2. **Refined Scenario Narratives**: Polish language for C-suite readership, add APA-style citations, include specific metrics and timeframes
-3. **Strategic Implications Section**: Impact on {company_name}'s strategic priorities, risk & opportunity assessment, decision points and trigger events
-4. **Glossary**: Define technical terms and acronyms used
-5. **Key Citations**: List all sources referenced (APA format)
-6. **Recommended Actions**: Prioritized list of strategic initiatives, timeframes and success metrics
+2. **Refined Scenario Narratives**: Polish for C-suite, add real APA citations inline, include actual metrics
+3. **Strategic Implications**: Impact on {company_name}'s actual strategic priorities
+4. **Glossary**: Define technical terms
+5. **Key Citations**: List all real sources (APA format)
+6. **Recommended Actions**: Prioritized initiatives with actual timeframes
 
 CRITICAL: The refined scenario set above contains {scenario_count} distinct scenarios. You MUST include ALL {scenario_count} scenarios in your output. Do not omit any scenarios.
 
