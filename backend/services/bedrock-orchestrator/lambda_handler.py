@@ -219,12 +219,25 @@ IMPORTANT: With Claude Opus 4.5's extended context, you can provide comprehensiv
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
                 "max_tokens": 64000,  # Claude Opus 4.5 supports up to 64K output tokens
-                "temperature": 0.7,
+                "temperature": 1.0,  # Must be 1.0 when thinking is enabled
+                "thinking": {
+                    "type": "enabled",
+                    "budget_tokens": 8000  # Extended thinking for scenario analysis and critique integration
+                },
                 "messages": [{"role": "user", "content": prompt}]
             })
             response = self.bedrock_runtime.invoke_model(modelId=self.claude_sonnet, body=body)
             response_body = json.loads(response['body'].read())
-            refined_text = response_body['content'][0]['text']
+
+            # Extract text content (skip thinking blocks)
+            refined_text = None
+            for block in response_body.get('content', []):
+                if block.get('type') == 'text':
+                    refined_text = block.get('text')
+                    break
+
+            if not refined_text:
+                raise ValueError("No text content found in Claude response")
 
             # Validate output contains scenarios
             output_scenario_count = refined_text.count('## Scenario ')
@@ -312,12 +325,25 @@ CRITICAL:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
                 "max_tokens": 64000,  # Claude Opus 4.5 supports up to 64K output tokens
-                "temperature": 0.7,
+                "temperature": 1.0,  # Must be 1.0 when thinking is enabled
+                "thinking": {
+                    "type": "enabled",
+                    "budget_tokens": 10000  # Extended thinking for JSON structuring and citation quality
+                },
                 "messages": [{"role": "user", "content": prompt}]
             })
             response = self.bedrock_runtime.invoke_model(modelId=self.claude_opus, body=body)
             response_body = json.loads(response['body'].read())
-            output_text = response_body['content'][0]['text']
+
+            # Extract text content (skip thinking blocks)
+            output_text = None
+            for block in response_body.get('content', []):
+                if block.get('type') == 'text':
+                    output_text = block.get('text')
+                    break
+
+            if not output_text:
+                raise ValueError("No text content found in Claude response")
 
             logger.info(f"[Final Refinement] Claude response length: {len(output_text)} chars")
             logger.info(f"[Final Refinement] Response preview: {output_text[:500]}")
