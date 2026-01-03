@@ -38,69 +38,55 @@ jobs:
           aws-region: us-east-1
 
       - name: Check and recover CloudFormation stack if stuck
-        continue-on-error: false
+        shell: bash
         run: |
-          set +e  # Don't exit on errors, handle them explicitly
+          echo "========================================="
+          echo "RECOVERY STEP STARTING"
+          echo "========================================="
+
           STACK_NAME="ai-foresight-platform-dev"
+          echo "Stack name: $STACK_NAME"
 
-          echo "========================================="
-          echo "Checking CloudFormation stack status..."
-          echo "========================================="
-
+          # Get stack status
+          echo "Querying CloudFormation..."
           STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].StackStatus' --output text 2>&1 || echo "DOES_NOT_EXIST")
-
-          echo "Current stack status: $STACK_STATUS"
+          echo ">>> Current stack status: $STACK_STATUS <<<"
 
           if [ "$STACK_STATUS" = "DELETE_FAILED" ]; then
-            echo "❌ Stack is in DELETE_FAILED state. Attempting recovery..."
+            echo "🔴 DELETE_FAILED detected! Force deleting stack..."
 
-            # Get resources that failed to delete
-            FAILED_RESOURCES=$(aws cloudformation describe-stack-resources \
-              --stack-name $STACK_NAME \
-              --query "StackResources[?ResourceStatus=='DELETE_FAILED'].LogicalResourceId" \
-              --output text)
+            # Get ALL resources to retain them (orphan everything)
+            echo "Getting all stack resources..."
+            ALL_RESOURCES=$(aws cloudformation describe-stack-resources --stack-name $STACK_NAME --query "StackResources[].LogicalResourceId" --output text 2>&1 || echo "")
 
-            if [ -n "$FAILED_RESOURCES" ]; then
-              echo "Failed to delete: $FAILED_RESOURCES"
-              echo "Retrying deletion with --retain-resources (will orphan these resources)..."
+            if [ -n "$ALL_RESOURCES" ]; then
+              echo "Found resources to retain: $ALL_RESOURCES"
 
-              # Build retain-resources arguments
+              # Build retain arguments
               RETAIN_ARGS=""
-              for resource in $FAILED_RESOURCES; do
-                RETAIN_ARGS="$RETAIN_ARGS --retain-resources $resource"
+              for res in $ALL_RESOURCES; do
+                RETAIN_ARGS="$RETAIN_ARGS --retain-resources $res"
+                echo "  - Will retain: $res"
               done
 
-              aws cloudformation delete-stack --stack-name $STACK_NAME $RETAIN_ARGS
+              echo "Executing: aws cloudformation delete-stack with resource retention..."
+              aws cloudformation delete-stack --stack-name $STACK_NAME $RETAIN_ARGS || echo "Delete command completed with status: $?"
             else
-              echo "No specific failed resources. Retrying standard deletion..."
-              aws cloudformation delete-stack --stack-name $STACK_NAME
+              echo "No resources found, trying simple delete..."
+              aws cloudformation delete-stack --stack-name $STACK_NAME || echo "Delete command completed with status: $?"
             fi
 
-            echo "Waiting for stack deletion (max 10 minutes)..."
-            aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME || {
-              echo "⚠️  Stack deletion wait timed out. Checking status..."
-              FINAL_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].StackStatus' --output text 2>&1 || echo "DOES_NOT_EXIST")
-              if [ "$FINAL_STATUS" = "DOES_NOT_EXIST" ]; then
-                echo "✅ Stack deleted successfully!"
-              else
-                echo "❌ Stack still exists in state: $FINAL_STATUS"
-                echo "Forcing removal by retaining ALL resources..."
+            echo "Waiting 60 seconds for stack deletion to process..."
+            sleep 60
 
-                # Get all resources
-                ALL_RESOURCES=$(aws cloudformation describe-stack-resources \
-                  --stack-name $STACK_NAME \
-                  --query "StackResources[].LogicalResourceId" \
-                  --output text)
-
-                RETAIN_ALL=""
-                for resource in $ALL_RESOURCES; do
-                  RETAIN_ALL="$RETAIN_ALL --retain-resources $resource"
-                done
-
-                aws cloudformation delete-stack --stack-name $STACK_NAME $RETAIN_ALL || true
-                sleep 30
-              fi
-            }
+            echo "Checking if stack still exists..."
+            FINAL_CHECK=$(aws cloudformation describe-stacks --stack-name $STACK_NAME 2>&1 || echo "STACK_GONE")
+            if [[ "$FINAL_CHECK" == *"STACK_GONE"* ]] || [[ "$FINAL_CHECK" == *"does not exist"* ]]; then
+              echo "✅ Stack successfully deleted!"
+            else
+              echo "⚠️  Stack may still exist, but proceeding with deployment anyway"
+              echo "  Status: $FINAL_CHECK"
+            fi
 
           elif [ "$STACK_STATUS" = "UPDATE_ROLLBACK_FAILED" ]; then
             echo "⚠️  Stack is in UPDATE_ROLLBACK_FAILED state. Finding failed resources..."
@@ -157,10 +143,11 @@ jobs:
             echo "✅ Stack is in acceptable state: $STACK_STATUS"
           fi
 
+          echo ""
           echo "========================================="
-          echo "Recovery check completed"
+          echo "RECOVERY STEP COMPLETED"
+          echo "Proceeding to deployment..."
           echo "========================================="
-          exit 0  # Always succeed, even if recovery had issues
 
       - name: Deploy backend with Serverless
         run: |
