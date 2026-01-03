@@ -69,6 +69,7 @@ provider:
             - arn:aws:dynamodb:${self:provider.region}:*:table/ai-foresight-scenarios-${self:provider.stage}/index/*
 
   environment:
+    SERVICE_NAME: ${self:service}
     STAGE: ${self:provider.stage}
     COST_TRACKING_ENABLED: 'true'
     MONTHLY_BUDGET_USD: '50'

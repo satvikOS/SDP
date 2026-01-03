@@ -901,7 +901,9 @@ def start_scenario_generation_async(event, context):
         # Invoke Lambda async to process in background
         lambda_client = boto3.client('lambda', region_name='us-east-1')
         # Construct worker function name (serverless pattern: service-stage-functionName)
-        worker_function = f"ai-foresight-platform-{os.getenv('STAGE', 'dev')}-generateScenarioAsyncWorker"
+        service_name = os.getenv('SERVICE_NAME', 'ai-foresight-platform-v2')
+        stage = os.getenv('STAGE', 'dev')
+        worker_function = f"{service_name}-{stage}-generateScenarioAsyncWorker"
 
         lambda_client.invoke(
             FunctionName=worker_function,
