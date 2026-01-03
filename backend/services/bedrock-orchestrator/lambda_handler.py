@@ -39,7 +39,13 @@ class MultiAIPipeline:
 
     def __init__(self):
         """Initialize multi-AI pipeline with Bedrock and Google AI clients."""
-        self.bedrock_runtime = boto3.client('bedrock-runtime', region_name='us-east-1')
+        # Configure Bedrock client with extended timeout for final refinement (can take 8-10 min)
+        pipeline_config = Config(
+            read_timeout=600,  # 10 minutes for final refinement with Opus 4.5
+            connect_timeout=10,
+            retries={'max_attempts': 2}
+        )
+        self.bedrock_runtime = boto3.client('bedrock-runtime', region_name='us-east-1', config=pipeline_config)
         self.claude_opus = "us.anthropic.claude-opus-4-5-20251101-v1:0"
         # Use Llama 4 Maverick for due diligence (faster than Opus)
         self.llama_maverick = "us.meta.llama4-maverick-17b-instruct-v1:0"
@@ -48,13 +54,21 @@ class MultiAIPipeline:
 
         if self.google_api_key:
             try:
-                from google import genai
-                self.google_client = genai.Client(api_key=self.google_api_key)
+                # Try multiple import patterns for google-genai SDK
+                try:
+                    from google import genai
+                    self.google_client = genai.Client(api_key=self.google_api_key)
+                except (ImportError, AttributeError):
+                    # Fallback: try direct Client import
+                    from google.genai import Client
+                    self.google_client = Client(api_key=self.google_api_key)
                 logger.info("Google Gemini client initialized successfully (google-genai SDK)")
             except ImportError as e:
                 logger.warning(f"google-genai package not installed: {e}. Gemini review will be skipped.")
+                self.google_client = None
         else:
             logger.warning("GOOGLE_API_KEY not set. Gemini review will be skipped.")
+            self.google_client = None
 
         logger.info("Multi-AI pipeline initialized (Claude Sonnet 4.5 → Gemini 1.5 Pro → Llama 4 Maverick → Claude Opus 4.5)")
 
@@ -265,7 +279,7 @@ IMPORTANT: Keep scenarios focused and concise (800-1200 words per narrative) to 
         try:
             body = json.dumps({
                 "prompt": prompt,
-                "max_gen_len": 16000,  # Reduced for faster generation
+                "max_gen_len": 8192,  # Llama 4 Maverick max limit (validated by Bedrock)
                 "temperature": 0.7,
                 "top_p": 0.9
             })

@@ -305,6 +305,15 @@ Return ONLY valid JSON with this EXACT structure:
       Identify ASYMMETRIC ADVANTAGES. Cite 10-15 REAL authoritative sources inline.
       Target: Board members making multi-billion dollar irreversible capital decisions.]",
 
+      "key_drivers": [
+        "[Driver 1: Specific force/trend with quantified impact]",
+        "[Driver 2: Technology shift with actual adoption curves/costs]",
+        "[Driver 3: Regulatory change with specific dates/compliance costs]",
+        "[Driver 4: Competitive dynamic with named players and market shares]",
+        "[Driver 5: Economic/geopolitical shift with GDP/capital flow impacts]"
+        // ... 5-7 key drivers total
+      ],
+
       "signposts": [
         {{
           "indicator": "[Measurable metric with threshold]",

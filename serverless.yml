@@ -9,8 +9,8 @@ custom:
   pythonRequirements:
     dockerizePip: false  # Disabled - no Docker available
     layer:
-      name: python-requirements-multi-ai-v2  # Force new layer with Gemini SDK
-      description: Python requirements with google-generativeai for Multi-AI Pipeline
+      name: python-requirements-multi-ai-v3  # Force rebuild with google-genai SDK
+      description: Python requirements with google-genai (new SDK) for Multi-AI Pipeline
     zip: true
     slim: true
     strip: false
