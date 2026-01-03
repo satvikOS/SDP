@@ -63,3 +63,5 @@ htmlcov/
 .aws-sam/
 samconfig.toml
 .sst/
+.requirements.zip
+multi-ai-pipeline-deployment.tar.gz

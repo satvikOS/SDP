@@ -10,19 +10,571 @@ from typing import Dict, List, Any
 from datetime import datetime
 from decimal import Decimal
 
-# Import multi-AI pipeline for enhanced scenario generation
-try:
-    from multi_ai_pipeline import MultiAIPipeline
-    MULTI_AI_ENABLED = True
-    logger_init = logging.getLogger()
-    logger_init.info("Multi-AI pipeline imported successfully")
-except ImportError as e:
-    MULTI_AI_ENABLED = False
-    logger_init = logging.getLogger()
-    logger_init.warning(f"Multi-AI pipeline not available: {e}")
+# Multi-AI pipeline will be imported dynamically when needed
+MULTI_AI_ENABLED = os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == 'true'
 
 logger = logging.getLogger()
 logger.setLevel(os.getenv('LOG_LEVEL', 'INFO'))
+
+# Log Multi-AI configuration on module load
+logger.info(f"=== MULTI-AI PIPELINE CONFIG ===")
+logger.info(f"MULTI_AI_ENABLED: {MULTI_AI_ENABLED}")
+logger.info(f"ENABLE_MULTI_MODEL_PIPELINE env: {os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'NOT_SET')}")
+logger.info(f"GOOGLE_API_KEY: {'SET' if os.getenv('GOOGLE_API_KEY') else 'NOT_SET'}")
+logger.info(f"================================")
+
+
+# === MULTI-AI PIPELINE - INLINED TO AVOID IMPORT ISSUES ===
+class MultiAIPipeline:
+    """Orchestrate multiple AI models for comprehensive scenario generation.
+
+    Workflow:
+    1. Claude Sonnet 4.5 - Initial comprehensive scenario draft (via Bedrock, 64K tokens)
+    2. Gemini 2.5 Pro - Strategic review & harsh critique (via Google AI API, 65K tokens)
+    3. Gemini 2.5 Pro - Due diligence & rewrite (via Google AI API, 65K tokens)
+    4. Claude Opus 4.5 - Final refinement with citations, formatting, branding (via Bedrock, 64K tokens)
+
+    This pipeline provides 3x validation layers using diverse AI architectures.
+    """
+
+    def __init__(self):
+        """Initialize multi-AI pipeline with Bedrock and Google AI clients."""
+        # Configure Bedrock client with extended timeout for final refinement (can take 8-10 min)
+        pipeline_config = Config(
+            read_timeout=600,  # 10 minutes for final refinement with Opus 4.5
+            connect_timeout=10,
+            retries={'max_attempts': 2}
+        )
+        self.bedrock_runtime = boto3.client('bedrock-runtime', region_name='us-east-1', config=pipeline_config)
+        self.claude_opus = "us.anthropic.claude-opus-4-5-20251101-v1:0"
+        self.google_api_key = os.getenv('GOOGLE_API_KEY', 'AIzaSyDM-pYF5GB0u6GltVxeHlAGMj6Ck1FcZls')
+        self.google_configured = False
+
+        if self.google_api_key:
+            try:
+                import google.generativeai as genai
+                genai.configure(api_key=self.google_api_key)
+                self.google_configured = True
+                logger.info("Google Gemini configured successfully (google-generativeai SDK)")
+            except ImportError as e:
+                logger.warning(f"google-generativeai package not installed: {e}. Gemini review will be skipped.")
+                self.google_configured = False
+            except Exception as e:
+                logger.warning(f"Failed to configure Google Gemini: {e}. Gemini review will be skipped.")
+                self.google_configured = False
+        else:
+            logger.warning("GOOGLE_API_KEY not set. Gemini review will be skipped.")
+            self.google_configured = False
+
+        logger.info("Multi-AI pipeline initialized (Claude Sonnet 4.5 → Gemini 2.5 Pro [Review] → Gemini 2.5 Pro [Due Diligence] → Claude Opus 4.5)")
+
+    def execute_pipeline(self, company_name: str, industry: str, region: str, horizon_years: int, strategic_context: str, multi_agent_output: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute the full multi-AI pipeline."""
+        logger.info(f"Starting multi-AI pipeline for {company_name}")
+        pipeline_metadata = {
+            'pipeline_version': '1.0',
+            'started_at': datetime.utcnow().isoformat(),
+            'models_used': [],
+            'review_layers': []
+        }
+
+        try:
+            initial_draft = self._format_initial_draft(multi_agent_output)
+            pipeline_metadata['models_used'].append('claude-sonnet-4.5')
+            logger.info("Step 1/4: Initial draft formatted")
+
+            strategic_critique = self._gemini_strategic_review(company_name, industry, region, horizon_years, strategic_context, initial_draft)
+            pipeline_metadata['models_used'].append('gemini-2.5-pro')
+            pipeline_metadata['review_layers'].append('strategic_review')
+            logger.info("Step 2/4: Gemini 2.5 Pro strategic review completed")
+
+            refined_scenarios = self._gemini_due_diligence(company_name, industry, region, horizon_years, strategic_context, initial_draft, strategic_critique)
+            pipeline_metadata['models_used'].append('gemini-2.5-pro')
+            pipeline_metadata['review_layers'].append('due_diligence')
+            logger.info("Step 3/4: Gemini 2.5 Pro due diligence completed")
+
+            final_document = self._claude_final_refinement(company_name, industry, region, horizon_years, strategic_context, refined_scenarios, strategic_critique)
+            pipeline_metadata['review_layers'].append('final_refinement')
+            logger.info("Step 4/4: Claude final refinement completed")
+
+            pipeline_metadata['completed_at'] = datetime.utcnow().isoformat()
+            return {
+                'scenarios': final_document['scenarios'],
+                'executive_summary': final_document.get('executive_summary'),
+                'strategic_critique': strategic_critique,
+                'pipeline_metadata': pipeline_metadata,
+                'professional_document': final_document
+            }
+        except Exception as e:
+            logger.error(f"Multi-AI pipeline failed: {str(e)}", exc_info=True)
+            return {
+                'scenarios': multi_agent_output.get('scenarios', []),
+                'pipeline_metadata': {**pipeline_metadata, 'error': str(e), 'fallback_used': True}
+            }
+
+    def _format_initial_draft(self, multi_agent_output: Dict[str, Any]) -> str:
+        scenarios = multi_agent_output.get('scenarios', [])
+        formatted = "# INITIAL SCENARIO SET\n\n"
+        for idx, scenario in enumerate(scenarios, 1):
+            formatted += f"## Scenario {idx}: {scenario.get('title', 'Untitled')}\n\n"
+            formatted += f"**Probability:** {scenario.get('probability', 0) * 100:.1f}%\n\n"
+            formatted += f"**Core Logic:** {scenario.get('core_logic', '')}\n\n"
+            formatted += f"### Narrative\n{scenario.get('narrative', '')}\n\n"
+            if scenario.get('key_drivers'):
+                formatted += "### Key Drivers\n" + '\n'.join(f"- {d}" for d in scenario['key_drivers']) + "\n\n"
+            if scenario.get('signposts'):
+                formatted += "### Early Warning Signposts\n" + '\n'.join(f"- {s}" for s in scenario['signposts']) + "\n\n"
+            formatted += "---\n\n"
+        return formatted
+
+    def _gemini_strategic_review(self, company_name: str, industry: str, region: str, horizon_years: int, strategic_context: str, initial_draft: str) -> str:
+        prompt = f"""You are the **Head of Strategy & Implementation** for {company_name}, a {industry} company operating in {region}.
+
+Your mission is to provide the **harshest possible strategic critique** of these scenario forecasts for the next {horizon_years} years.
+
+**Strategic Context:**
+{strategic_context}
+
+**Initial Scenario Set:**
+{initial_draft}
+
+CRITICAL QUALITY CHECKS - Identify these FATAL flaws:
+
+1. **PLACEHOLDER LANGUAGE** (UNACCEPTABLE):
+   - Are scenarios using "Product X", "Competitor Y", "XX%", "$XX B"?
+   - REQUIREMENT: Every scenario must name ACTUAL products, competitors, percentages, dollar amounts
+
+2. **GENERIC vs. COMPANY-SPECIFIC**:
+   - Does the analysis demonstrate deep knowledge of {company_name}'s actual business model?
+   - Are ACTUAL competitors named with market shares? (e.g., "PepsiCo 22%, Coca-Cola 18%")
+   - Are ACTUAL products/brands named? (not "flagship brand" but "Coca-Cola Zero Sugar")
+   - Are ACTUAL facilities/assets mentioned? (not "manufacturing plants" but "15 bottling plants in Southeast Asia")
+
+3. **PHYSICS VIOLATIONS** (FATAL):
+   - Do scenarios claim impossible efficiency gains? (e.g., ">100% efficiency", "zero energy cost")
+   - Are material/energy costs below physical minimums?
+   - Do technology curves violate thermodynamics or Moore's Law?
+
+4. **MISSING QUANTIFICATION**:
+   - Are ranges provided for revenue, margins, market share? (e.g., "$45-65B" NOT "$XX-YY B")
+   - Are competitive positions quantified? (e.g., "market share grows from 18% to 25-32%")
+   - Are switching costs quantified? (e.g., "$12-18B, 4-6 years" NOT "$XXB, X years")
+
+5. **CITATION QUALITY**:
+   - Are citations real and specific? (e.g., "IEA World Energy Outlook 2024" NOT "Industry Report 2024")
+   - Are 8-12 authoritative sources cited per scenario?
+
+6. **MISSING STRATEGIC ANALYSIS**:
+   - What vital uncertainties or drivers are missing?
+   - What threats or opportunities are overlooked?
+   - Are competitive moves considered?
+   - Are regulatory/geopolitical risks addressed?
+   - Do scenarios make economic sense?
+
+Be **ruthlessly honest**. Identify EVERY instance of placeholder language, generic statements, physics violations, and missing quantification. No scenario should survive your critique unscathed.
+
+Provide your critique in a structured format with specific, actionable feedback."""
+        try:
+            if not self.google_configured:
+                return "Gemini review skipped: Google AI not configured"
+            # Use Gemini 2.5 Pro with maximum output tokens
+            import google.generativeai as genai
+            model = genai.GenerativeModel('gemini-2.5-pro')
+            response = model.generate_content(
+                prompt,
+                generation_config=genai.GenerationConfig(
+                    max_output_tokens=65536,  # Gemini 2.5 Pro maximum (65K)
+                    temperature=0.7
+                )
+            )
+            return response.text
+        except Exception as e:
+            logger.error(f"Gemini strategic review failed: {str(e)}")
+            return f"Strategic review unavailable: {str(e)}"
+
+    def _gemini_due_diligence(self, company_name: str, industry: str, region: str, horizon_years: int, strategic_context: str, initial_draft: str, strategic_critique: str) -> str:
+        # Count scenarios in initial draft
+        scenario_count = initial_draft.count('## Scenario ')
+        logger.info(f"[Due Diligence - Gemini 2.5 Pro] Initial draft contains {scenario_count} scenarios")
+
+        prompt = f"""You are the **Chief Analyst** conducting due diligence on strategic scenarios for {company_name}, a {industry} company in {region} with a {horizon_years}-year horizon.
+
+**Strategic Context:**
+{strategic_context}
+
+**Initial Scenario Set:**
+{initial_draft}
+
+**Strategic Critique from Head of Strategy:**
+{strategic_critique}
+
+Your mission is to ELIMINATE ALL QUALITY ISSUES from the critique:
+
+1. **REPLACE ALL PLACEHOLDERS** with actual company-specific content:
+   - BEFORE: "Product X", "Competitor Y", "XX%", "$XX B"
+   - AFTER: Name ACTUAL products (e.g., "Coca-Cola Zero Sugar"), competitors (e.g., "PepsiCo 22% share"), ranges (e.g., "$45-65B", "18-25%")
+
+2. **ADD DEEP COMPANY RESEARCH** for {company_name}:
+   - Use your knowledge to identify their actual business model, top products, main competitors
+   - Name specific facilities, technologies, partnerships
+   - Provide actual financial ranges based on your knowledge
+
+3. **FIX PHYSICS VIOLATIONS**:
+   - Ensure efficiency gains respect thermodynamic limits (e.g., max 90-95% for most systems)
+   - Ensure cost trajectories respect material/energy minimums
+   - Make technology curves realistic
+
+4. **ADD REAL QUANTIFICATION**:
+   - Revenue: "grows from $X to $Y-Z" (actual numbers, not placeholders)
+   - Margins: "EBITDA from A% to B-C%" (actual ranges)
+   - Market share: "from X% to Y-Z%" (actual ranges)
+   - Switching costs: "$X-Y B, Z-W years" (actual estimates)
+
+5. **ADD REAL CITATIONS** (8-12 per scenario):
+   - Use sources you know: IEA, IMF, McKinsey, Bloomberg, company 10-Ks
+   - Format: Author. (Year). Title. Publisher.
+
+6. **INCORPORATE STRATEGIC CRITIQUE**:
+   - Address every gap, flaw, weakness identified by the strategy review
+   - Add evidence with real-world precedents
+   - Ensure scenarios are internally consistent and mutually distinct
+
+CRITICAL INSTRUCTIONS:
+- The initial draft contains {scenario_count} scenarios
+- You MUST output ALL {scenario_count} scenarios in your response
+- DO NOT ask questions or request clarification - output the revised scenarios directly
+- DO NOT write conversational text like "I'll help revise..." or "Would you like me to..."
+- START your response immediately with the scenarios in markdown format
+
+REQUIRED OUTPUT FORMAT (use this exact structure):
+
+# INITIAL SCENARIO SET
+
+## Scenario 1: [Title]
+
+**Probability:** [X]%
+
+**Core Logic:** [Brief statement]
+
+### Narrative
+[Improved narrative addressing all critique points - 800-1200 words, focused and executive-ready]
+
+### Key Drivers
+- [Driver 1]
+- [Driver 2]
+...
+
+### Early Warning Signposts
+- [Signpost 1]
+- [Signpost 2]
+...
+
+---
+
+## Scenario 2: [Title]
+[Continue same format for all {scenario_count} scenarios]
+
+Begin your response with "# INITIAL SCENARIO SET" and output all {scenario_count} revised scenarios immediately.
+
+IMPORTANT: Keep scenarios focused and concise (800-1200 words per narrative) to ensure timely delivery while maintaining executive quality."""
+        try:
+            if not self.google_configured:
+                logger.warning("[Due Diligence] Gemini not configured, falling back to initial draft")
+                return initial_draft
+
+            # Use Gemini 2.5 Pro with maximum output tokens
+            import google.generativeai as genai
+            model = genai.GenerativeModel('gemini-2.5-pro')
+            response = model.generate_content(
+                prompt,
+                generation_config=genai.GenerationConfig(
+                    max_output_tokens=65536,  # Gemini 2.5 Pro maximum (65K)
+                    temperature=0.7
+                )
+            )
+            refined_text = response.text
+
+            # Validate output contains scenarios
+            output_scenario_count = refined_text.count('## Scenario ')
+            logger.info(f"[Due Diligence] Output contains {output_scenario_count} scenarios")
+            logger.info(f"[Due Diligence] First 500 chars: {refined_text[:500]}")
+
+            if output_scenario_count == 0:
+                logger.error(f"[Due Diligence] Gemini 2.5 Pro returned conversational response instead of scenarios!")
+                logger.error(f"[Due Diligence] Falling back to initial draft")
+                return initial_draft
+
+            if output_scenario_count < scenario_count:
+                logger.warning(f"[Due Diligence] Expected {scenario_count} scenarios but got {output_scenario_count}")
+
+            return refined_text
+        except Exception as e:
+            logger.error(f"Gemini 2.5 Pro due diligence failed: {str(e)}")
+            return initial_draft
+
+    def _claude_final_refinement(self, company_name: str, industry: str, region: str, horizon_years: int, strategic_context: str, refined_scenarios: str, strategic_critique: str) -> Dict[str, Any]:
+        # Count scenarios in refined set
+        scenario_count = refined_scenarios.count('## Scenario ')
+        logger.info(f"[Final Refinement] Refined scenarios text contains {scenario_count} scenarios")
+        logger.info(f"[Final Refinement] First 500 chars: {refined_scenarios[:500]}")
+
+        prompt = f"""You are a **Senior Strategic Document Editor** preparing an executive-ready foresight report for {company_name}.
+
+**Company:** {company_name}
+**Industry:** {industry}
+**Region:** {region}
+**Time Horizon:** {horizon_years} years
+**Strategic Context:** {strategic_context}
+
+**Refined Scenario Set (Post-Review):**
+{refined_scenarios}
+
+{"**Strategic Review Feedback:**" if strategic_critique else ""}
+{strategic_critique if strategic_critique else ""}
+
+Your mission is to create a **publication-quality strategic foresight document** with ZERO placeholder language:
+
+QUALITY STANDARDS (MANDATORY):
+✓ ZERO placeholders: No "Product X", "XX%", "$XX B" - everything must be actual and company-specific
+✓ Deep research evident: Every statement demonstrates knowledge of {company_name}'s actual business
+✓ Real quantification: All ranges use actual numbers (e.g., "$45-65B" not "$XX-YY B")
+✓ Physics compliance: No impossible efficiency gains or thermodynamic violations
+✓ Real citations: 8-12 APA sources per scenario (IEA, IMF, McKinsey, company 10-Ks, not "Industry Report 2024")
+
+DOCUMENT STRUCTURE:
+1. **Executive Summary** (2-3 paragraphs): Key findings, strategic implications, recommended actions
+2. **Refined Scenario Narratives**: Polish for C-suite, add real APA citations inline, include actual metrics
+3. **Strategic Implications**: Impact on {company_name}'s actual strategic priorities
+4. **Glossary**: Define technical terms
+5. **Key Citations**: List all real sources (APA format)
+6. **Recommended Actions**: Prioritized initiatives with actual timeframes
+
+CRITICAL: The refined scenario set above contains {scenario_count} distinct scenarios. You MUST include ALL {scenario_count} scenarios in your output. Do not omit any scenarios.
+
+Output as a structured JSON object with this EXACT schema:
+
+{{
+  "executive_summary": "string",
+  "scenarios": [
+    {{
+      "title": "string",
+      "probability": 0.25,
+      "core_logic": "string",
+      "narrative": "string - comprehensive refined narrative",
+      "strategic_implications": "string",
+      "key_drivers": ["string", "string", ...],  // MUST be array of strings
+      "signposts": ["string", "string", ...],     // MUST be array of strings
+      "citations": ["string", "string", ...]      // MUST be array of strings
+    }}
+    // ... repeat for ALL {scenario_count} scenarios
+  ],
+  "glossary": {{"term": "definition"}},
+  "references": ["citation string", ...],
+  "recommended_actions": [
+    {{
+      "action": "string",
+      "rationale": "string",
+      "timeframe": "string",
+      "success_metrics": ["string", ...]
+    }}
+  ]
+}}
+
+CRITICAL:
+- key_drivers, signposts, citations MUST be arrays of strings, NOT comma-separated strings
+- Include ALL {scenario_count} scenarios in the scenarios array
+- Keep scenarios focused and concise for timely delivery
+- Ensure professional tone, quantitative rigor, and executive-level polish"""
+        try:
+            body = json.dumps({
+                "anthropic_version": "bedrock-2023-05-31",
+                "max_tokens": 64000,  # Opus 4.5 maximum output tokens (64K limit)
+                "temperature": 0.7,
+                "messages": [{"role": "user", "content": prompt}]
+            })
+            response = self.bedrock_runtime.invoke_model(modelId=self.claude_opus, body=body)
+            response_body = json.loads(response['body'].read())
+            output_text = response_body['content'][0]['text']
+
+            logger.info(f"[Final Refinement] Claude response length: {len(output_text)} chars")
+            logger.info(f"[Final Refinement] Response preview: {output_text[:500]}")
+
+            try:
+                if '```json' in output_text:
+                    json_start = output_text.find('```json') + 7
+                    json_end = output_text.find('```', json_start)
+                    output_text = output_text[json_start:json_end].strip()
+
+                parsed_doc = json.loads(output_text)
+                scenarios_in_doc = len(parsed_doc.get('scenarios', []))
+                logger.info(f"[Final Refinement] Successfully parsed JSON with {scenarios_in_doc} scenarios")
+
+                if scenarios_in_doc == 0:
+                    logger.error(f"[Final Refinement] JSON parsed but contains 0 scenarios! Falling back to extraction")
+                    extracted = self._extract_scenarios_from_text(refined_scenarios)
+                    parsed_doc['scenarios'] = self._normalize_scenarios(extracted)
+                else:
+                    # Normalize scenario data to ensure arrays are arrays
+                    parsed_doc['scenarios'] = self._normalize_scenarios(parsed_doc['scenarios'])
+                    logger.info(f"[Final Refinement] Scenarios normalized successfully")
+
+                return parsed_doc
+            except json.JSONDecodeError as e:
+                logger.error(f"[Final Refinement] JSON parsing failed: {str(e)}")
+                logger.error(f"[Final Refinement] Attempted to parse: {output_text[:1000]}")
+                extracted = self._extract_scenarios_from_text(refined_scenarios)
+                normalized = self._normalize_scenarios(extracted)
+                return {
+                    'executive_summary': "Document refinement in progress",
+                    'scenarios': normalized,
+                    'raw_output': output_text
+                }
+        except Exception as e:
+            logger.error(f"Claude final refinement failed: {str(e)}")
+            extracted = self._extract_scenarios_from_text(refined_scenarios)
+            normalized = self._normalize_scenarios(extracted)
+            return {
+                'executive_summary': "Final refinement unavailable",
+                'scenarios': normalized,
+                'error': str(e)
+            }
+
+    def _normalize_scenarios(self, scenarios: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Normalize scenario data to ensure all fields are in correct format for frontend."""
+        normalized = []
+        for scenario in scenarios:
+            # Ensure key_drivers is an array
+            if 'key_drivers' in scenario:
+                if isinstance(scenario['key_drivers'], str):
+                    # Convert comma-separated string to array
+                    scenario['key_drivers'] = [d.strip() for d in scenario['key_drivers'].split(',') if d.strip()]
+                elif not isinstance(scenario['key_drivers'], list):
+                    scenario['key_drivers'] = []
+            else:
+                scenario['key_drivers'] = []
+
+            # Ensure signposts is an array
+            if 'signposts' in scenario:
+                if isinstance(scenario['signposts'], str):
+                    # Convert comma-separated string to array
+                    scenario['signposts'] = [s.strip() for s in scenario['signposts'].split(',') if s.strip()]
+                elif not isinstance(scenario['signposts'], list):
+                    scenario['signposts'] = []
+            else:
+                scenario['signposts'] = []
+
+            # Ensure citations is an array
+            if 'citations' in scenario:
+                if isinstance(scenario['citations'], str):
+                    scenario['citations'] = [c.strip() for c in scenario['citations'].split(',') if c.strip()]
+                elif not isinstance(scenario['citations'], list):
+                    scenario['citations'] = []
+            else:
+                scenario['citations'] = []
+
+            # Ensure narrative field exists (might be narrative_refined from JSON)
+            if 'narrative_refined' in scenario and 'narrative' not in scenario:
+                scenario['narrative'] = scenario['narrative_refined']
+
+            # Ensure probability is a float
+            if 'probability' in scenario:
+                try:
+                    scenario['probability'] = float(scenario['probability'])
+                except (ValueError, TypeError):
+                    scenario['probability'] = 0.25
+
+            normalized.append(scenario)
+            logger.info(f"[Normalize] Scenario '{scenario.get('title', 'Unknown')}': drivers={len(scenario['key_drivers'])}, signposts={len(scenario['signposts'])}")
+
+        return normalized
+
+    def _extract_scenarios_from_text(self, text: str) -> List[Dict[str, Any]]:
+        """Enhanced extraction that preserves more scenario details from markdown."""
+        scenarios = []
+        sections = text.split('## Scenario ')
+
+        logger.info(f"[Extract] Found {len(sections) - 1} scenario sections")
+
+        for idx, section in enumerate(sections[1:], 1):
+            lines = section.split('\n')
+            title_line = lines[0].strip() if lines else "Untitled"
+
+            # Extract title (remove number prefix if present)
+            title = title_line.split(':', 1)[-1].strip() if ':' in title_line else title_line
+
+            # Extract probability (look for **Probability:** line)
+            probability = 0.25  # default
+            for line in lines:
+                if '**Probability:**' in line or 'Probability:' in line:
+                    prob_text = line.split(':', 1)[-1].strip().replace('%', '').strip()
+                    try:
+                        probability = float(prob_text) / 100 if float(prob_text) > 1 else float(prob_text)
+                    except ValueError:
+                        pass
+                    break
+
+            # Extract core logic
+            core_logic = ""
+            for i, line in enumerate(lines):
+                if '**Core Logic:**' in line or 'Core Logic:' in line:
+                    core_logic = line.split(':', 1)[-1].strip()
+                    break
+
+            # Extract narrative (everything between ### Narrative and next ###)
+            narrative = ""
+            in_narrative = False
+            for line in lines:
+                if '### Narrative' in line:
+                    in_narrative = True
+                    continue
+                if in_narrative and line.startswith('###'):
+                    break
+                if in_narrative:
+                    narrative += line + '\n'
+
+            # Extract key drivers
+            key_drivers = []
+            in_drivers = False
+            for line in lines:
+                if '### Key Drivers' in line:
+                    in_drivers = True
+                    continue
+                if in_drivers and line.startswith('###'):
+                    break
+                if in_drivers and line.strip().startswith('-'):
+                    key_drivers.append(line.strip()[1:].strip())
+
+            # Extract signposts
+            signposts = []
+            in_signposts = False
+            for line in lines:
+                if '### Early Warning Signposts' in line or '### Signposts' in line:
+                    in_signposts = True
+                    continue
+                if in_signposts and line.startswith('###'):
+                    break
+                if in_signposts and line.strip().startswith('-'):
+                    signposts.append(line.strip()[1:].strip())
+
+            scenario = {
+                'title': title,
+                'probability': probability,
+                'core_logic': core_logic,
+                'narrative': narrative.strip(),
+                'key_drivers': key_drivers,
+                'signposts': signposts
+            }
+            scenarios.append(scenario)
+            logger.info(f"[Extract] Scenario {idx}: '{title}' (prob: {probability})")
+
+        if not scenarios:
+            logger.warning(f"[Extract] No scenarios found, returning fallback")
+            return [{'title': 'Scenario', 'narrative': text, 'probability': 1.0}]
+
+        logger.info(f"[Extract] Successfully extracted {len(scenarios)} scenarios")
+        return scenarios
+
+# === END MULTI-AI PIPELINE ===
 
 
 def _convert_floats_to_decimal(obj):
@@ -65,16 +617,16 @@ def _response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def health(event, context):
-    try:
-        return _response(200, {
-            'status': 'healthy',
-            'timestamp': datetime.utcnow().isoformat(),
-            'model': 'ai-opus-4-5',
-            'bedrock_available': True
-        })
-    except Exception as e:
-        logger.error(f"Health error: {e}")
-        return _response(500, {'error': str(e)})
+    """Minimal health check - imports json locally to avoid any module issues."""
+    import json as json_lib
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': json_lib.dumps({'status': 'ok', 'timestamp': str(context.aws_request_id) if context else 'test'})
+    }
 
 
 def list_agents(event, context):
@@ -155,7 +707,7 @@ REMEMBER: 2000-5000 words per narrative. Board-level intelligence worth $100K+ p
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
-            'max_tokens': 60000,  # Opus 4.5 limit is 64000, using 60000 for safety
+            'max_tokens': 64000,  # Opus 4.5 maximum output tokens (64K limit)
             'temperature': 0.8,
             'messages': [{'role': 'user', 'content': prompt}]
         }
@@ -349,7 +901,9 @@ def start_scenario_generation_async(event, context):
         # Invoke Lambda async to process in background
         lambda_client = boto3.client('lambda', region_name='us-east-1')
         # Construct worker function name (serverless pattern: service-stage-functionName)
-        worker_function = f"ai-foresight-platform-{os.getenv('STAGE', 'dev')}-generateScenarioAsyncWorker"
+        service_name = os.getenv('SERVICE_NAME', 'ai-foresight-platform-v2')
+        stage = os.getenv('STAGE', 'dev')
+        worker_function = f"{service_name}-{stage}-generateScenarioAsyncWorker"
 
         lambda_client.invoke(
             FunctionName=worker_function,
@@ -392,14 +946,15 @@ def generate_scenario_async_worker(event, context):
 
         logger.info(f"[Job {job_id}] Generating for {company_name}")
 
-        # Configure boto3 with extended timeout for long-running AI Opus 4.5 requests
+        # Configure boto3 with optimized timeout for fast generation (<15 min total)
         boto_config = Config(
-            read_timeout=600,  # 10 minutes for comprehensive scenario generation
+            read_timeout=360,  # 6 minutes for initial comprehensive generation
             connect_timeout=10,
             retries={'max_attempts': 2}
         )
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1', config=boto_config)
-        model_id = 'us.anthropic.claude-opus-4-5-20251101-v1:0'
+        # Use Claude Sonnet 4.5 with cross-region inference profile (matching Opus 4.5 pattern)
+        model_id = 'us.anthropic.claude-sonnet-4-5-20250929-v1:0'
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
@@ -419,13 +974,8 @@ def generate_scenario_async_worker(event, context):
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
-            'max_tokens': 64000,  # Maximum for Opus 4.5
-            'temperature': 1.0,  # Must be 1.0 when thinking is enabled
-            # top_k is not allowed when thinking is enabled
-            'thinking': {
-                'type': 'enabled',
-                'budget_tokens': 10000  # Extended thinking for complex scenario reasoning
-            },
+            'max_tokens': 64000,  # Sonnet 4.5 maximum output tokens (64K limit)
+            'temperature': 0.7,
             'messages': [{'role': 'user', 'content': prompt}]
         }
 
@@ -439,16 +989,8 @@ def generate_scenario_async_worker(event, context):
 
         response_body = json.loads(response['body'].read())
 
-        # When thinking is enabled, response contains multiple content blocks
-        # Find the text block (thinking blocks are type='thinking', text blocks are type='text')
-        ai_response = None
-        for block in response_body.get('content', []):
-            if block.get('type') == 'text':
-                ai_response = block.get('text')
-                break
-
-        if not ai_response:
-            raise ValueError("No text content found in response")
+        # Extract text from response
+        ai_response = response_body['content'][0]['text']
 
         # Parse JSON from response - handle markdown code blocks if present
         # Remove markdown code fences if they exist
@@ -468,7 +1010,10 @@ def generate_scenario_async_worker(event, context):
         end = cleaned_response.rfind('}') + 1
 
         if start == -1 or end == 0:
-            logger.error(f"[Job {job_id}] No JSON found in response. First 500 chars: {ai_response[:500]}")
+            logger.error(f"[Job {job_id}] No JSON found in response.")
+            logger.error(f"[Job {job_id}] Full response length: {len(ai_response)} chars")
+            logger.error(f"[Job {job_id}] First 1000 chars: {ai_response[:1000]}")
+            logger.error(f"[Job {job_id}] Last 500 chars: {ai_response[-500:]}")
             raise ValueError("No valid JSON found in AI response")
 
         result_json = cleaned_response[start:end]
@@ -489,21 +1034,98 @@ def generate_scenario_async_worker(event, context):
         logger.info(f"[Job {job_id}] Axis X: {matrix_framework.get('axis_x', {}).get('name', 'N/A')}")
         logger.info(f"[Job {job_id}] Axis Y: {matrix_framework.get('axis_y', {}).get('name', 'N/A')}")
 
+        # --- Multi-AI Pipeline Integration ---
+        logger.info(f"[Job {job_id}] === MULTI-AI PIPELINE CHECK ===")
+        logger.info(f"[Job {job_id}] MULTI_AI_ENABLED = {MULTI_AI_ENABLED}")
+        logger.info(f"[Job {job_id}] ENABLE_MULTI_MODEL_PIPELINE env = {os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'NOT_SET')}")
+
+        if MULTI_AI_ENABLED and os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == 'true':
+            logger.info(f"[Job {job_id}] ✓ Multi-AI pipeline ENABLED - starting enhancement")
+            logger.info(f"[Job {job_id}] Pipeline: Claude Sonnet 4.5 → Gemini 2.5 Pro [Review] → Gemini 2.5 Pro [Due Diligence] → Claude Opus 4.5 [Final]")
+
+            try:
+                # MultiAIPipeline is now inlined in this file (no import needed)
+                logger.info(f"[Job {job_id}] Initializing MultiAIPipeline...")
+                pipeline = MultiAIPipeline()
+                logger.info(f"[Job {job_id}] ✓ MultiAIPipeline initialized")
+
+                enhanced_result = pipeline.execute_pipeline(
+                    company_name=company_name,
+                    industry=industry,
+                    region=region,
+                    horizon_years=horizon_years,
+                    strategic_context=strategic_context,
+                    multi_agent_output=parsed_result
+                )
+
+                # Use enhanced results
+                logger.info(f"[Job {job_id}] Enhanced result keys: {list(enhanced_result.keys())}")
+                logger.info(f"[Job {job_id}] Number of scenarios in enhanced result: {len(enhanced_result.get('scenarios', []))}")
+
+                if 'professional_document' in enhanced_result:
+                    parsed_result = enhanced_result['professional_document']
+                    scenarios = enhanced_result.get('scenarios', scenarios)
+                    logger.info(f"[Job {job_id}] Using enhanced scenarios, count: {len(scenarios)}")
+                else:
+                    logger.warning(f"[Job {job_id}] No professional_document in enhanced result!")
+
+                pipeline_metadata = enhanced_result.get('pipeline_metadata', {})
+                strategic_critique = enhanced_result.get('strategic_critique', '')
+
+                logger.info(f"[Job {job_id}] Multi-AI pipeline completed successfully")
+                logger.info(f"[Job {job_id}] Models used: {pipeline_metadata.get('models_used', [])}")
+                logger.info(f"[Job {job_id}] Review layers: {pipeline_metadata.get('review_layers', [])}")
+
+            except Exception as e:
+                import traceback
+                logger.error(f"[Job {job_id}] ✗ Multi-AI pipeline FAILED - using base result")
+                logger.error(f"[Job {job_id}] Error: {str(e)}")
+                logger.error(f"[Job {job_id}] Traceback: {traceback.format_exc()[:500]}")
+                # Continue with original parsed_result
+                pipeline_metadata = {'error': str(e), 'fallback_used': True}
+        else:
+            logger.warning(f"[Job {job_id}] ✗ Multi-AI pipeline DISABLED")
+            logger.warning(f"[Job {job_id}] Reason: MULTI_AI_ENABLED={MULTI_AI_ENABLED}, env={os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'NOT_SET')}")
+            logger.info(f"[Job {job_id}] Using base Claude Opus 4.5 result only")
+            pipeline_metadata = {'pipeline_enabled': False}
+        # --- End Multi-AI Pipeline Integration ---
+
         # Calculate generation time
         generation_time = (datetime.utcnow() - start_time).total_seconds()
 
-        # Estimate cost (rough approximation for AI Opus 4.5)
-        # Input: ~2000 tokens (longer prompt), Output: ~15000 tokens (4 comprehensive scenarios)
+        # Estimate cost
+        # Base Claude Opus 4.5: Input ~2000 tokens, Output ~15000 tokens
         input_tokens = 2000
         output_tokens = 15000  # 4 scenarios × ~3750 tokens each
         cost_per_1k_input = 0.015  # $15/MTok
         cost_per_1k_output = 0.075  # $75/MTok
-        estimated_cost = (input_tokens / 1000 * cost_per_1k_input) + (output_tokens / 1000 * cost_per_1k_output)
+        base_cost = (input_tokens / 1000 * cost_per_1k_input) + (output_tokens / 1000 * cost_per_1k_output)
+
+        # Adjust cost if multi-AI pipeline was used
+        if MULTI_AI_ENABLED and os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == 'true':
+            # Multi-AI pipeline: Claude Opus + Gemini + Claude Sonnet + Claude Opus
+            # Approximately 2.4x base cost ($0.15 → $0.36)
+            estimated_cost = base_cost * 2.4
+            logger.info(f"[Job {job_id}] Multi-AI pipeline cost: ${estimated_cost:.4f} (base: ${base_cost:.4f})")
+        else:
+            estimated_cost = base_cost
 
         # Store results in DynamoDB
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
         table_name = f"ai-foresight-scenarios-{os.getenv('STAGE', 'dev')}"
         table = dynamodb.Table(table_name)
+
+        # Determine generation method based on pipeline usage
+        if MULTI_AI_ENABLED and os.getenv('ENABLE_MULTI_MODEL_PIPELINE', 'true').lower() == 'true':
+            generation_method = 'Multi-AI Pipeline: Claude Sonnet 4.5 → Gemini 2.5 Pro [Review] → Gemini 2.5 Pro [Due Diligence] → Claude Opus 4.5 [Final]'
+            models_used = {
+                'claude-sonnet-4.5': 1,  # Initial draft
+                'gemini-2.5-pro': 2,      # Strategic review + Due diligence
+                'claude-opus-4.5': 1      # Final refinement
+            }
+        else:
+            generation_method = 'AI Opus 4.5 - 2x2 Matrix Scenario Planning'
+            models_used = {'ai-opus-4-5': 1}
 
         result = {
             'scenario_set_id': job_id,
@@ -514,7 +1136,7 @@ def generate_scenario_async_worker(event, context):
             'created_at': start_time.isoformat() + 'Z',
             'generation_time_seconds': generation_time,
             'ai_generated': True,
-            'generation_method': 'AI Opus 4.5 - 2x2 Matrix Scenario Planning',
+            'generation_method': generation_method,
 
             # 2x2 Matrix Framework
             'matrix_framework': matrix_framework,
@@ -527,9 +1149,15 @@ def generate_scenario_async_worker(event, context):
             'uncertainties': [matrix_framework.get('axis_x', {}), matrix_framework.get('axis_y', {})],
             'action_plan': {},
             'quality_report': {'scenario_methodology': '2x2 matrix with outside-in perspective'},
-            'models_used': {'ai-opus-4-5': 1},
+            'models_used': models_used,
             'total_cost_usd': estimated_cost
         }
+
+        # Add multi-AI pipeline metadata if available
+        if MULTI_AI_ENABLED and 'pipeline_metadata' in locals():
+            result['pipeline_metadata'] = pipeline_metadata
+        if MULTI_AI_ENABLED and 'strategic_critique' in locals():
+            result['strategic_critique'] = strategic_critique
 
         # Convert floats to Decimal for DynamoDB compatibility
         result_for_dynamodb = _convert_floats_to_decimal(result)

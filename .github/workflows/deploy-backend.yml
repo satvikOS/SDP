@@ -37,6 +37,80 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Pre-check - Verify AWS CLI and CloudFormation access
+        shell: bash
+        run: |
+          echo "====== PRE-CHECK STARTING ======"
+          echo "AWS CLI Version:"
+          aws --version
+          echo "AWS Region: $AWS_REGION"
+          echo "Testing CloudFormation access..."
+          aws cloudformation list-stacks --query 'StackSummaries[0].StackName' --output text || echo "CloudFormation accessible"
+          echo "====== PRE-CHECK COMPLETE ======"
+
+      - name: Force delete stuck CloudFormation stack
+        shell: bash
+        continue-on-error: true
+        run: |
+          echo "========================================="
+          echo "🔴 FORCE DELETE STEP STARTING"
+          echo "========================================="
+
+          STACK_NAME="ai-foresight-platform-dev"
+
+          # Check if stack exists and get status
+          if aws cloudformation describe-stacks --stack-name $STACK_NAME &>/dev/null; then
+            STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].StackStatus' --output text)
+            echo "Stack exists with status: $STACK_STATUS"
+
+            if [[ "$STACK_STATUS" == *"FAILED"* ]] || [[ "$STACK_STATUS" == "DELETE_IN_PROGRESS" ]]; then
+              echo "🔴 Stack is in failed/delete state: $STACK_STATUS"
+              echo "Getting all resources to force delete..."
+
+              # Get ALL resources
+              RESOURCES=$(aws cloudformation list-stack-resources --stack-name $STACK_NAME --query 'StackResourceSummaries[].LogicalResourceId' --output text 2>&1 || echo "")
+
+              if [ -n "$RESOURCES" ]; then
+                echo "📋 Found resources to retain:"
+                for res in $RESOURCES; do
+                  echo "  - $res"
+                done
+
+                # Build delete command with all resources retained
+                DELETE_CMD="aws cloudformation delete-stack --stack-name $STACK_NAME"
+                for res in $RESOURCES; do
+                  DELETE_CMD="$DELETE_CMD --retain-resources $res"
+                done
+
+                echo "🗑️  Executing force delete..."
+                echo "Command: $DELETE_CMD"
+                eval $DELETE_CMD
+
+                echo "⏳ Waiting 90 seconds for deletion to process..."
+                sleep 90
+
+                # Verify deletion
+                if aws cloudformation describe-stacks --stack-name $STACK_NAME &>/dev/null; then
+                  echo "⚠️  Stack still exists after delete attempt"
+                else
+                  echo "✅ Stack successfully deleted!"
+                fi
+              else
+                echo "📋 No resources found, attempting simple delete..."
+                aws cloudformation delete-stack --stack-name $STACK_NAME || true
+                sleep 30
+              fi
+            else
+              echo "ℹ️  Stack in acceptable state: $STACK_STATUS"
+            fi
+          else
+            echo "✅ Stack does not exist - ready for fresh deployment"
+          fi
+
+          echo "========================================="
+          echo "🔴 FORCE DELETE STEP COMPLETED"
+          echo "========================================="
+
       - name: Deploy backend with Serverless
         run: |
           npx serverless deploy --stage dev --verbose

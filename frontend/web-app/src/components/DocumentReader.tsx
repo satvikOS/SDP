@@ -334,8 +334,8 @@ export default function DocumentReader({ scenario, onClose }: DocumentReaderProp
                   </div>
                 </div>
 
-                {/* Signposts */}
-                {scn.signposts && scn.signposts.length > 0 && (
+                {/* Signposts - Only show if signposts exist with valid data */}
+                {scn.signposts && scn.signposts.length > 0 && scn.signposts.some((sp: any) => sp.indicator && sp.indicator.trim()) && (
                   <div className="mt-12">
                     <h3 className="text-2xl font-bold text-gray-900 mb-6">Strategic Signposts</h3>
                     <div className="overflow-x-auto">
@@ -349,7 +349,7 @@ export default function DocumentReader({ scenario, onClose }: DocumentReaderProp
                           </tr>
                         </thead>
                         <tbody>
-                          {scn.signposts.map((signpost: any, idx: number) => (
+                          {scn.signposts.filter((sp: any) => sp.indicator && sp.indicator.trim()).map((signpost: any, idx: number) => (
                             <tr key={idx} className="hover:bg-gray-50">
                               <td className="border border-gray-300 px-4 py-3 text-gray-800">{signpost.indicator}</td>
                               <td className="border border-gray-300 px-4 py-3 text-gray-700">{signpost.timeframe}</td>

@@ -1,4 +1,4 @@
-service: ai-foresight-platform
+service: ai-foresight-platform-v2
 
 frameworkVersion: '3'
 
@@ -7,8 +7,10 @@ plugins:
 
 custom:
   pythonRequirements:
-    dockerizePip: true
-    layer: true
+    dockerizePip: non-linux  # Use Docker only on non-Linux (native pip on GitHub Actions Linux)
+    layer:
+      name: python-requirements-multi-ai-v7  # Stable google-generativeai SDK
+      description: Python requirements with google-generativeai (stable SDK with Lambda support)
     zip: true
     slim: true
     strip: false
@@ -67,15 +69,25 @@ provider:
             - arn:aws:dynamodb:${self:provider.region}:*:table/ai-foresight-scenarios-${self:provider.stage}/index/*
 
   environment:
+    SERVICE_NAME: ${self:service}
     STAGE: ${self:provider.stage}
     COST_TRACKING_ENABLED: 'true'
     MONTHLY_BUDGET_USD: '50'
     ENABLE_MODEL_FALLBACK: 'true'
     LOG_LEVEL: INFO
+    # Multi-AI Pipeline Configuration
+    ENABLE_MULTI_MODEL_PIPELINE: 'true'
+    GOOGLE_API_KEY: 'AIzaSyDM-pYF5GB0u6GltVxeHlAGMj6Ck1FcZls'
 
   httpApi:
     cors: true
     metrics: true
+  apiGateway:
+    binaryMediaTypes:
+      - 'application/pdf'
+      - 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      - 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+      - 'application/epub+zip'
 
 package:
   individually: true
@@ -93,6 +105,7 @@ functions:
     handler: backend/services/bedrock-orchestrator/lambda_handler.health
     timeout: 10
     memorySize: 256
+    layers: []  # No layers needed for health check
     events:
       - httpApi:
           path: /health
@@ -189,9 +202,6 @@ functions:
     handler: backend/services/bedrock-orchestrator/lambda_handler.generate_scenario_async_worker
     timeout: 900
     memorySize: 3008
-    package:
-      patterns:
-        - backend/services/bedrock-orchestrator/**
 
   transformToBoardroom:
     handler: backend/services/bedrock-orchestrator/lambda_handler_br_transform.transform_to_boardroom
