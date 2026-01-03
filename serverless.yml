@@ -9,8 +9,8 @@ custom:
   pythonRequirements:
     dockerizePip: non-linux  # Use Docker only on non-Linux (native pip on GitHub Actions Linux)
     layer:
-      name: python-requirements-multi-ai-v6  # Native Linux build for Lambda compatibility
-      description: Python requirements with google-genai (native Linux pip build)
+      name: python-requirements-multi-ai-v7  # Stable google-generativeai SDK
+      description: Python requirements with google-generativeai (stable SDK with Lambda support)
     zip: true
     slim: true
     strip: false
