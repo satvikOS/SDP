@@ -7,10 +7,10 @@ plugins:
 
 custom:
   pythonRequirements:
-    dockerizePip: false  # Disabled - no Docker available
+    dockerizePip: true  # ENABLED - Required for google-genai to install correctly
     layer:
-      name: python-requirements-multi-ai-v3  # Force rebuild with google-genai SDK
-      description: Python requirements with google-genai (new SDK) for Multi-AI Pipeline
+      name: python-requirements-multi-ai-v4  # Force complete rebuild with Docker
+      description: Python requirements with google-genai v0.2.0+ for Gemini 2.5 Pro
     zip: true
     slim: true
     strip: false
