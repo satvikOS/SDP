@@ -381,7 +381,7 @@ CRITICAL:
         try:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 16384,  # Opus 4.5 maximum output tokens
+                "max_tokens": 64000,  # Opus 4.5 maximum output tokens (64K limit)
                 "temperature": 0.7,
                 "messages": [{"role": "user", "content": prompt}]
             })
@@ -700,7 +700,7 @@ REMEMBER: 2000-5000 words per narrative. Board-level intelligence worth $100K+ p
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
-            'max_tokens': 16384,  # Opus 4.5 maximum output tokens
+            'max_tokens': 64000,  # Opus 4.5 maximum output tokens (64K limit)
             'temperature': 0.8,
             'messages': [{'role': 'user', 'content': prompt}]
         }
@@ -965,7 +965,7 @@ def generate_scenario_async_worker(event, context):
 
         request_body = {
             'anthropic_version': 'bedrock-2023-05-31',
-            'max_tokens': 8192,  # Sonnet 4.5 max output tokens (Claude 4.5 Sonnet limit)
+            'max_tokens': 64000,  # Sonnet 4.5 maximum output tokens (64K limit)
             'temperature': 0.7,
             'messages': [{'role': 'user', 'content': prompt}]
         }
