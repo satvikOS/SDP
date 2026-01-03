@@ -56,7 +56,7 @@ class MultiAIPipeline:
         else:
             logger.warning("GOOGLE_API_KEY not set. Gemini review will be skipped.")
 
-        logger.info("Multi-AI pipeline initialized (Claude Opus 4.5 → Gemini 1.5 Pro → Llama 4 Maverick → Claude Opus 4.5)")
+        logger.info("Multi-AI pipeline initialized (Claude Sonnet 4.5 → Gemini 1.5 Pro → Llama 4 Maverick → Claude Opus 4.5)")
 
     def execute_pipeline(self, company_name: str, industry: str, region: str, horizon_years: int, strategic_context: str, multi_agent_output: Dict[str, Any]) -> Dict[str, Any]:
         """Execute the full multi-AI pipeline."""
@@ -70,7 +70,7 @@ class MultiAIPipeline:
 
         try:
             initial_draft = self._format_initial_draft(multi_agent_output)
-            pipeline_metadata['models_used'].append('claude-opus-4.5')
+            pipeline_metadata['models_used'].append('claude-sonnet-4.5')
             logger.info("Step 1/4: Initial draft formatted")
 
             strategic_critique = self._gemini_strategic_review(company_name, industry, region, horizon_years, strategic_context, initial_draft)
@@ -930,8 +930,8 @@ def generate_scenario_async_worker(event, context):
             retries={'max_attempts': 2}
         )
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1', config=boto_config)
-        # Use Claude Opus 4.5 for initial draft (reduced prompt = faster generation)
-        model_id = 'us.anthropic.claude-opus-4-5-20251101-v1:0'
+        # Use Claude Sonnet 4.5 for initial draft
+        model_id = 'anthropic.claude-sonnet-4-5-20250929-v1:0'
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
