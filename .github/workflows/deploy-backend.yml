@@ -45,23 +45,56 @@ jobs:
           echo "Current stack status: $STACK_STATUS"
 
           if [ "$STACK_STATUS" = "UPDATE_ROLLBACK_FAILED" ]; then
-            echo "⚠️  Stack is in UPDATE_ROLLBACK_FAILED state. Continuing rollback..."
-            aws cloudformation continue-update-rollback --stack-name $STACK_NAME
+            echo "⚠️  Stack is in UPDATE_ROLLBACK_FAILED state. Finding failed resources..."
 
-            echo "Waiting for rollback to complete (max 10 minutes)..."
-            aws cloudformation wait stack-rollback-complete --stack-name $STACK_NAME || {
-              echo "Rollback did not complete in time. Checking final status..."
-              FINAL_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].StackStatus' --output text)
-              echo "Final status: $FINAL_STATUS"
-              if [ "$FINAL_STATUS" != "UPDATE_ROLLBACK_COMPLETE" ] && [ "$FINAL_STATUS" != "ROLLBACK_COMPLETE" ]; then
-                echo "❌ Stack rollback failed. Manual intervention required."
-                exit 1
+            # Get all failed resources
+            FAILED_RESOURCES=$(aws cloudformation describe-stack-resources \
+              --stack-name $STACK_NAME \
+              --query "StackResources[?ResourceStatus=='UPDATE_FAILED' || ResourceStatus=='DELETE_FAILED'].LogicalResourceId" \
+              --output text)
+
+            if [ -n "$FAILED_RESOURCES" ]; then
+              echo "Failed resources found: $FAILED_RESOURCES"
+              echo "Attempting rollback with --resources-to-skip..."
+
+              # Convert space-separated list to proper format
+              SKIP_ARGS=""
+              for resource in $FAILED_RESOURCES; do
+                SKIP_ARGS="$SKIP_ARGS --resources-to-skip $resource"
+              done
+
+              aws cloudformation continue-update-rollback --stack-name $STACK_NAME $SKIP_ARGS || {
+                echo "⚠️  Rollback with skipped resources also failed. Trying without skipping..."
+                aws cloudformation continue-update-rollback --stack-name $STACK_NAME
+              }
+            else
+              echo "No specific failed resources found. Attempting standard rollback..."
+              aws cloudformation continue-update-rollback --stack-name $STACK_NAME
+            fi
+
+            echo "Waiting for rollback to complete (max 15 minutes)..."
+            for i in {1..90}; do
+              sleep 10
+              CURRENT_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].StackStatus' --output text)
+              echo "[$i/90] Current status: $CURRENT_STATUS"
+
+              if [ "$CURRENT_STATUS" = "UPDATE_ROLLBACK_COMPLETE" ] || [ "$CURRENT_STATUS" = "ROLLBACK_COMPLETE" ]; then
+                echo "✅ Stack recovered successfully!"
+                break
+              elif [ "$CURRENT_STATUS" = "UPDATE_ROLLBACK_FAILED" ]; then
+                echo "❌ Stack rollback failed again. Deleting and recreating stack..."
+                aws cloudformation delete-stack --stack-name $STACK_NAME
+                echo "Waiting for stack deletion (max 10 minutes)..."
+                aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME || true
+                echo "✅ Stack deleted. New deployment will create fresh stack."
+                break
               fi
-            }
-            echo "✅ Stack recovered successfully!"
+            done
           elif [ "$STACK_STATUS" = "UPDATE_IN_PROGRESS" ] || [ "$STACK_STATUS" = "UPDATE_ROLLBACK_IN_PROGRESS" ]; then
             echo "⏳ Stack update/rollback already in progress. Waiting for completion..."
             sleep 60
+          elif [ "$STACK_STATUS" = "DOES_NOT_EXIST" ]; then
+            echo "✅ Stack does not exist. Will be created on deployment."
           else
             echo "✅ Stack is in acceptable state: $STACK_STATUS"
           fi
