@@ -59,6 +59,9 @@ class MultiAIPipeline:
             except ImportError as e:
                 logger.warning(f"google-generativeai package not installed: {e}. Gemini review will be skipped.")
                 self.google_configured = False
+            except Exception as e:
+                logger.warning(f"Failed to configure Google Gemini: {e}. Gemini review will be skipped.")
+                self.google_configured = False
         else:
             logger.warning("GOOGLE_API_KEY not set. Gemini review will be skipped.")
             self.google_configured = False
