@@ -625,7 +625,7 @@ def health(event, context):
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*'
         },
-        'body': json_lib.dumps({'status': 'ok', 'timestamp': str(context.request_id) if context else 'test'})
+        'body': json_lib.dumps({'status': 'ok', 'timestamp': str(context.aws_request_id) if context else 'test'})
     }
 
 
