@@ -930,8 +930,8 @@ def generate_scenario_async_worker(event, context):
             retries={'max_attempts': 2}
         )
         bedrock = boto3.client('bedrock-runtime', region_name='us-east-1', config=boto_config)
-        # Use Claude Sonnet 4.5 for initial draft
-        model_id = 'anthropic.claude-sonnet-4-5-20250929-v1:0'
+        # Use Claude Sonnet 4.5 inference profile
+        model_id = 'us.anthropic.claude-sonnet-4-5-v1:0'
 
         context_note = f"\n\nSTRATEGIC CONTEXT: {strategic_context}\nAddress these specific questions." if strategic_context else ""
 
