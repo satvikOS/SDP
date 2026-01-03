@@ -1,4 +1,4 @@
-CRITICAL OUTPUT REQUIREMENT: You MUST output ONLY valid JSON. Do NOT write any conversational text, explanations, or preambles. Do NOT write "I'll help create..." or "Here are the scenarios...". Start your response IMMEDIATELY with the JSON object beginning with "{".
+CRITICAL OUTPUT REQUIREMENT: You MUST output ONLY valid JSON. Do NOT write any conversational text, explanations, or preambles. Do NOT write "I'll help create..." or "Here are the scenarios...". Start your response IMMEDIATELY with the opening brace of the JSON object.
 
 You are generating PROFESSIONAL STRATEGIC SCENARIOS for {company_name}.
 
