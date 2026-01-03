@@ -37,6 +37,35 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Check and recover CloudFormation stack if stuck
+        run: |
+          STACK_NAME="ai-foresight-platform-dev"
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].StackStatus' --output text 2>&1 || echo "DOES_NOT_EXIST")
+
+          echo "Current stack status: $STACK_STATUS"
+
+          if [ "$STACK_STATUS" = "UPDATE_ROLLBACK_FAILED" ]; then
+            echo "⚠️  Stack is in UPDATE_ROLLBACK_FAILED state. Continuing rollback..."
+            aws cloudformation continue-update-rollback --stack-name $STACK_NAME
+
+            echo "Waiting for rollback to complete (max 10 minutes)..."
+            aws cloudformation wait stack-rollback-complete --stack-name $STACK_NAME || {
+              echo "Rollback did not complete in time. Checking final status..."
+              FINAL_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].StackStatus' --output text)
+              echo "Final status: $FINAL_STATUS"
+              if [ "$FINAL_STATUS" != "UPDATE_ROLLBACK_COMPLETE" ] && [ "$FINAL_STATUS" != "ROLLBACK_COMPLETE" ]; then
+                echo "❌ Stack rollback failed. Manual intervention required."
+                exit 1
+              fi
+            }
+            echo "✅ Stack recovered successfully!"
+          elif [ "$STACK_STATUS" = "UPDATE_IN_PROGRESS" ] || [ "$STACK_STATUS" = "UPDATE_ROLLBACK_IN_PROGRESS" ]; then
+            echo "⏳ Stack update/rollback already in progress. Waiting for completion..."
+            sleep 60
+          else
+            echo "✅ Stack is in acceptable state: $STACK_STATUS"
+          fi
+
       - name: Deploy backend with Serverless
         run: |
           npx serverless deploy --stage dev --verbose
