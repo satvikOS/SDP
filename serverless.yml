@@ -1,4 +1,4 @@
-service: ai-foresight-platform
+service: ai-foresight-platform-v2
 
 frameworkVersion: '3'
 
