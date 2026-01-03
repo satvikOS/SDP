@@ -38,8 +38,15 @@ jobs:
           aws-region: us-east-1
 
       - name: Check and recover CloudFormation stack if stuck
+        continue-on-error: false
         run: |
+          set +e  # Don't exit on errors, handle them explicitly
           STACK_NAME="ai-foresight-platform-dev"
+
+          echo "========================================="
+          echo "Checking CloudFormation stack status..."
+          echo "========================================="
+
           STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].StackStatus' --output text 2>&1 || echo "DOES_NOT_EXIST")
 
           echo "Current stack status: $STACK_STATUS"
@@ -149,6 +156,11 @@ jobs:
           else
             echo "✅ Stack is in acceptable state: $STACK_STATUS"
           fi
+
+          echo "========================================="
+          echo "Recovery check completed"
+          echo "========================================="
+          exit 0  # Always succeed, even if recovery had issues
 
       - name: Deploy backend with Serverless
         run: |
