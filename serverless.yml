@@ -7,10 +7,10 @@ plugins:
 
 custom:
   pythonRequirements:
-    dockerizePip: true  # ENABLED - Required for google-genai to install correctly
+    dockerizePip: false  # Using manual pip install in GitHub Actions with correct platform
     layer:
-      name: python-requirements-multi-ai-v4  # Force complete rebuild with Docker
-      description: Python requirements with google-genai v0.2.0+ for Gemini 2.5 Pro
+      name: python-requirements-multi-ai-v5  # Manual platform-specific build
+      description: Python requirements with google-genai (manual manylinux2014 build)
     zip: true
     slim: true
     strip: false
