@@ -44,7 +44,58 @@ jobs:
 
           echo "Current stack status: $STACK_STATUS"
 
-          if [ "$STACK_STATUS" = "UPDATE_ROLLBACK_FAILED" ]; then
+          if [ "$STACK_STATUS" = "DELETE_FAILED" ]; then
+            echo "❌ Stack is in DELETE_FAILED state. Attempting recovery..."
+
+            # Get resources that failed to delete
+            FAILED_RESOURCES=$(aws cloudformation describe-stack-resources \
+              --stack-name $STACK_NAME \
+              --query "StackResources[?ResourceStatus=='DELETE_FAILED'].LogicalResourceId" \
+              --output text)
+
+            if [ -n "$FAILED_RESOURCES" ]; then
+              echo "Failed to delete: $FAILED_RESOURCES"
+              echo "Retrying deletion with --retain-resources (will orphan these resources)..."
+
+              # Build retain-resources arguments
+              RETAIN_ARGS=""
+              for resource in $FAILED_RESOURCES; do
+                RETAIN_ARGS="$RETAIN_ARGS --retain-resources $resource"
+              done
+
+              aws cloudformation delete-stack --stack-name $STACK_NAME $RETAIN_ARGS
+            else
+              echo "No specific failed resources. Retrying standard deletion..."
+              aws cloudformation delete-stack --stack-name $STACK_NAME
+            fi
+
+            echo "Waiting for stack deletion (max 10 minutes)..."
+            aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME || {
+              echo "⚠️  Stack deletion wait timed out. Checking status..."
+              FINAL_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].StackStatus' --output text 2>&1 || echo "DOES_NOT_EXIST")
+              if [ "$FINAL_STATUS" = "DOES_NOT_EXIST" ]; then
+                echo "✅ Stack deleted successfully!"
+              else
+                echo "❌ Stack still exists in state: $FINAL_STATUS"
+                echo "Forcing removal by retaining ALL resources..."
+
+                # Get all resources
+                ALL_RESOURCES=$(aws cloudformation describe-stack-resources \
+                  --stack-name $STACK_NAME \
+                  --query "StackResources[].LogicalResourceId" \
+                  --output text)
+
+                RETAIN_ALL=""
+                for resource in $ALL_RESOURCES; do
+                  RETAIN_ALL="$RETAIN_ALL --retain-resources $resource"
+                done
+
+                aws cloudformation delete-stack --stack-name $STACK_NAME $RETAIN_ALL || true
+                sleep 30
+              fi
+            }
+
+          elif [ "$STACK_STATUS" = "UPDATE_ROLLBACK_FAILED" ]; then
             echo "⚠️  Stack is in UPDATE_ROLLBACK_FAILED state. Finding failed resources..."
 
             # Get all failed resources
