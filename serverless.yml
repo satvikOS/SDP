@@ -7,10 +7,10 @@ plugins:
 
 custom:
   pythonRequirements:
-    dockerizePip: false  # Using manual pip install in GitHub Actions with correct platform
+    dockerizePip: non-linux  # Use Docker only on non-Linux (native pip on GitHub Actions Linux)
     layer:
-      name: python-requirements-multi-ai-v5  # Manual platform-specific build
-      description: Python requirements with google-genai (manual manylinux2014 build)
+      name: python-requirements-multi-ai-v6  # Native Linux build for Lambda compatibility
+      description: Python requirements with google-genai (native Linux pip build)
     zip: true
     slim: true
     strip: false
