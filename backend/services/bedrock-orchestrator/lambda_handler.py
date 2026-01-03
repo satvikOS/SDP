@@ -987,7 +987,10 @@ def generate_scenario_async_worker(event, context):
         end = cleaned_response.rfind('}') + 1
 
         if start == -1 or end == 0:
-            logger.error(f"[Job {job_id}] No JSON found in response. First 500 chars: {ai_response[:500]}")
+            logger.error(f"[Job {job_id}] No JSON found in response.")
+            logger.error(f"[Job {job_id}] Full response length: {len(ai_response)} chars")
+            logger.error(f"[Job {job_id}] First 1000 chars: {ai_response[:1000]}")
+            logger.error(f"[Job {job_id}] Last 500 chars: {ai_response[-500:]}")
             raise ValueError("No valid JSON found in AI response")
 
         result_json = cleaned_response[start:end]
