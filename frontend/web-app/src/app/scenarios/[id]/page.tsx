@@ -49,7 +49,7 @@ export default function DocumentReaderPage() {
 
   const handleExport = async (format: string) => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://invalid';
       const endpoint = `${API_URL}/scenarios/export/${format.toLowerCase()}`;
 
       const response = await fetch(endpoint, {

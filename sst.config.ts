@@ -13,7 +13,7 @@ export default $config({
     const web = new sst.aws.Nextjs("AiForesightWeb", {
       path: "frontend/web-app",
       environment: {
-        NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "https://aymwk7jco0.execute-api.us-east-1.amazonaws.com",
+        NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "https://invalid.example.invalid",
       },
     });
 

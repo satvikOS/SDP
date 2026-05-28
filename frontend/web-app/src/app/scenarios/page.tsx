@@ -150,7 +150,7 @@ function ScenarioCard({ scenario, onDelete }: { scenario: ScenarioData; onDelete
 
     try {
       setIsDeleting(true);
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://invalid';
       const response = await fetch(`${API_URL}/scenarios/${scenario.scenarioId}`, {
         method: 'DELETE',
       });
