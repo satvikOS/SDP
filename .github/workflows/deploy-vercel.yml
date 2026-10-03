@@ -26,8 +26,8 @@ jobs:
       GEMINI_API: ${{ secrets.GEMINI_API }}
       OPENAI_API: ${{ secrets.OPENAI_API }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
@@ -39,9 +39,9 @@ jobs:
       - name: Install pinned Vercel CLI
         run: npm install --global vercel@62.2.0
       - name: Pull project settings
-        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
-      - name: Build production artifact
-        run: vercel build --prod --token="$VERCEL_TOKEN"
+        run: vercel pull --yes --environment=preview --token="$VERCEL_TOKEN"
+      - name: Build candidate artifact
+        run: vercel build --token="$VERCEL_TOKEN"
       - name: Deploy immutable preview
         id: deploy
         shell: bash
