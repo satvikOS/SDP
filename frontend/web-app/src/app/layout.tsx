@@ -1,12 +1,18 @@
 import type { Metadata, Viewport } from 'next';
-import { Sora } from 'next/font/google';
+import { Geist, Manrope } from 'next/font/google';
 
-import { Sidebar } from '@/components/Sidebar';
+import { ThemeFlow } from '@/components/ThemeFlow';
 import './globals.css';
 
-const sora = Sora({
+const geist = Geist({
   subsets: ['latin'],
-  variable: '--font-sora',
+  variable: '--font-geist',
+  display: 'swap',
+});
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
   display: 'swap',
 });
 
@@ -15,24 +21,22 @@ export const metadata: Metadata = {
     default: 'SDP Decision Room',
     template: '%s · SDP',
   },
-  description: 'A multi-model scenario development process for decisions that must survive uncertainty.',
+  description: 'A structured workspace for developing and comparing strategic scenarios.',
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#071311',
+  themeColor: '#000000',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={sora.variable}>
+    <html lang="en" className={`${geist.variable} ${manrope.variable}`} data-accent="blue">
       <body>
         <a className="skip-link" href="#main-content">Skip to content</a>
-        <div className="app-shell">
-          <Sidebar />
-          <main className="app-content" id="main-content">{children}</main>
-        </div>
+        <ThemeFlow />
+        {children}
       </body>
     </html>
   );

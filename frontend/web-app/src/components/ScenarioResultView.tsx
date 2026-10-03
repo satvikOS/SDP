@@ -1,4 +1,4 @@
-import { Clock3, CornerDownRight, Radar, ShieldCheck, TriangleAlert } from 'lucide-react';
+import { CornerDownRight, Radar, ShieldCheck, TriangleAlert } from 'lucide-react';
 
 import type { ScenarioResult } from '@/lib/scenario-schema';
 import { StrategicField } from './StrategicField';
@@ -6,9 +6,9 @@ import { StrategicField } from './StrategicField';
 export function ScenarioResultView({ result }: { result: ScenarioResult }) {
   return (
     <div className="result-stack">
-      <section className="result-hero panel panel-accent">
+      <section className="result-hero glass-panel">
         <div>
-          <span className="section-kicker">Decision brief</span>
+          <span className="eyebrow">Decision brief</span>
           <h2>{result.briefTitle}</h2>
           <p>{result.executiveSummary}</p>
         </div>
@@ -28,10 +28,10 @@ export function ScenarioResultView({ result }: { result: ScenarioResult }) {
         </dl>
       </section>
 
-      <section className="panel field-panel">
+      <section className="glass-panel field-panel">
         <div className="panel-heading">
           <div>
-            <span className="section-kicker">Uncertainty field</span>
+            <span className="eyebrow">Scenario field</span>
             <h2>Four plausible operating environments</h2>
           </div>
           <p>Planning weights are not forecasts. Use them to test exposure.</p>
@@ -41,7 +41,7 @@ export function ScenarioResultView({ result }: { result: ScenarioResult }) {
 
       <section className="scenario-grid" aria-label="Scenario narratives">
         {result.scenarios.map((scenario, index) => (
-          <article className="scenario-card" data-index={index} key={scenario.title}>
+          <article className="scenario-card glass-panel" data-index={index} key={scenario.title}>
             <header>
               <span>{String(index + 1).padStart(2, '0')}</span>
               <div>
@@ -67,10 +67,10 @@ export function ScenarioResultView({ result }: { result: ScenarioResult }) {
       </section>
 
       <section className="action-layout">
-        <div className="panel">
+        <div className="glass-panel">
           <div className="panel-heading compact-heading">
             <div>
-              <span className="section-kicker">Across all four futures</span>
+              <span className="eyebrow">Across all four scenarios</span>
               <h2>Robust actions</h2>
             </div>
             <ShieldCheck size={24} />
@@ -84,25 +84,15 @@ export function ScenarioResultView({ result }: { result: ScenarioResult }) {
             ))}
           </ol>
         </div>
-        <div className="panel unknowns-panel">
-          <span className="section-kicker">Research queue</span>
+        <div className="glass-panel unknowns-panel">
+          <span className="eyebrow">Open questions</span>
           <h2>What would change the view</h2>
           <ul>{result.criticalUnknowns.map((item) => <li key={item}>{item}</li>)}</ul>
           <div className="dissent-note">
-            <strong>Model dissent</strong>
+            <strong>Alternative interpretation</strong>
             <p>{result.dissent}</p>
           </div>
         </div>
-      </section>
-
-      <section className="provenance-row" aria-label="Model provenance">
-        {result.provenance.map((item) => (
-          <div key={item.provider}>
-            <Clock3 size={14} />
-            <span><strong>{item.provider}</strong> · {item.role}</span>
-            <small>{item.model} · {(item.durationMs / 1000).toFixed(1)}s</small>
-          </div>
-        ))}
       </section>
     </div>
   );

@@ -1,10 +1,6 @@
-import type { Metadata } from 'next';
+import { permanentRedirect } from 'next/navigation';
 
-import { ScenarioDetail } from '@/components/ScenarioDetail';
-
-export const metadata: Metadata = { title: 'Decision brief' };
-
-export default async function ScenarioPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function LegacyScenarioPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  return <div className="page-frame detail-page"><ScenarioDetail id={id} /></div>;
+  permanentRedirect(`/workspace/library/${id}`);
 }

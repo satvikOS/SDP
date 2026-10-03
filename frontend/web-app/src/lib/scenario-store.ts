@@ -2,9 +2,13 @@ import { scenarioResultSchema, type ScenarioResult } from './scenario-schema';
 import { useSyncExternalStore } from 'react';
 
 const STORAGE_KEY = 'sdp.scenario-results.v2';
+const COMPARE_KEY = 'sdp.compare.v1';
 const EMPTY_RESULTS: ScenarioResult[] = [];
+const EMPTY_IDS: string[] = [];
 let cachedRaw: string | null = null;
 let cachedResults = EMPTY_RESULTS;
+let cachedCompareRaw: string | null = null;
+let cachedCompareIds = EMPTY_IDS;
 
 export function loadScenarioResults(): ScenarioResult[] {
   if (typeof window === 'undefined') return EMPTY_RESULTS;
@@ -49,4 +53,33 @@ export function deleteScenarioResult(id: string) {
 
 export function getScenarioResult(id: string) {
   return loadScenarioResults().find((item) => item.id === id);
+}
+
+export function loadComparisonIds(): string[] {
+  if (typeof window === 'undefined') return EMPTY_IDS;
+  try {
+    const raw = window.localStorage.getItem(COMPARE_KEY) ?? '[]';
+    if (raw === cachedCompareRaw) return cachedCompareIds;
+    const parsed: unknown = JSON.parse(raw);
+    cachedCompareRaw = raw;
+    cachedCompareIds = Array.isArray(parsed)
+      ? parsed.filter((value): value is string => typeof value === 'string').slice(0, 3)
+      : EMPTY_IDS;
+    return cachedCompareIds;
+  } catch {
+    return EMPTY_IDS;
+  }
+}
+
+export function useComparisonIds() {
+  return useSyncExternalStore(subscribeToScenarioResults, loadComparisonIds, () => EMPTY_IDS);
+}
+
+export function toggleComparisonId(id: string) {
+  const current = loadComparisonIds();
+  const next = current.includes(id)
+    ? current.filter((value) => value !== id)
+    : [...current, id].slice(-3);
+  window.localStorage.setItem(COMPARE_KEY, JSON.stringify(next));
+  window.dispatchEvent(new Event('sdp:storage'));
 }

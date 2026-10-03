@@ -1,55 +1,90 @@
 'use client';
 
-import { useMemo } from 'react';
+import { Plus, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useScenarioResults } from '@/lib/scenario-store';
+import { AriaButton, AriaTextField } from './ui/AriaControls';
+
+type Initiative = { id: string; name: string; owner: string; exposure: 'Low' | 'Moderate' | 'High' };
+const KEY = 'sdp.initiatives.v1';
 
 export function PortfolioAnalytics() {
   const results = useScenarioResults();
+  const [initiatives, setInitiatives] = useState<Initiative[]>([]);
+  const [name, setName] = useState('');
+  const [owner, setOwner] = useState('');
 
-  const metrics = useMemo(() => {
-    const scenarioCount = results.reduce((sum, result) => sum + result.scenarios.length, 0);
-    const actionCount = results.reduce((sum, result) => sum + result.robustActions.length, 0);
-    const unknownCount = results.reduce((sum, result) => sum + result.criticalUnknowns.length, 0);
-    return { scenarioCount, actionCount, unknownCount };
-  }, [results]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      try { setInitiatives(JSON.parse(window.localStorage.getItem(KEY) ?? '[]')); } catch { setInitiatives([]); }
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
-  const highestWeights = results
+  const metrics = useMemo(() => ({
+    scenarios: results.reduce((sum, result) => sum + result.scenarios.length, 0),
+    actions: results.reduce((sum, result) => sum + result.robustActions.length, 0),
+    questions: results.reduce((sum, result) => sum + result.criticalUnknowns.length, 0),
+  }), [results]);
+
+  const prominent = results
     .flatMap((result) => result.scenarios.map((scenario) => ({ ...scenario, brief: result.briefTitle })))
     .toSorted((a, b) => b.probability - a.probability)
     .slice(0, 6);
 
+  function persist(next: Initiative[]) {
+    setInitiatives(next);
+    window.localStorage.setItem(KEY, JSON.stringify(next));
+  }
+
+  function addInitiative() {
+    if (!name.trim()) return;
+    persist([...initiatives, { id: crypto.randomUUID(), name: name.trim(), owner: owner.trim() || 'Unassigned', exposure: 'Moderate' }]);
+    setName('');
+    setOwner('');
+  }
+
   return (
-    <>
-      <section className="metric-strip">
-        <div><span>Decision briefs</span><strong>{results.length}</strong><small>stored locally</small></div>
-        <div><span>Alternative futures</span><strong>{metrics.scenarioCount}</strong><small>across the portfolio</small></div>
-        <div><span>Robust actions</span><strong>{metrics.actionCount}</strong><small>candidates for review</small></div>
-        <div><span>Critical unknowns</span><strong>{metrics.unknownCount}</strong><small>open research items</small></div>
+    <div className="portfolio-layout">
+      <section className="metric-grid portfolio-metrics">
+        <article className="glass-panel"><span>Decision briefs</span><strong>{results.length}</strong></article>
+        <article className="glass-panel"><span>Alternative scenarios</span><strong>{metrics.scenarios}</strong></article>
+        <article className="glass-panel"><span>Robust actions</span><strong>{metrics.actions}</strong></article>
+        <article className="glass-panel"><span>Open questions</span><strong>{metrics.questions}</strong></article>
       </section>
 
-      <section className="analytics-layout">
-        <div className="panel">
-          <div className="panel-heading"><div><span className="section-kicker">Planning weight</span><h2>Most prominent futures</h2></div></div>
-          {highestWeights.length > 0 ? (
-            <div className="weight-list">
-              {highestWeights.map((item, index) => (
-                <div key={`${item.brief}-${item.title}`}>
-                  <span>{item.title}<small>{item.brief}</small></span>
-                  <i><b data-index={index % 4} style={{ width: `${item.probability}%` }} /></i>
-                  <strong>{item.probability}%</strong>
-                </div>
-              ))}
-            </div>
-          ) : <p className="empty-copy">Build a scenario set to populate the portfolio view.</p>}
+      <section className="glass-panel portfolio-chart">
+        <div className="panel-title"><div><span className="eyebrow">Scenario set</span><h2>Most prominent environments</h2></div></div>
+        {prominent.length > 0 ? prominent.map((item, index) => (
+          <div className="weight-row" key={`${item.brief}-${item.title}`}>
+            <span><strong>{item.title}</strong><small>{item.brief}</small></span>
+            <i><b data-index={index % 4} style={{ width: `${item.probability}%` }} /></i>
+            <em>{item.probability}%</em>
+          </div>
+        )) : <div className="empty-copy">Create a scenario set to populate this view.</div>}
+      </section>
+
+      <section className="glass-panel initiative-panel">
+        <div className="panel-title"><div><span className="eyebrow">Initiatives</span><h2>Track current commitments</h2></div></div>
+        <div className="initiative-form">
+          <AriaTextField label="Initiative" value={name} onChange={setName} placeholder="Expansion program" />
+          <AriaTextField label="Owner" value={owner} onChange={setOwner} placeholder="Strategy team" />
+          <AriaButton className="button primary-button" onPress={addInitiative}><Plus size={16} /> Add</AriaButton>
         </div>
-        <div className="panel portfolio-note">
-          <span className="section-kicker">Interpretation</span>
-          <h2>Do not optimize the portfolio to this chart.</h2>
-          <p>Planning weights help allocate attention. They are not calibrated probabilities and should not be aggregated into a forecast.</p>
-          <p>The useful question is whether the same investment appears fragile across several independently constructed futures.</p>
+        <div className="initiative-list">
+          {initiatives.map((initiative) => (
+            <article key={initiative.id}>
+              <div><strong>{initiative.name}</strong><span>{initiative.owner}</span></div>
+              <select value={initiative.exposure} onChange={(event) => persist(initiatives.map((item) => item.id === initiative.id ? { ...item, exposure: event.target.value as Initiative['exposure'] } : item))} aria-label={`Exposure for ${initiative.name}`}>
+                <option>Low</option><option>Moderate</option><option>High</option>
+              </select>
+              <AriaButton aria-label={`Remove ${initiative.name}`} onPress={() => persist(initiatives.filter((item) => item.id !== initiative.id))}><Trash2 size={16} /></AriaButton>
+            </article>
+          ))}
+          {initiatives.length === 0 && <p className="empty-copy">Add initiatives to track exposure alongside the scenario portfolio.</p>}
         </div>
       </section>
-    </>
+    </div>
   );
 }

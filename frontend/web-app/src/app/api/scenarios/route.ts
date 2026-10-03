@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     if (error instanceof MissingProviderKeysError) {
       return Response.json(
         {
-          error: 'The model providers are not configured for this deployment.',
+          error: 'The scenario service is not configured for this deployment.',
           missing: error.missing,
         },
         { status: 503 },

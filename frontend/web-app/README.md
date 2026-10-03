@@ -1,32 +1,32 @@
-# AI Foresight Platform - Web Application
+# SDP Decision Room — Web Application
 
-Next.js 14 frontend for the AI-Driven Strategic Foresight Platform.
+Next.js 16 application for the Scenario Development Process.
 
 ## Features
 
-- **Scenario Generation Interface**: Interactive form to generate scenario sets
-- **Real-time Progress Tracking**: Live updates during scenario generation (2-5 minutes)
-- **Scenario Visualization**: View generated scenarios with narratives, signposts, and actions
-- **Cost Tracking**: Track API costs per scenario generation
-- **Responsive Design**: Works on iPad Pro and all modern browsers
-- **Dark Mode Support**: Automatic dark/light theme switching
+- **Scenario Workbench**: accessible React Aria brief builder with templates and timeline horizon control
+- **Company Intelligence**: server-side search across 10,000+ public/private organizations, plus custom entries
+- **Decision Views**: scenario library, side-by-side comparison, portfolio, and signals board
+- **Reports**: read-only share links plus branded PDF and PowerPoint exports
+- **Document Studio**: custom local PDF and `.pptx` viewer
+- **OLED Interface**: responsive black canvas with long-duration blue/moss ambient themes
 
 ## Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
+- **Interaction Primitives**: React Aria Components
+- **Styling**: custom CSS design system
 - **Icons**: Lucide React
-- **HTTP Client**: Axios
-- **Deployment**: AWS S3 + CloudFront (via GitHub Actions)
+- **Deployment**: Vercel via GitHub Actions
 
 ## API Integration
 
-Connects to AWS Lambda backend via REST API:
-- `/health` - Health check
-- `/agents` - List available agents
-- `/execute` - Execute single agent
-- `/generate-scenarios` - Full scenario generation pipeline
+The application uses Next.js route handlers:
+
+- `/api/companies` — indexed company lookup
+- `/api/scenarios` — scenario generation and validation
+- `/api/health` — deployment readiness
 
 ## Local Development
 
@@ -34,35 +34,22 @@ Connects to AWS Lambda backend via REST API:
 # Install dependencies
 npm install
 
-# Set API endpoint
-echo "NEXT_PUBLIC_API_URL=https://your-api.execute-api.us-east-1.amazonaws.com" > .env.local
-
 # Run development server
 npm run dev
 
 # Open http://localhost:3000
 ```
 
-## Build & Deploy
+## Verify and deploy
 
 ```bash
-# Build for production (static export)
+npm run lint
+npm run typecheck
+npm run test
 npm run build
-
-# Test production build locally
-npm start
-
-# Or use GitHub Actions (auto-deploy on push)
-# Push to main or ai-platform/ai-foresight-platform-yEVtZ branch
 ```
 
-## Environment Variables
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `NEXT_PUBLIC_API_URL` | Lambda API endpoint | `https://abc123.execute-api.us-east-1.amazonaws.com` |
-
-**Note:** Set `NEXT_PUBLIC_API_URL` as GitHub Secret for CI/CD deployment.
+Provider credentials are injected only from GitHub Actions secrets during Vercel deployment. Do not create credential-bearing `.env` files or expose keys through `NEXT_PUBLIC_*` values.
 
 ## Project Structure
 
@@ -71,61 +58,47 @@ src/
 ├── app/                    # Next.js App Router pages
 │   ├── layout.tsx         # Root layout
 │   ├── page.tsx           # Home page
-│   ├── scenarios/
-│   │   ├── page.tsx       # Scenario library
-│   │   └── new/
-│   │       └── page.tsx   # Scenario generation form
+│   ├── workspace/         # Overview, scenarios, compare, portfolio, signals, documents
+│   ├── share/             # Read-only shared reports
+│   ├── api/               # Company lookup, generation, health
 │   └── globals.css        # Global styles
-├── lib/
-│   ├── api-client.ts      # Lambda API client
-│   └── utils.ts           # Utility functions
-└── components/            # Reusable components (future)
+├── components/            # Product views and React Aria controls
+├── data/                  # Company catalog, geography, industries, templates
+└── lib/                   # Scenario engine, storage, schemas, report export
 ```
 
 ## Key Pages
 
 ### Home (`/`)
-- Platform overview
-- System architecture info
-- Quick links to generate scenarios
-- API health status indicator
 
-### Generate Scenarios (`/scenarios/new`)
-- Interactive form (Industry, Region, Horizon)
-- Real-time generation progress (7 AI agents)
-- Results display with scenarios, actions, quality scores
-- Cost and time tracking
+- Public product introduction
+- Dynamic greeting flow with return-visitor behavior
+- Direct entry into the workspace
 
-### Scenario Library (`/scenarios`)
-- List of all generated scenario sets (future: DynamoDB integration)
-- Filter by industry, region, date
-- View scenario details
+### Create (`/workspace/scenarios/new`)
+
+- Organization search or custom entry
+- Industry and geography taxonomy
+- Timeline horizon and structured decision brief
+- Template-assisted authoring and clear progress states
+
+### Workspace
+
+- Library and scenario detail
+- Side-by-side comparison
+- Portfolio and signals
+- Templates
+- Custom document studio
 
 ## CI/CD Deployment
 
-Automatically deploys to AWS S3 + CloudFront when you push to GitHub:
+Pushing to `main` runs verification and deploys through Vercel:
 
-1. Push changes to `main` or `ai-platform/ai-foresight-platform-yEVtZ`
-2. GitHub Actions builds Next.js app
-3. Deploys to S3 bucket
-4. Invalidates CloudFront cache (production only)
+1. GitHub Actions installs and verifies the app.
+2. Vercel builds an immutable preview with runtime credentials supplied from Actions secrets.
+3. The workflow checks runtime health.
+4. The verified artifact is promoted to production.
 
 See `.github/workflows/deploy-frontend.yml` for workflow details.
 
-## Cost
-
-**Development:** Free (local or GitHub Pages)
-**Production:** ~$1-2/month (S3 + CloudFront)
-
-## Next Steps
-
-- [ ] Add persistent storage (DynamoDB integration for scenario history)
-- [ ] Add authentication (Cognito)
-- [ ] Add visualization components (scenario matrices, trend radars)
-- [ ] Add export functionality (PDF, PowerPoint)
-- [ ] Add real-time monitoring dashboard (signpost tracking)
-- [ ] Add collaboration features (comments, sharing)
-
----
-
-**Auto-deployed via GitHub Actions** 🚀
+No user authentication is intentionally required for the current professor-facing deployment. Scenario history and portfolio data remain in the current browser.

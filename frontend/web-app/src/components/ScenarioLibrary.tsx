@@ -1,51 +1,67 @@
 'use client';
 
-import { ArrowUpRight, Library, Plus, Trash2 } from 'lucide-react';
+import { ArrowUpRight, GitCompareArrows, Library, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { deleteScenarioResult, useScenarioResults } from '@/lib/scenario-store';
+import { Button, Checkbox } from 'react-aria-components';
+
+import {
+  deleteScenarioResult,
+  toggleComparisonId,
+  useComparisonIds,
+  useScenarioResults,
+} from '@/lib/scenario-store';
 
 export function ScenarioLibrary() {
   const results = useScenarioResults();
-
-  function remove(id: string) {
-    deleteScenarioResult(id);
-  }
+  const comparisonIds = useComparisonIds();
 
   if (results.length === 0) {
     return (
-      <section className="empty-library panel">
-        <Library size={30} />
-        <h2>No saved briefs in this browser.</h2>
-        <p>Generated scenario sets stay on this device until shared persistence is connected.</p>
-        <Link className="button button-primary" href="/scenarios/new"><Plus size={17} /> Build the first brief</Link>
+      <section className="empty-state glass-panel">
+        <Library size={28} />
+        <h2>No scenarios saved yet</h2>
+        <p>Create a scenario set to begin building the library.</p>
+        <Link className="button primary-button" href="/workspace/new"><Plus size={17} /> New scenario</Link>
       </section>
     );
   }
 
   return (
-    <section className="library-list">
-      {results.map((result) => (
-        <article className="library-row" key={result.id}>
-          <div className="library-date">
-            <strong>{new Date(result.createdAt).getDate()}</strong>
-            <span>{new Date(result.createdAt).toLocaleString(undefined, { month: 'short' })}</span>
-          </div>
-          <div className="library-main">
-            <span>{result.request.organization} · {result.request.horizonYear}</span>
-            <h2>{result.briefTitle}</h2>
-            <p>{result.request.focalQuestion}</p>
-          </div>
-          <div className="library-scenarios" aria-label="Scenario planning weights">
-            {result.scenarios.map((scenario, index) => (
-              <div key={scenario.title}><i data-index={index} style={{ width: `${scenario.probability}%` }} /><span>{scenario.title}</span><strong>{scenario.probability}%</strong></div>
-            ))}
-          </div>
-          <div className="library-actions">
-            <Link href={`/scenarios/${result.id}`} aria-label={`Open ${result.briefTitle}`}><ArrowUpRight size={18} /></Link>
-            <button type="button" onClick={() => remove(result.id)} aria-label={`Delete ${result.briefTitle}`}><Trash2 size={17} /></button>
-          </div>
-        </article>
-      ))}
-    </section>
+    <>
+      <div className="library-toolbar glass-panel">
+        <span>Select up to three briefs for comparison.</span>
+        <Link className="button quiet-button" data-disabled={comparisonIds.length < 2} href="/workspace/compare">
+          <GitCompareArrows size={16} /> Compare {comparisonIds.length > 0 ? comparisonIds.length : ''}
+        </Link>
+      </div>
+      <section className="library-list">
+        {results.map((result) => (
+          <article className="library-row glass-panel" key={result.id}>
+            <Checkbox
+              className="selection-check"
+              isSelected={comparisonIds.includes(result.id)}
+              onChange={() => toggleComparisonId(result.id)}
+              aria-label={`Select ${result.briefTitle} for comparison`}
+            >
+              {({ isSelected }) => <span>{isSelected ? '✓' : ''}</span>}
+            </Checkbox>
+            <div className="library-main">
+              <span>{result.request.organization} · {result.request.horizonYear}</span>
+              <h2>{result.briefTitle}</h2>
+              <p>{result.request.focalQuestion}</p>
+            </div>
+            <div className="library-scenarios" aria-label="Scenario planning weights">
+              {result.scenarios.map((scenario, index) => (
+                <div key={scenario.title}><i data-index={index} style={{ width: `${scenario.probability}%` }} /><span>{scenario.title}</span><strong>{scenario.probability}%</strong></div>
+              ))}
+            </div>
+            <div className="library-actions">
+              <Link href={`/workspace/library/${result.id}`} aria-label={`Open ${result.briefTitle}`}><ArrowUpRight size={18} /></Link>
+              <Button onPress={() => deleteScenarioResult(result.id)} aria-label={`Delete ${result.briefTitle}`}><Trash2 size={17} /></Button>
+            </div>
+          </article>
+        ))}
+      </section>
+    </>
   );
 }
