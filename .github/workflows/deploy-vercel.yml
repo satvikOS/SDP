@@ -43,7 +43,7 @@ jobs:
       - name: Build candidate artifact
         run: vercel build --token="$VERCEL_TOKEN"
       - name: Deploy immutable preview
-        id: deploy
+        id: preview
         shell: bash
         run: |
           deployment_url="$(vercel deploy --prebuilt --token="$VERCEL_TOKEN" \
@@ -55,13 +55,30 @@ jobs:
             --env "OPENAI_MODEL=gpt-6-luna")"
           echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
       - name: Smoke test runtime configuration
-        run: curl --fail --retry 5 --retry-delay 5 "${{ steps.deploy.outputs.url }}/api/health"
-      - name: Promote verified artifact
-        run: vercel promote "${{ steps.deploy.outputs.url }}" --token="$VERCEL_TOKEN"
+        run: curl --fail --retry 5 --retry-delay 5 "${{ steps.preview.outputs.url }}/api/health"
+      - name: Pull production settings
+        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - name: Build production artifact
+        run: vercel build --prod --token="$VERCEL_TOKEN"
+      - name: Deploy verified production artifact
+        id: production
+        shell: bash
+        run: |
+          deployment_url="$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN" \
+            --env "XAI_API=$XAI_API" \
+            --env "GEMINI_API=$GEMINI_API" \
+            --env "OPENAI_API=$OPENAI_API" \
+            --env "XAI_MODEL=grok-4-1-fast-reasoning" \
+            --env "GEMINI_MODEL=gemini-3.5-flash" \
+            --env "OPENAI_MODEL=gpt-6-luna")"
+          echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
+      - name: Smoke test production deployment
+        run: curl --fail --retry 5 --retry-delay 5 "${{ steps.production.outputs.url }}/api/health"
       - name: Deployment summary
         run: |
           echo "## Deploy Result" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **URL**: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Preview**: ${{ steps.preview.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Production**: ${{ steps.production.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Target**: production" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Status**: READY" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Commit**: ${GITHUB_SHA::7}" >> "$GITHUB_STEP_SUMMARY"
