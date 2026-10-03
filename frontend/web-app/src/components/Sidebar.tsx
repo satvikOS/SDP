@@ -45,7 +45,7 @@ export function Sidebar() {
             );
           })}
         </nav>
-        <Link className="method-link" href="/help"><BookOpenText size={17} /> Method</Link>
+        <Link className="method-link" data-active={pathname === '/workspace/method'} href="/workspace/method"><BookOpenText size={17} /> Method</Link>
       </aside>
 
       <nav className="mobile-nav" aria-label="Mobile workspace navigation">

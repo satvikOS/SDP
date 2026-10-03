@@ -6,9 +6,9 @@ SDP is a Scenario Development Process for decisions that must remain sound under
 
 - A public welcome page leads into a focused scenario workspace; no account is required.
 - A decision brief captures the organization, industry, geography, focal question, horizon, constraints, and known uncertainties.
-- Company search covers more than 10,000 globally relevant public and private organizations, including exchange and ticker metadata, while accepting any custom company name.
+- Company search combines a 10,000+ local exchange index, a broad private-company catalog, and live global exchange lookup while accepting any custom organization name.
 - Structured outputs include alternative futures, signposts, strategic moves, no-regret actions, evidence gaps, and dissent.
-- Generated briefs are saved locally in the browser and support comparison, portfolio tracking, signals, templates, shareable read-only links, PDF export, and PowerPoint export.
+- Generated briefs and their PDF reports persist locally until explicitly deleted, with comparison, portfolio tracking, signals, templates, shareable read-only links, and PowerPoint export.
 - A custom in-product document studio reviews local PDF and `.pptx` evidence without uploading it.
 - The OLED interface uses React Aria Components, keyboard-accessible controls, responsive navigation, reduced-motion support, and long-duration blue/moss ambient themes.
 - GitHub Actions runs lint, TypeScript, unit tests, and a production build before deployment.
@@ -78,7 +78,7 @@ No provider key is exposed through a `NEXT_PUBLIC_` variable or returned by the 
 
 - Results, portfolio items, and signals are intentionally browser-local for this single-user academic deployment; there are no accounts, teams, or version history.
 - Shared report links encode a read-only snapshot in the URL and do not provide collaborative editing.
-- The document studio renders PDF pages and common PowerPoint text/image layouts locally; advanced SmartArt, embedded media, and unusual presentation effects may not reproduce exactly.
+- The document studio renders PDFs and PowerPoint masters, layouts, formatted text, images, tables, charts, shapes, and SmartArt locally. PowerPoint animations, video, audio, and 3D effects are not supported.
 - Generated scenarios are not a substitute for sourced research. The product identifies evidence gaps rather than inventing citations.
 - Legacy AWS infrastructure is no longer deployed, but the remaining legacy backend code is retained as reference until output-parity review is complete.
 

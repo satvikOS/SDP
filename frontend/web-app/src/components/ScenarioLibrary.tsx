@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowUpRight, GitCompareArrows, Library, Plus, Trash2 } from 'lucide-react';
+import { ArrowUpRight, FileText, GitCompareArrows, Library, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button, Checkbox } from 'react-aria-components';
 
@@ -49,6 +49,7 @@ export function ScenarioLibrary() {
               <span>{result.request.organization} · {result.request.horizonYear}</span>
               <h2>{result.briefTitle}</h2>
               <p>{result.request.focalQuestion}</p>
+              <small className="library-file"><FileText size={12} /> Saved PDF report</small>
             </div>
             <div className="library-scenarios" aria-label="Scenario planning weights">
               {result.scenarios.map((scenario, index) => (

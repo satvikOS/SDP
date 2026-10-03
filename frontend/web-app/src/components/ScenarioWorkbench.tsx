@@ -184,8 +184,8 @@ export function ScenarioWorkbench() {
               value={form.organization}
               options={companyOptions}
               onInputChange={(organization) => setForm((current) => ({ ...current, organization }))}
-              placeholder="Search 10,000+ companies or enter another"
-              description="Listed companies include exchange and ticker. Press Enter to use any other name."
+              placeholder="Search global companies or enter another"
+              description="Global listings include exchange and ticker. Press Enter to use any other name."
               isRequired
               isLoading={isSearchingCompanies}
             />

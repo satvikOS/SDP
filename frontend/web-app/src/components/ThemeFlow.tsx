@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react';
 
-const MIN_DELAY = 140_000;
-const DELAY_RANGE = 80_000;
+const MIN_DELAY = 75_000;
+const DELAY_RANGE = 40_000;
 
 export function ThemeFlow() {
   useEffect(() => {

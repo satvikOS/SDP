@@ -167,11 +167,11 @@ export function HorizonSlider({ value, onChange, min, max }: {
         <Label>Planning horizon</Label>
         <SliderOutput>{({ state }) => `${state.getThumbValue(0)}`}</SliderOutput>
       </div>
-      <SliderTrack>
+      <SliderTrack className="timeline-track">
         {({ state }) => (
           <>
             <div className="timeline-fill" style={{ width: `${state.getThumbPercent(0) * 100}%` }} />
-            <SliderThumb aria-label="Horizon year" />
+            <SliderThumb className="timeline-thumb" aria-label="Horizon year" />
           </>
         )}
       </SliderTrack>

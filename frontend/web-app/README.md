@@ -5,10 +5,10 @@ Next.js 16 application for the Scenario Development Process.
 ## Features
 
 - **Scenario Workbench**: accessible React Aria brief builder with templates and timeline horizon control
-- **Company Intelligence**: server-side search across 10,000+ public/private organizations, plus custom entries
+- **Company Intelligence**: 10,000+ locally indexed listings, curated private organizations, live global exchange lookup, and custom entries
 - **Decision Views**: scenario library, side-by-side comparison, portfolio, and signals board
-- **Reports**: read-only share links plus branded PDF and PowerPoint exports
-- **Document Studio**: custom local PDF and `.pptx` viewer
+- **Reports**: persistent browser-local PDF reports, read-only share links, and branded PowerPoint exports
+- **Document Studio**: custom local PDF and high-fidelity `.pptx` viewer
 - **OLED Interface**: responsive black canvas with long-duration blue/moss ambient themes
 
 ## Tech Stack

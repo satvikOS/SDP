@@ -41,14 +41,16 @@ export function useScenarioResults() {
 
 export function saveScenarioResult(result: ScenarioResult) {
   const existing = loadScenarioResults().filter((item) => item.id !== result.id);
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify([result, ...existing].slice(0, 30)));
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify([result, ...existing]));
   window.dispatchEvent(new Event('sdp:storage'));
+  void import('./scenario-document-store').then(({ persistScenarioPdf }) => persistScenarioPdf(result));
 }
 
 export function deleteScenarioResult(id: string) {
   const remaining = loadScenarioResults().filter((item) => item.id !== id);
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(remaining));
   window.dispatchEvent(new Event('sdp:storage'));
+  void import('./scenario-document-store').then(({ deleteScenarioPdf }) => deleteScenarioPdf(id));
 }
 
 export function getScenarioResult(id: string) {

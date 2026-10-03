@@ -6,6 +6,16 @@ const moss = '6E9274';
 const muted = 'AAB4C3';
 
 export async function exportScenarioPdf(result: ScenarioResult) {
+  const document = await buildScenarioPdf(result);
+  document.save(`${slug(result.briefTitle)}.pdf`);
+}
+
+export async function createScenarioPdfBlob(result: ScenarioResult) {
+  const document = await buildScenarioPdf(result);
+  return document.output('blob');
+}
+
+async function buildScenarioPdf(result: ScenarioResult) {
   const { jsPDF } = await import('jspdf');
   const document = new jsPDF({ unit: 'pt', format: 'a4' });
   const width = document.internal.pageSize.getWidth();
@@ -76,7 +86,7 @@ export async function exportScenarioPdf(result: ScenarioResult) {
   result.criticalUnknowns.forEach((item) => paragraph(`• ${item}`));
   paragraph(`Alternative interpretation: ${result.dissent}`);
 
-  document.save(`${slug(result.briefTitle)}.pdf`);
+  return document;
 }
 
 export async function exportScenarioPptx(result: ScenarioResult) {
@@ -95,8 +105,7 @@ export async function exportScenarioPptx(result: ScenarioResult) {
 
   const addFrame = (slide: ReturnType<typeof deck.addSlide>) => {
     slide.background = { color: '000000' };
-    slide.addShape(deck.ShapeType.line, { x: 0.45, y: 0.42, w: 12.4, h: 0, line: { color: blue, transparency: 35, width: 1 } });
-    slide.addText('SDP', { x: 0.45, y: 0.14, w: 0.6, h: 0.2, fontFace: 'Aptos', fontSize: 9, bold: true, color: paper, margin: 0 });
+    slide.addText('SDP', { x: 0.55, y: 0.28, w: 0.6, h: 0.2, fontFace: 'Aptos', fontSize: 9, bold: true, color: paper, margin: 0 });
   };
 
   let slide = deck.addSlide();
