@@ -24,7 +24,7 @@ Implement a 4-stage multi-AI validation pipeline for enterprise-grade scenario g
 
 #### 2. **Google Gemini Integration**
 - ✅ Google AI SDK added to `requirements.txt`
-- ✅ API key configured: `AIzaSyDM-pYF5GB0u6GltVxeHlAGMj6Ck1FcZls`
+- ✅ API key configured: `REVOKED_DO_NOT_REUSE`
 - ✅ Gemini 2.0 Flash Experimental model integration
 - ✅ Fallback handling if Gemini unavailable
 
@@ -175,7 +175,7 @@ else:
 
 ```bash
 # Add to Lambda environment or .env
-GOOGLE_API_KEY=AIzaSyDM-pYF5GB0u6GltVxeHlAGMj6Ck1FcZls
+GOOGLE_API_KEY=REVOKED_DO_NOT_REUSE
 ENABLE_MULTI_MODEL_PIPELINE=true
 ```
 

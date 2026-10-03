@@ -68,7 +68,7 @@ Add these environment variables to your Lambda function:
 ENABLE_MULTI_MODEL_PIPELINE=true
 
 # Google Gemini API Key
-GOOGLE_API_KEY=AIzaSyDM-pYF5GB0u6GltVxeHlAGMj6Ck1FcZls
+GOOGLE_API_KEY=REVOKED_DO_NOT_REUSE
 
 # AWS Bedrock Configuration (usually auto-configured)
 AWS_REGION=us-east-1

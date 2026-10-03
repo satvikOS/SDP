@@ -223,7 +223,7 @@ You'll see:
 
 **Example (not real):**
 ```
-Access key ID: AKIAIOSFODNN7EXAMPLE
+Access key ID: EXAMPLE_ACCESS_KEY_ID
 Secret access key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 ```
 
@@ -248,7 +248,7 @@ Secret access key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 ### 6.3 Add AWS_ACCESS_KEY_ID
 - Click **"New repository secret"** (green button)
 - **Name:** `AWS_ACCESS_KEY_ID`
-- **Secret:** Paste your Access key ID (e.g., `AKIAIOSFODNN7EXAMPLE`)
+- **Secret:** Paste your Access key ID (e.g., `EXAMPLE_ACCESS_KEY_ID`)
 - Click **"Add secret"**
 
 ### 6.4 Add AWS_SECRET_ACCESS_KEY

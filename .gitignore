@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-package-lock.json
+.vercel/
 
 # Python
 __pycache__/
@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+/lib/
 lib64/
 parts/
 sdist/

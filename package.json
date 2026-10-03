@@ -1,29 +1,18 @@
 {
-  "name": "ai-foresight-platform",
-  "version": "1.0.0",
-  "description": "AI-Driven Strategic Foresight Platform",
+  "name": "sdp",
+  "version": "2.0.0",
+  "description": "Multi-model Scenario Development Process decision room",
   "private": true,
   "scripts": {
-    "deploy:dev": "serverless deploy --stage dev",
-    "deploy:prod": "serverless deploy --stage prod",
-    "remove:dev": "serverless remove --stage dev",
-    "remove:prod": "serverless remove --stage prod",
-    "logs": "serverless logs -f executeAgent --stage dev --tail",
-    "test": "echo \"Tests coming soon\" && exit 0",
-    "sst:deploy": "sst deploy --stage dev",
-    "sst:deploy:prod": "sst deploy --stage production",
-    "sst:dev": "sst dev",
-    "sst:remove": "sst remove --stage dev"
-  },
-  "devDependencies": {
-    "aws-cdk-lib": "^2.233.0",
-    "serverless": "^3.38.0",
-    "serverless-offline": "^13.3.0",
-    "serverless-python-requirements": "^6.1.0",
-    "sst": "^3.17.25"
+    "dev": "npm --prefix frontend/web-app run dev",
+    "build": "npm --prefix frontend/web-app run build",
+    "lint": "npm --prefix frontend/web-app run lint",
+    "typecheck": "npm --prefix frontend/web-app run typecheck",
+    "test": "npm --prefix frontend/web-app run test",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "node": "24.x",
+    "npm": ">=10.0.0"
   }
 }

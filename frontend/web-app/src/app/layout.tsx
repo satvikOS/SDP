@@ -1,25 +1,37 @@
-import type { Metadata } from 'next';
-import './globals.css';
+import type { Metadata, Viewport } from 'next';
+import { Sora } from 'next/font/google';
+
 import { Sidebar } from '@/components/Sidebar';
+import './globals.css';
+
+const sora = Sora({
+  subsets: ['latin'],
+  variable: '--font-sora',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
-  title: 'AI Foresight Platform - Enterprise Strategic Foresight',
-  description: 'Enterprise-grade AI-powered strategic foresight and scenario planning for government and corporate decision-makers',
+  title: {
+    default: 'SDP Decision Room',
+    template: '%s · SDP',
+  },
+  description: 'A multi-model scenario development process for decisions that must survive uncertainty.',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#071311',
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="dark">
-      <body className="font-sans">
-        <div className="min-h-screen bg-[var(--bg)]">
+    <html lang="en" className={sora.variable}>
+      <body>
+        <a className="skip-link" href="#main-content">Skip to content</a>
+        <div className="app-shell">
           <Sidebar />
-          <div className="lg:pl-72">
-            {children}
-          </div>
+          <main className="app-content" id="main-content">{children}</main>
         </div>
       </body>
     </html>

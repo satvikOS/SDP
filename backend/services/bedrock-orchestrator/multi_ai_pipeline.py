@@ -32,7 +32,7 @@ class MultiAIPipeline:
         self.claude_sonnet = "us.anthropic.claude-3-5-sonnet-20241022-v2:0"  # Claude Sonnet 4.5
 
         # Initialize Google Gemini client
-        self.google_api_key = os.getenv('GOOGLE_API_KEY', 'AIzaSyDM-pYF5GB0u6GltVxeHlAGMj6Ck1FcZls')
+        self.google_api_key = os.getenv('GOOGLE_API_KEY')
         self.google_client = None
 
         if self.google_api_key:

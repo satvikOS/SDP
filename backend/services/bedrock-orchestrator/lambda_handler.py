@@ -47,7 +47,7 @@ class MultiAIPipeline:
         )
         self.bedrock_runtime = boto3.client('bedrock-runtime', region_name='us-east-1', config=pipeline_config)
         self.claude_opus = "us.anthropic.claude-opus-4-5-20251101-v1:0"
-        self.google_api_key = os.getenv('GOOGLE_API_KEY', 'AIzaSyDM-pYF5GB0u6GltVxeHlAGMj6Ck1FcZls')
+        self.google_api_key = os.getenv('GOOGLE_API_KEY')
         self.google_configured = False
 
         if self.google_api_key:
