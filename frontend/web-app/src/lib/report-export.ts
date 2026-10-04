@@ -35,11 +35,11 @@ async function buildScenarioPdf(result: ScenarioResult) {
     y = 54;
   };
   const heading = (text: string, size = 18) => {
+    document.setFont('helvetica', 'bold');
+    document.setFontSize(size);
     const lines = document.splitTextToSize(text, width - margin * 2);
     const lineHeight = size * 1.12;
     ensure(lines.length * lineHeight + 18);
-    document.setFont('helvetica', 'bold');
-    document.setFontSize(size);
     document.setTextColor(243, 246, 251);
     document.text(lines, margin, y, { lineHeightFactor: 1.12 });
     y += lines.length * lineHeight + 12;
