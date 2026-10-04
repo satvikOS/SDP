@@ -1,6 +1,7 @@
 import { CornerDownRight, Radar, ShieldCheck, TriangleAlert } from 'lucide-react';
 
 import type { ScenarioResult } from '@/lib/scenario-schema';
+import { ScenarioFlowDiagram } from './ScenarioFlowDiagram';
 import { StrategicField } from './StrategicField';
 
 export function ScenarioResultView({ result }: { result: ScenarioResult }) {
@@ -37,6 +38,17 @@ export function ScenarioResultView({ result }: { result: ScenarioResult }) {
           <p>Planning weights are not forecasts. Use them to test exposure.</p>
         </div>
         <StrategicField scenarios={result.scenarios} />
+      </section>
+
+      <section className="glass-panel decision-flow-panel">
+        <div className="panel-heading">
+          <div>
+            <span className="eyebrow">Decision logic</span>
+            <h2>How the scenario set supports action</h2>
+          </div>
+          <p>Signals refresh the assumptions behind the decision frame.</p>
+        </div>
+        <ScenarioFlowDiagram />
       </section>
 
       <section className="scenario-grid" aria-label="Scenario narratives">

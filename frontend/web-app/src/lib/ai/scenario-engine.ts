@@ -11,7 +11,7 @@ import {
 } from '@/lib/scenario-schema';
 
 export const MODEL_CONFIG = {
-  xai: process.env.XAI_MODEL ?? 'grok-4-1-fast-reasoning',
+  xai: process.env.XAI_MODEL ?? 'grok-4.3',
   google: process.env.GEMINI_MODEL ?? 'gemini-3.7-flash',
   openai: process.env.OPENAI_MODEL ?? 'gpt-6-luna',
 } as const;
@@ -173,6 +173,7 @@ export async function generateScenarioSet(input: ScenarioRequest): Promise<Scena
     runReview('xAI', MODEL_CONFIG.xai, 'challenger', () =>
       generateText({
         model: xai(MODEL_CONFIG.xai),
+        providerOptions: { xai: { reasoningEffort: 'low' } },
         system: analystSystem,
         maxOutputTokens: 2400,
         abortSignal: AbortSignal.timeout(60_000),
@@ -225,6 +226,7 @@ export async function generateScenarioSet(input: ScenarioRequest): Promise<Scena
         ...synthesisOptions,
         model: xai.responses(MODEL_CONFIG.xai),
         abortSignal: AbortSignal.timeout(45_000),
+        providerOptions: { xai: { reasoningEffort: 'medium' } },
       }),
     });
   }

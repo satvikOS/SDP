@@ -1,0 +1,91 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { describe, expect, it } from 'vitest';
+
+import { buildScenarioPdf } from './report-export';
+import type { ScenarioResult } from './scenario-schema';
+
+const sample: ScenarioResult = {
+  id: 'reference-report',
+  createdAt: '2026-10-04T14:00:00.000Z',
+  briefTitle: 'Global services transition: capital allocation through 2036',
+  executiveSummary: 'The decision is not whether the service transition will continue, but how quickly capital can move without weakening liquidity or core customer relationships. A staged commitment, explicit signposts, and protected downside capacity remain robust across the four environments tested.',
+  request: {
+    organization: 'Northstar Industries',
+    industry: 'Business services and technology',
+    region: 'Global',
+    horizonYear: 2036,
+    focalQuestion: 'How aggressively should capital move from legacy operations into recurring digital services while preserving liquidity and customer trust?',
+    strategicContext: 'The organization is managing a structural decline in legacy demand while digital services expand. Management must sequence investment against uncertain adoption, financing costs, regulatory expectations, and execution capacity.',
+    knownUncertainties: ['Enterprise adoption speed', 'Cost of capital', 'Execution capacity'],
+  },
+  drivers: [
+    { name: 'Customer migration', assessment: 'Contract renewal behavior determines the pace at which recurring services can replace legacy revenue.', impact: 'high', uncertainty: 'high', direction: 'accelerating' },
+    { name: 'Financing conditions', assessment: 'Debt pricing and covenant headroom shape the amount and timing of reversible investment.', impact: 'high', uncertainty: 'high', direction: 'uncertain' },
+    { name: 'Delivery capacity', assessment: 'Specialist talent and operating discipline determine whether growth converts to durable margin.', impact: 'high', uncertainty: 'medium', direction: 'steady' },
+    { name: 'Regulatory pressure', assessment: 'Data, resilience, and disclosure obligations raise both entry costs and customer switching friction.', impact: 'medium', uncertainty: 'medium', direction: 'accelerating' },
+  ],
+  scenarios: [
+    {
+      title: 'Disciplined acceleration', thesis: 'Demand strengthens while financing remains selective, rewarding staged investment with clear proof points.',
+      narrative: 'Enterprise demand becomes visible through multi-year commitments, but boards remain cautious about irreversible capital. Management funds a small number of repeatable service offers, protects covenant headroom, and releases additional capital only when renewal, margin, and delivery thresholds are met.',
+      probability: 31, coordinates: { x: 72, y: 70 }, keyDrivers: ['Customer migration', 'Financing conditions'],
+      signposts: ['Multi-year service renewals exceed the agreed threshold', 'Net retention improves for two consecutive quarters', 'Funding spread remains within the board limit'],
+      strategicMoves: ['Stage capital against contracted demand', 'Standardize the highest-retention service offers', 'Preserve a liquidity reserve for execution variance'],
+      avoid: 'Avoid treating early bookings as proof of scalable delivery economics.',
+    },
+    {
+      title: 'Capacity bottleneck', thesis: 'Demand arrives faster than the organization can recruit, integrate, and deliver consistently.',
+      narrative: 'Commercial demand is strong, yet implementation backlogs and specialist scarcity reduce service quality. Growth creates working-capital pressure and customer dissatisfaction. The winning posture favors operating controls, partner capacity, and deliberate sales gating over volume at any price.',
+      probability: 24, coordinates: { x: 68, y: 36 }, keyDrivers: ['Delivery capacity', 'Customer migration'],
+      signposts: ['Implementation backlog exceeds two quarters', 'Service gross margin declines despite revenue growth', 'Critical-role attrition rises above the operating limit'],
+      strategicMoves: ['Gate new commitments against verified delivery capacity', 'Create certified partner delivery capacity', 'Prioritize offers with repeatable implementation patterns'],
+      avoid: 'Avoid compensating for delivery weakness with broader discounting or custom work.',
+    },
+    {
+      title: 'Capital constraint', thesis: 'Higher funding costs and slower adoption require a narrower portfolio and stronger cash discipline.',
+      narrative: 'Customers lengthen procurement cycles while lenders and shareholders demand near-term cash evidence. Management consolidates the service portfolio around defensible segments, improves legacy cash conversion, and uses partnerships to keep strategic options open without increasing fixed cost.',
+      probability: 27, coordinates: { x: 32, y: 64 }, keyDrivers: ['Financing conditions', 'Regulatory pressure'],
+      signposts: ['Weighted funding cost remains above the investment hurdle', 'Procurement cycles extend beyond the planning assumption', 'Free cash flow misses the board range for two quarters'],
+      strategicMoves: ['Concentrate investment on cash-generative segments', 'Use partnerships for option-preserving market access', 'Accelerate working-capital recovery'],
+      avoid: 'Avoid spreading constrained capital evenly across an undifferentiated portfolio.',
+    },
+    {
+      title: 'Managed retrenchment', thesis: 'Weak demand and execution stress make balance-sheet protection the governing priority.',
+      narrative: 'Service adoption stalls as customers defer transformation and internal delivery metrics deteriorate. Management protects core accounts, exits low-conviction offers, and establishes explicit restart criteria. The strategic objective shifts from expansion to preserving assets and capabilities that retain option value.',
+      probability: 18, coordinates: { x: 28, y: 28 }, keyDrivers: ['Customer migration', 'Delivery capacity'],
+      signposts: ['Pipeline conversion falls below the downside threshold', 'Core-account churn rises for two consecutive quarters', 'Transformation milestones miss the recovery plan'],
+      strategicMoves: ['Protect core account service levels', 'Exit offers without a credible path to contribution', 'Define evidence-based restart conditions'],
+      avoid: 'Avoid continuing expansion solely to defend prior investment decisions.',
+    },
+  ],
+  robustActions: [
+    { timing: 'now', action: 'Approve stage gates for transition capital', rationale: 'Stage gates preserve reversibility and connect funding to observable commercial and operating evidence.' },
+    { timing: 'now', action: 'Protect a defined liquidity reserve', rationale: 'A protected reserve prevents execution variance from forcing value-destructive financing or asset sales.' },
+    { timing: 'next 90 days', action: 'Instrument customer and delivery signposts', rationale: 'A shared signal system shortens the time between evidence change and management response.' },
+    { timing: 'next 90 days', action: 'Prioritize repeatable service offers', rationale: 'Standardization improves delivery quality, margin visibility, and the ability to scale through partners.' },
+    { timing: 'this year', action: 'Run a portfolio reallocation review', rationale: 'A formal review moves capital from offers that miss thresholds to those demonstrating durable economics.' },
+  ],
+  criticalUnknowns: ['Which customer segments will sign multi-year service commitments?', 'How much covenant headroom is required under the downside case?', 'Which delivery capabilities can scale through partners without weakening quality?', 'What evidence should trigger acceleration, pause, or retrenchment?'],
+  dissent: 'A credible counterview is that management is underestimating the durability of legacy cash flows and may destroy option value by moving capital too quickly. This interpretation should be tested against account-level retention, maintenance margin, and switching-cost evidence.',
+  provenance: [
+    { provider: 'xAI', model: 'grok-4.3', role: 'challenger', durationMs: 1200, status: 'complete' },
+    { provider: 'Google', model: 'gemini-3.7-flash', role: 'signal analyst', durationMs: 1000, status: 'complete' },
+    { provider: 'OpenAI', model: 'gpt-6-luna', role: 'synthesizer', durationMs: 1800, status: 'complete' },
+  ],
+};
+
+describe('professional PDF report', () => {
+  it('builds a substantial multi-page decision brief', async () => {
+    const document = await buildScenarioPdf(sample);
+    const bytes = Buffer.from(document.output('arraybuffer'));
+    expect(document.getNumberOfPages()).toBeGreaterThanOrEqual(8);
+    expect(bytes.byteLength).toBeGreaterThan(15_000);
+
+    if (process.env.WRITE_PDF_ARTIFACT === '1') {
+      const directory = resolve(process.cwd(), '../../output/pdf');
+      await mkdir(directory, { recursive: true });
+      await writeFile(resolve(directory, 'sdp-scenario-report-reference.pdf'), bytes);
+    }
+  });
+});
