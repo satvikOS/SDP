@@ -51,7 +51,7 @@ jobs:
             --env "GEMINI_API=$GEMINI_API" \
             --env "OPENAI_API=$OPENAI_API" \
             --env "XAI_MODEL=grok-4-1-fast-reasoning" \
-            --env "GEMINI_MODEL=gemini-3.5-flash" \
+            --env "GEMINI_MODEL=gemini-3.7-flash" \
             --env "OPENAI_MODEL=gpt-6-luna")"
           echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
       - name: Smoke test runtime configuration
@@ -69,7 +69,7 @@ jobs:
             --env "GEMINI_API=$GEMINI_API" \
             --env "OPENAI_API=$OPENAI_API" \
             --env "XAI_MODEL=grok-4-1-fast-reasoning" \
-            --env "GEMINI_MODEL=gemini-3.5-flash" \
+            --env "GEMINI_MODEL=gemini-3.7-flash" \
             --env "OPENAI_MODEL=gpt-6-luna")"
           echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
       - name: Smoke test production deployment

@@ -88,10 +88,9 @@ button { color: inherit; }
 @keyframes edge-float-three { to { transform: translate(10vw, -15vh) scale(1.1); } }
 
 .brand { align-items: center; display: inline-flex; gap: 12px; position: relative; z-index: 2; }
-.brand-symbol { fill: var(--text); height: 32px; shape-rendering: geometricPrecision; width: 32px; }
+.brand-symbol { fill: var(--text); height: 32px; shape-rendering: geometricPrecision; width: 36px; }
 .brand-type { display: flex; flex-direction: column; line-height: 1.1; }
-.brand-type strong { font-family: var(--font-manrope), sans-serif; font-size: 15px; font-weight: 780; letter-spacing: -.035em; }
-.brand-type strong span { font-weight: 580; }
+.brand-type strong { font-family: var(--font-manrope), sans-serif; font-size: 15px; font-weight: 760; letter-spacing: -.025em; }
 .brand-type small { color: var(--muted); font-size: 9px; margin-top: 4px; }
 
 .button {

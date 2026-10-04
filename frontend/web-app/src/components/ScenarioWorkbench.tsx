@@ -140,7 +140,7 @@ export function ScenarioWorkbench() {
         throw new Error(message);
       }
       const parsed = scenarioResultSchema.parse(data);
-      saveScenarioResult(parsed);
+      await saveScenarioResult(parsed);
       setResult(parsed);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'The scenario could not be created.');
@@ -153,7 +153,7 @@ export function ScenarioWorkbench() {
     return (
       <div className="result-workspace">
         <div className="result-toolbar glass-panel">
-          <p><Check size={16} /> Saved in this browser</p>
+          <p><Check size={16} /> Saved to Library</p>
           <div>
             <ReportActions result={result} />
             <AriaButton className="button quiet-button" onPress={() => setResult(null)}>
@@ -251,7 +251,7 @@ export function ScenarioWorkbench() {
         {error && <div className="form-error" role="alert"><strong>Unable to continue</strong><span>{error}</span></div>}
 
         <div className="form-submit">
-          <span>Your work is saved only in this browser.</span>
+          <span>Generated reports are saved automatically to Library.</span>
           <AriaButton className="button primary-button" isDisabled={isSubmitting} type="submit">
             {isSubmitting ? <LoaderCircle className="spin" size={17} /> : null}
             {isSubmitting ? 'Developing scenarios' : 'Develop scenarios'}

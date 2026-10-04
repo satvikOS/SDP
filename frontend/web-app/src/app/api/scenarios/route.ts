@@ -46,7 +46,10 @@ export async function POST(request: Request) {
       );
     }
 
-    console.error('Scenario generation failed', error);
+    console.error('Scenario generation failed', {
+      name: error instanceof Error ? error.name : 'UnknownError',
+      message: error instanceof Error ? error.message : 'Unknown failure',
+    });
     return Response.json(
       { error: 'Scenario generation failed. No result was saved; try again.' },
       { status: 502 },

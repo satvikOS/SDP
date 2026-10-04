@@ -3,14 +3,14 @@ import Link from 'next/link';
 export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <Link className="brand" href="/" aria-label="SDP home">
-      <svg className="brand-symbol" viewBox="0 0 34 34" aria-hidden="true">
-        <path d="M2 31 7.2 18h7L9 31H2Z" />
-        <path d="m11.2 31 8.6-22h7L18.2 31h-7Z" />
-        <path d="M21 31 32.2 2h-7L14 31h7Z" />
+      <svg className="brand-symbol" viewBox="0 0 38 34" aria-hidden="true">
+        <path d="M2 30 7.2 17h6L8 30H2Z" />
+        <path d="M11.2 30 19.6 9h6l-8.4 21h-6Z" />
+        <path d="M20.4 30 31.6 2h6L26.4 30h-6Z" />
       </svg>
       {!compact && (
         <span className="brand-type">
-          <strong><span>S</span>DP</strong>
+          <strong>SDP</strong>
           <small>Scenario development</small>
         </span>
       )}

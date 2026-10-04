@@ -57,13 +57,14 @@ export const modelContributionSchema = z.object({
   model: z.string(),
   role: z.enum(['challenger', 'signal analyst', 'synthesizer']),
   durationMs: z.number().nonnegative(),
+  status: z.enum(['complete', 'unavailable']).default('complete'),
 });
 
 export const scenarioResultSchema = scenarioDraftSchema.extend({
   id: z.string(),
   createdAt: z.string(),
   request: scenarioRequestSchema,
-  provenance: z.array(modelContributionSchema).length(3),
+  provenance: z.array(modelContributionSchema).min(1).max(6),
 });
 
 export type ScenarioRequest = z.infer<typeof scenarioRequestSchema>;

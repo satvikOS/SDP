@@ -39,11 +39,15 @@ export function useScenarioResults() {
   return useSyncExternalStore(subscribeToScenarioResults, loadScenarioResults, () => EMPTY_RESULTS);
 }
 
-export function saveScenarioResult(result: ScenarioResult) {
+export async function saveScenarioResult(result: ScenarioResult) {
   const existing = loadScenarioResults().filter((item) => item.id !== result.id);
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify([result, ...existing]));
   window.dispatchEvent(new Event('sdp:storage'));
-  void import('./scenario-document-store').then(({ persistScenarioPdf }) => persistScenarioPdf(result));
+  if ('storage' in navigator && 'persist' in navigator.storage) {
+    void navigator.storage.persist().catch(() => false);
+  }
+  const { persistScenarioPdf } = await import('./scenario-document-store');
+  await persistScenarioPdf(result);
 }
 
 export function deleteScenarioResult(id: string) {
