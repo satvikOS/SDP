@@ -191,8 +191,8 @@ export async function generateScenarioSet(input: ScenarioRequest): Promise<Scena
     ),
   ]);
 
-  const synthesisSystem = `${analystSystem}\nYou are the lead scenario architect. Build plausible alternatives, not predictions. The four probabilities must express relative planning weight and total approximately 100. Keep scenario titles concrete and non-dramatic. Coordinates place each scenario on a 0-100 strategic field and must be visibly separated.`;
-  const synthesisPrompt = `Synthesize one decision-ready scenario set from the client brief and the available independent reviews. Preserve disagreement in the dissent field. Do not claim that model knowledge is current, do not fabricate citations, and turn evidence gaps into critical unknowns or signposts.\n\nCLIENT BRIEF\n${brief}\n\nxAI CHALLENGER REVIEW\n${challenger.text}\n\nGEMINI SIGNAL ANALYSIS\n${signalAnalysis.text}`;
+  const synthesisSystem = `${analystSystem}\nYou are the lead scenario architect. Build plausible alternatives, not predictions. The four probabilities must express relative planning weight and total approximately 100. Keep scenario titles concrete and non-dramatic. Coordinates place each scenario on a 0-100 strategic field and must be visibly separated. Never mention AI providers, model names, or the review mechanism in user-facing output. Express substantive disagreement directly, or refer only to "the challenger" and "the signal analysis" when attribution is necessary.`;
+  const synthesisPrompt = `Synthesize one decision-ready scenario set from the client brief and the available independent reviews. Preserve disagreement in the dissent field without naming the systems that produced the reviews. Do not claim that model knowledge is current, do not fabricate citations, and turn evidence gaps into critical unknowns or signposts.\n\nCLIENT BRIEF\n${brief}\n\nCHALLENGER REVIEW\n${challenger.text}\n\nSIGNAL ANALYSIS\n${signalAnalysis.text}`;
   const synthesisOptions = {
     system: synthesisSystem,
     output: Output.object({ schema: scenarioDraftSchema }),
