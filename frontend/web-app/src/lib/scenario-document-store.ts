@@ -4,7 +4,7 @@ import type { ScenarioResult } from './scenario-schema';
 const DATABASE = 'sdp-documents';
 const STORE = 'reports';
 const VERSION = 1;
-const DOCUMENT_VERSION = 2;
+const DOCUMENT_VERSION = 3;
 
 type StoredScenarioDocument = {
   version: number;
