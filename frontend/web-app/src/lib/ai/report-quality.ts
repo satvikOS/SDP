@@ -11,11 +11,14 @@ export function reportProseProblems(draft: ScenarioDraft) {
     ]),
     ...draft.robustActions.map((a, i): [string, string] => [`robustActions[${i}].rationale`, a.rationale]),
   ];
-  return sections.flatMap(([path, text]) => {
+  const proseProblems = sections.flatMap(([path, text]) => {
     const ending = text.replace(/(?:\s*\[\d+\])+\s*$/, '').trim();
     const issues = [];
     if (!/[.!?][”"')]*$/.test(ending)) issues.push(`${path}: end with a complete sentence, not a clipped fragment. Rewrite more concisely within its character limit.`);
     if (/\b(?:probabilit\w*|weights?)\b[^.!?]*\bplaceholders?\b|\bplaceholders?\b[^.!?]*\b(?:probabilit\w*|weights?)\b/i.test(text)) issues.push(`${path}: remove internal placeholder instructions; the published weights are calculated by the server.`);
     return issues;
   });
+  const axisProblems = Object.entries(draft.strategicAxes).flatMap(([axis, label]) => /[-,:;]\s*$|\b(?:and|or|the|to|of|with|for)\s*$/i.test(label)
+    ? [`strategicAxes.${axis}: this label is clipped. Use a complete, concise label under 26 characters.`] : []);
+  return [...proseProblems, ...axisProblems];
 }

@@ -40,7 +40,12 @@ export function assessEvidenceReview(references: EvidenceReference[], review: Ev
 
 type SearchSource = { sourceType: string; url?: string; title?: string };
 export function publicationTitle(html: string, supplied: string, hostname: string) {
-  const decode = (text: string) => text.replace(/<[^>]*>/g, ' ').replace(/&(?:amp|quot|apos|lt|gt|nbsp|#39|#x27);/gi, (entity) => ({ '&amp;': '&', '&quot;': '"', '&apos;': "'", '&#39;': "'", '&#x27;': "'", '&lt;': '<', '&gt;': '>', '&nbsp;': ' ' }[entity.toLowerCase()] ?? entity)).replace(/\s+/g, ' ').trim().slice(0, 240);
+  const entities: Record<string, string> = { amp: '&', quot: '"', apos: "'", lt: '<', gt: '>', nbsp: ' ', mdash: '—', ndash: '–', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“', hellip: '…', bull: '•', middot: '·' };
+  const decode = (text: string) => text.replace(/<[^>]*>/g, ' ').replace(/&([a-z]+|#\d+|#x[\da-f]+);/gi, (entity, code: string) => {
+    if (!code.startsWith('#')) return entities[code.toLowerCase()] ?? entity;
+    const point = code[1].toLowerCase() === 'x' ? parseInt(code.slice(2), 16) : parseInt(code.slice(1), 10);
+    return point > 0 && point <= 0x10ffff && !(point >= 0xd800 && point <= 0xdfff) ? String.fromCodePoint(point) : entity;
+  }).replace(/\s+/g, ' ').trim().slice(0, 240);
   const og = (html.match(/<meta\b[^>]*>/gi) ?? []).find((tag) => /(?:property|name)\s*=\s*["']og:title["']/i.test(tag));
   const extracted = og?.match(/\bcontent\s*=\s*(["'])([\s\S]*?)\1/i)?.[2] ?? html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1];
   const provided = decode(supplied);

@@ -12,4 +12,7 @@ describe('publication prose gate', () => {
     expect(reportProseProblems(clipped).join(' ')).toContain('dissent');
     expect(reportProseProblems(clipped).join(' ')).toContain('remove internal placeholder instructions');
   });
+  it('rejects clipped chart-axis labels without requiring sentence punctuation', () => {
+    expect(reportProseProblems({ ...sample, strategicAxes: { ...sample.strategicAxes, xHigh: 'Fuel access: available and cost-' } }).join(' ')).toContain('strategicAxes.xHigh');
+  });
 });

@@ -82,7 +82,7 @@ export async function generateScenarioSet(input: ScenarioRequest, onProgress?: (
   const runSynthesis = async (feedback: string, editorialFeedback: string) => {
     const stageStarted = Date.now();
     const response = await generateText({
-      model: openai.responses(MODEL_CONFIG.openai), system,
+      model: openai.responses(MODEL_CONFIG.openai), system: `${system} Use complete chart-axis labels under 26 characters; never clip a phrase.`,
       tools: { web_search: openai.tools.webSearch({ externalWebAccess: true }) },
       toolChoice: { type: 'tool', toolName: 'web_search' },
       providerOptions: { openai: { reasoningEffort: 'low', store: false } },
