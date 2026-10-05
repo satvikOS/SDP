@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sample } from '../scenario-fixtures.test-data';
-import { assessEvidenceReview, assertCitations, canonicalUrl } from './evidence';
+import { assessEvidenceReview, assertCitations, canonicalUrl, mergeEvidenceSources } from './evidence';
 import { evidenceReviewSchema, type EvidenceReview, type ScenarioResult } from '../scenario-schema';
 function citedFixture(): ScenarioResult {
   return { ...sample, executiveSummarySourceIds: [1], dissentSourceIds: [1],
@@ -34,5 +34,16 @@ describe('reference gate', () => {
     expect(assessEvidenceReview(references.map((r) => ({ ...r, publisher:'One publisher' })), review).problems.join(' ')).toContain('two publishers');
     const missing = { ...review, claims: review.claims.map((c) => ({ ...c, sourceIds: undefined })) };
     expect(evidenceReviewSchema.safeParse(missing).success).toBe(false);
+  });
+  it('adds verified independent sources without changing existing citation identities', () => {
+    const references = citedFixture().evidence!.references;
+    const merged = mergeEvidenceSources(references, [
+      { ...references[0], url:`${references[0].url}?utm_source=test` },
+      { ...references[0], url:'https://example.net/additional-primary-publication', publisher:'Independent publisher' },
+    ]);
+    expect(merged).toHaveLength(5);
+    expect(merged.slice(0,4)).toEqual(references);
+    expect(merged[4].id).toBe(5);
+    expect(mergeEvidenceSources(references,merged,4)).toEqual(references);
   });
 });

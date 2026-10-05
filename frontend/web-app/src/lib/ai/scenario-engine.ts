@@ -5,7 +5,7 @@ import { generateText, Output } from 'ai';
 import { z } from 'zod';
 import { scenarioDraftSchema, scenarioGenerationSchema, evidenceReviewSchema, type ScenarioRequest, type ScenarioResult } from '@/lib/scenario-schema';
 import { assessScenarioProbabilities, probabilityMethod } from '@/lib/probability';
-import { assessEvidenceReview, assertCitations, EvidenceQualityError, verifySearchSources } from './evidence';
+import { assessEvidenceReview, assertCitations, EvidenceQualityError, mergeEvidenceSources, verifySearchSources } from './evidence';
 
 export const MODEL_CONFIG = {
   xai: process.env.XAI_MODEL ?? 'grok-4.3',
@@ -46,7 +46,7 @@ export async function generateScenarioSet(input: ScenarioRequest, onProgress?: (
   });
   searched(research);
   record('Google', 'researcher', MODEL_CONFIG.google, started);
-  const references = await verifySearchSources(research.sources);
+  let references = await verifySearchSources(research.sources);
   if (references.length < 4 || new Set(references.map((r) => r.publisher)).size < 2) throw new EvidenceQualityError('Research did not yield enough accessible, independent sources. No unverified report was saved. Please retry.');
 
   started = Date.now();
@@ -61,14 +61,15 @@ export async function generateScenarioSet(input: ScenarioRequest, onProgress?: (
     });
     searched(response);
     record('xAI', 'challenger', MODEL_CONFIG.xai, stageStarted);
-    return response.output;
+    return { review: response.output, sources: response.sources };
   };
   let challenged = await challenge();
-  let reviewed = assessEvidenceReview(references, challenged);
+  let reviewed = assessEvidenceReview(references, challenged.review);
   if (reviewed.problems.length) {
-    console.warn('Independent evidence review requires repair', { problems: reviewed.problems, sourceAssessments: challenged.sourceAssessments.map((s) => ({ sourceId: s.sourceId, admissible: s.admissible })) });
-    challenged = await challenge(JSON.stringify({ problems: reviewed.problems, previousReview: challenged }));
-    reviewed = assessEvidenceReview(references, challenged);
+    console.warn('Independent evidence review requires repair', { problems: reviewed.problems, sourceAssessments: challenged.review.sourceAssessments.map((s) => ({ sourceId: s.sourceId, admissible: s.admissible })) });
+    references = mergeEvidenceSources(references, await verifySearchSources(challenged.sources));
+    challenged = await challenge(JSON.stringify({ problems: reviewed.problems, previousReview: challenged.review, instruction: 'Additional accessible search publications may now appear in the registry. Independently assess them before relying on them.' }));
+    reviewed = assessEvidenceReview(references, challenged.review);
   }
   if (reviewed.problems.length) {
     console.error('Independent evidence review withheld', { problems: reviewed.problems });
@@ -76,7 +77,7 @@ export async function generateScenarioSet(input: ScenarioRequest, onProgress?: (
   }
   const { admittedReferences, claims, accepted } = reviewed;
   const evidence = { references: admittedReferences, claims, searchedAt: new Date().toISOString(), methodology: 'Live source discovery; accessible-URL verification; independent source admissibility and claim challenge; cited synthesis; independent final fact audit. Rejected and uncertain claims cannot determine scenario weights. This process reduces errors but does not guarantee that every source or judgment is correct.' };
-  const context = `BRIEF\n${brief}\nVERIFIED REFERENCES\n${JSON.stringify(admittedReferences)}\nACCEPTED FACTS\n${JSON.stringify(accepted)}\nCOUNTERARGUMENT\n${challenged.argument}`;
+  const context = `BRIEF\n${brief}\nVERIFIED REFERENCES\n${JSON.stringify(admittedReferences)}\nACCEPTED FACTS\n${JSON.stringify(accepted)}\nCOUNTERARGUMENT\n${challenged.review.argument}`;
   const synthesize = async (feedback = '') => {
     onProgress?.(2);
     const stageStarted = Date.now();

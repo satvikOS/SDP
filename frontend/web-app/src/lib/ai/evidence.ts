@@ -49,6 +49,22 @@ export function canonicalUrl(value: string) {
   return url.toString().replace(/\/$/, '');
 }
 
+// Existing citation IDs stay immutable when independent research finds more
+// verified publications. A repair may add sources, never fabricate support.
+export function mergeEvidenceSources(existing: EvidenceReference[], additions: EvidenceReference[], maximum = 20) {
+  const merged = [...existing];
+  const urls = new Set(existing.map((r) => canonicalUrl(r.url)));
+  let nextId = Math.max(0, ...existing.map((r) => r.id)) + 1;
+  for (const reference of additions) {
+    if (merged.length >= maximum) break;
+    const url = canonicalUrl(reference.url);
+    if (urls.has(url)) continue;
+    urls.add(url);
+    merged.push({ ...reference, url, id: nextId++ });
+  }
+  return merged;
+}
+
 // Only URLs returned by the provider's search tool can enter the bibliography.
 // Google grounding uses redirect URLs; resolve those to the actual publisher.
 export async function verifySearchSources(sources: SearchSource[], offset = 0) {
