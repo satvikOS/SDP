@@ -46,7 +46,7 @@ jobs:
         id: preview
         shell: bash
         run: |
-          deployment_url="$(vercel deploy --prebuilt --token="$VERCEL_TOKEN" \
+          deployment_url="$(vercel deploy --prebuilt --archive=tgz --token="$VERCEL_TOKEN" \
             --env "XAI_API=$XAI_API" \
             --env "GEMINI_API=$GEMINI_API" \
             --env "OPENAI_API=$OPENAI_API" \
@@ -69,7 +69,7 @@ jobs:
         id: production
         shell: bash
         run: |
-          deployment_url="$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN" \
+          deployment_url="$(vercel deploy --prebuilt --archive=tgz --prod --token="$VERCEL_TOKEN" \
             --env "XAI_API=$XAI_API" \
             --env "GEMINI_API=$GEMINI_API" \
             --env "OPENAI_API=$OPENAI_API" \
