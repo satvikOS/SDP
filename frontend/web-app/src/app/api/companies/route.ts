@@ -4,7 +4,7 @@ import publicCompanies from '@/data/public-companies.json';
 import globalCompanies from '@/data/global-companies.json';
 import catalogSource from '@/data/company-catalog-source.json';
 import { privateCompanies } from '@/data/private-companies';
-import { deduplicateCompanies, type CatalogCompany } from '@/lib/company-catalog';
+import { companyIdentity, deduplicateCompanies, type CatalogCompany } from '@/lib/company-catalog';
 
 type PublicCompany = {
   name: string;
@@ -28,21 +28,22 @@ const catalog = deduplicateCompanies([
   ...(publicCompanies as PublicCompany[]),
   ...(globalCompanies as CatalogCompany[]),
   ...privateCompanies,
-]).map((company) => ({ ...company, search: `${company.name} ${company.listings?.map((l) => l.ticker).join(' ') ?? ''}`.toLocaleLowerCase() }));
+]).map((company) => ({ ...company, identity: companyIdentity(company.name), search: `${company.name} ${company.listings?.map((l) => l.ticker).join(' ') ?? ''}`.toLocaleLowerCase() }));
 
 export async function GET(request: NextRequest) {
   const query = request.nextUrl.searchParams.get('q')?.trim() ?? '';
   const normalized = query.toLocaleLowerCase();
+  const normalizedIdentity = companyIdentity(query);
 
   if (normalized.length === 0) {
     return NextResponse.json({ items: [], total: catalog.length, catalog: catalogSource });
   }
 
   const localItems: CompanyResult[] = catalog
-    .filter((company) => company.search.includes(normalized))
+    .filter((company) => company.search.includes(normalized) || (normalizedIdentity.length > 0 && company.identity.includes(normalizedIdentity)))
     .toSorted((a, b) => {
-      const aScore = a.search === normalized ? 0 : a.search.startsWith(normalized) ? 1 : 2;
-      const bScore = b.search === normalized ? 0 : b.search.startsWith(normalized) ? 1 : 2;
+      const aScore = a.identity === normalizedIdentity ? 0 : a.search.startsWith(normalized) ? 1 : 2;
+      const bScore = b.identity === normalizedIdentity ? 0 : b.search.startsWith(normalized) ? 1 : 2;
       return aScore - bScore || a.name.localeCompare(b.name);
     })
     .slice(0, 45)
@@ -86,5 +87,6 @@ async function searchGlobalListings(query: string): Promise<PublicCompany[]> {
 
 function rank(name: string, query: string) {
   const normalized = name.toLocaleLowerCase();
-  return normalized === query ? 0 : normalized.startsWith(query) ? 1 : 2;
+  const identity = companyIdentity(name), queryIdentity = companyIdentity(query);
+  return normalized === query || identity === queryIdentity ? 0 : normalized.startsWith(query) || (queryIdentity.length > 0 && identity.startsWith(queryIdentity)) ? 1 : 2;
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { sample } from '../scenario-fixtures.test-data';
-import { assertCitations, canonicalUrl } from './evidence';
-import type { ScenarioResult } from '../scenario-schema';
+import { assessEvidenceReview, assertCitations, canonicalUrl } from './evidence';
+import { evidenceReviewSchema, type EvidenceReview, type ScenarioResult } from '../scenario-schema';
 function citedFixture(): ScenarioResult {
   return { ...sample, executiveSummarySourceIds: [1], dissentSourceIds: [1],
     drivers: sample.drivers.map((d) => ({ ...d, sourceIds: [1] })),
@@ -18,5 +18,21 @@ describe('reference gate', () => {
   });
   it('removes tracking and fragment variations from source identities', () => {
     expect(canonicalUrl('https://example.org/research/?utm_source=test#section')).toBe('https://example.org/research');
+  });
+  it('keeps independent review thresholds and excludes claims without admitted sources', () => {
+    const references = citedFixture().evidence!.references.map((r, i) => ({ ...r, publisher: i < 2 ? 'Publisher A' : 'Publisher B' }));
+    const review: EvidenceReview = {
+      sourceAssessments: references.map((r) => ({ sourceId: r.id, admissible: true, reason: 'Test fixture only.' })),
+      claims: Array.from({length:6}, (_,i) => ({id:i+10, text:'A hypothetical dated test assertion.', sourceIds:[1], supportingText:'Test evidence only.', verdict:'accepted', reason:'Test only.'})),
+      argument:'A hypothetical counterargument for tests.',
+    };
+    expect(assessEvidenceReview(references, review).problems).toEqual([]);
+    const unknown = { ...review, claims: review.claims.map((c) => ({ ...c, sourceIds:[99] })) };
+    expect(assessEvidenceReview(references, unknown).accepted).toHaveLength(0);
+    expect(assessEvidenceReview(references, unknown).claims.every((c) => c.verdict === 'uncertain')).toBe(true);
+    expect(assessEvidenceReview(references, { ...review, claims: review.claims.map((c) => ({ ...c, id:1 })) }).problems.join(' ')).toContain('repeated');
+    expect(assessEvidenceReview(references.map((r) => ({ ...r, publisher:'One publisher' })), review).problems.join(' ')).toContain('two publishers');
+    const missing = { ...review, claims: review.claims.map((c) => ({ ...c, sourceIds: undefined })) };
+    expect(evidenceReviewSchema.safeParse(missing).success).toBe(false);
   });
 });

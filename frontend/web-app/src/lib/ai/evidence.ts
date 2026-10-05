@@ -1,9 +1,28 @@
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
-import type { ScenarioResult } from '../scenario-schema';
+import type { EvidenceReference, EvidenceReview, ScenarioResult } from '../scenario-schema';
 
 export class EvidenceQualityError extends Error {
   constructor(message: string) { super(message); this.name = 'EvidenceQualityError'; }
+}
+
+export function assessEvidenceReview(references: EvidenceReference[], review: EvidenceReview) {
+  const admitted = new Set(review.sourceAssessments.filter((s) => s.admissible && references.some((r) => r.id === s.sourceId)).map((s) => s.sourceId));
+  const admittedReferences = references.filter((r) => admitted.has(r.id));
+  const claims = review.claims.map((claim) => {
+    const sourceIds = claim.sourceIds.filter((id) => admitted.has(id));
+    const supported = sourceIds.length === claim.sourceIds.length && sourceIds.length > 0;
+    return { ...claim, sourceIds, verdict: supported ? claim.verdict : 'uncertain' as const,
+      reason: supported ? claim.reason : 'The claim lacked a complete set of admitted source references and was excluded.' };
+  });
+  const accepted = claims.filter((claim) => claim.verdict === 'accepted');
+  const problems = [
+    ...(admittedReferences.length < 4 ? [`Only ${admittedReferences.length} admissible references; at least four are required.`] : []),
+    ...(new Set(admittedReferences.map((r) => r.publisher)).size < 2 ? ['Admitted references must span at least two publishers.'] : []),
+    ...(accepted.length < 5 ? [`Only ${accepted.length} accepted, source-supported claims; at least five are required.`] : []),
+    ...(new Set(claims.map((c) => c.id)).size !== claims.length ? ['Claim IDs were repeated. Give each claim its own unique integer ID.'] : []),
+  ];
+  return { admittedReferences, claims, accepted, problems };
 }
 
 type SearchSource = { sourceType: string; url?: string; title?: string };

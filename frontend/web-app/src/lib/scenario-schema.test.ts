@@ -6,6 +6,7 @@ import {
   scenarioDraftSchema,
   scenarioRequestSchema,
   scenarioGenerationSchema,
+  evidenceReviewSchema,
 } from './scenario-schema';
 
 const request = {
@@ -33,8 +34,6 @@ const baseScenario = {
 describe('scenario schemas', () => {
   it('does not request server-calculated tuples from structured-output providers', () => {
     // AI SDK sends the input schema, where Zod defaults make properties optional.
-    const schema = zodSchema(scenarioGenerationSchema).jsonSchema;
-    expect(JSON.stringify(schema)).not.toContain('probabilityRange');
     const inspect = (value: unknown) => {
       if (value && typeof value === 'object') {
         const object = value as Record<string,unknown>;
@@ -46,7 +45,10 @@ describe('scenario schemas', () => {
         Object.values(object).forEach(inspect);
       }
     };
-    inspect(schema);
+    for (const schema of [zodSchema(scenarioGenerationSchema).jsonSchema, zodSchema(evidenceReviewSchema).jsonSchema]) {
+      expect(JSON.stringify(schema)).not.toContain('probabilityRange');
+      inspect(schema);
+    }
   });
   it('accepts a complete bounded brief', () => {
     expect(scenarioRequestSchema.parse(request).organization).toBe('Northstar Energy');

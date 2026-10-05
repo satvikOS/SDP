@@ -100,6 +100,14 @@ export const evidenceClaimSchema = z.object({
   reason: z.string().max(400),
 });
 
+export const evidenceReviewSchema = z.object({
+  sourceAssessments: z.array(z.object({ sourceId: z.number().int().positive(), admissible: z.boolean(), reason: z.string().max(300) })).max(20),
+  claims: z.array(evidenceClaimSchema.extend({ sourceIds: sourceIds.unwrap() })).min(6).max(16),
+  argument: z.string().max(1600),
+});
+export type EvidenceReview = z.infer<typeof evidenceReviewSchema>;
+export type EvidenceReference = z.infer<typeof referenceSchema>;
+
 export const evidenceBundleSchema = z.object({
   references: z.array(referenceSchema).max(30),
   claims: z.array(evidenceClaimSchema).max(24),
