@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sample } from '../scenario-fixtures.test-data';
-import { assessEvidenceReview, assertCitations, canonicalUrl, hasLiveResearch, mergeEvidenceSources } from './evidence';
+import { assessEvidenceReview, assertCitations, canonicalUrl, hasLiveResearch, mergeEvidenceSources, publicationTitle } from './evidence';
 import { evidenceReviewSchema, type EvidenceReview, type ScenarioResult } from '../scenario-schema';
 function citedFixture(): ScenarioResult {
   return { ...sample, executiveSummarySourceIds: [1], dissentSourceIds: [1],
@@ -10,6 +10,13 @@ function citedFixture(): ScenarioResult {
     evidence: { searchedAt: new Date().toISOString(), methodology: 'Test fixture only.', references: [1,2,3,4].map((id) => ({ id, title: 'Test reference', publisher: 'Test', url: `https://example.org/${id}`, accessedAt: new Date().toISOString() })), claims: [{ id: 1, text: 'Test claim only, not real evidence.', sourceIds: [1], supportingText: 'Test fixture.', verdict: 'accepted', reason: 'Test only.' }] } };
 }
 describe('reference gate', () => {
+  it('uses publication titles instead of bare provider domain labels', () => {
+    expect(publicationTitle('<title>Official rules &amp; implementation</title>', 'example.org', 'example.org')).toBe('Official rules & implementation');
+    expect(publicationTitle('<meta property="og:title" content="Published framework"><title>Home</title>', '', 'example.org')).toBe('Published framework');
+    expect(publicationTitle('<meta content="Maersk\'s fleet commitments" property="og:title">', '', 'example.org')).toBe("Maersk's fleet commitments");
+    expect(publicationTitle('<title>Site home</title>', 'A specific provider publication title', 'example.org')).toBe('A specific provider publication title');
+    expect(publicationTitle('', '', 'example.org')).toBe('example.org');
+  });
   it('requires real provider search or retrieval traces, not a model assertion', () => {
     const empty = {sources:[], toolCalls:[]};
     expect(hasLiveResearch(empty)).toBe(false);

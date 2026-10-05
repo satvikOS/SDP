@@ -39,6 +39,36 @@ export function assessEvidenceReview(references: EvidenceReference[], review: Ev
 }
 
 type SearchSource = { sourceType: string; url?: string; title?: string };
+export function publicationTitle(html: string, supplied: string, hostname: string) {
+  const decode = (text: string) => text.replace(/<[^>]*>/g, ' ').replace(/&(?:amp|quot|apos|lt|gt|nbsp|#39|#x27);/gi, (entity) => ({ '&amp;': '&', '&quot;': '"', '&apos;': "'", '&#39;': "'", '&#x27;': "'", '&lt;': '<', '&gt;': '>', '&nbsp;': ' ' }[entity.toLowerCase()] ?? entity)).replace(/\s+/g, ' ').trim().slice(0, 240);
+  const og = (html.match(/<meta\b[^>]*>/gi) ?? []).find((tag) => /(?:property|name)\s*=\s*["']og:title["']/i.test(tag));
+  const extracted = og?.match(/\bcontent\s*=\s*(["'])([\s\S]*?)\1/i)?.[2] ?? html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1];
+  const provided = decode(supplied);
+  const domainOnly = !provided || /^(?:https?:\/\/)?(?:www\.)?[\w.-]+\.[a-z]{2,}\/?$/i.test(provided);
+  return domainOnly && extracted ? decode(extracted) || hostname : provided || hostname;
+}
+async function readPublicationTitle(response: Response, supplied: string, hostname: string) {
+  if (!response.headers.get('content-type')?.includes('html') || !response.body) {
+    await response.body?.cancel();
+    return publicationTitle('', supplied, hostname);
+  }
+  const reader = response.body.getReader(), parts: Uint8Array[] = [];
+  let size = 0;
+  try {
+    while (size < 16_384) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      const part = value.subarray(0, 16_384 - size);
+      parts.push(part); size += part.length;
+    }
+    const bytes = new Uint8Array(size);
+    let offset = 0;
+    for (const part of parts) { bytes.set(part, offset); offset += part.length; }
+    return publicationTitle(new TextDecoder().decode(bytes), supplied, hostname);
+  } catch {
+    return publicationTitle('', supplied, hostname);
+  } finally { await reader.cancel().catch(() => undefined); }
+}
 function privateAddress(address: string) {
   if (address.includes(':')) return address === '::1' || address === '::' || /^(fc|fd|fe80|::ffff:)/i.test(address);
   const [a, b] = address.split('.').map(Number);
@@ -85,16 +115,17 @@ export async function verifySearchSources(sources: SearchSource[], offset = 0) {
   const inspected = await Promise.allSettled(unique.map(async (source) => {
     let url = await checkPublicUrl(source.url!);
     for (let redirects = 0; redirects < 5; redirects += 1) {
-      const response = await fetch(url, { method: 'GET', redirect: 'manual', headers: { 'User-Agent': 'SDP academic evidence review', Range: 'bytes=0-4095' }, signal: AbortSignal.timeout(8_000) });
-      await response.body?.cancel();
+      const response = await fetch(url, { method: 'GET', redirect: 'manual', headers: { 'User-Agent': 'SDP academic evidence review', Range: 'bytes=0-16383' }, signal: AbortSignal.timeout(8_000) });
       if (response.status >= 300 && response.status < 400) {
+        await response.body?.cancel();
         const location = response.headers.get('location');
         if (!location) throw new Error('Unresolved source redirect');
         url = await checkPublicUrl(new URL(location, url).toString());
         continue;
       }
-      if (!response.ok) throw new Error('Source inaccessible');
-      return { title: source.title || url.hostname, url: canonicalUrl(url.toString()), publisher: url.hostname.replace(/^www\./, ''), accessedAt: new Date().toISOString() };
+      if (!response.ok) { await response.body?.cancel(); throw new Error('Source inaccessible'); }
+      const title = await readPublicationTitle(response, source.title ?? '', url.hostname);
+      return { title, url: canonicalUrl(url.toString()), publisher: url.hostname.replace(/^www\./, ''), accessedAt: new Date().toISOString() };
     }
     throw new Error('Too many source redirects');
   }));

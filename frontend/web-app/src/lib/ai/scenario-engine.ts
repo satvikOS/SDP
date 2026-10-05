@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { scenarioDraftSchema, scenarioGenerationSchema, evidenceReviewSchema, evidenceAuditSchema, type ScenarioRequest, type ScenarioResult } from '../scenario-schema';
 import { assessScenarioProbabilities, probabilityMethod } from '../probability';
 import { assessEvidenceReview, assertCitations, EvidenceQualityError, hasLiveResearch, mergeEvidenceSources, verifySearchSources } from './evidence';
+import { reportProseProblems } from './report-quality';
 
 export const MODEL_CONFIG = {
   xai: process.env.XAI_MODEL ?? 'grok-4.3',
@@ -78,8 +79,7 @@ export async function generateScenarioSet(input: ScenarioRequest, onProgress?: (
   const { admittedReferences, claims, accepted } = reviewed;
   const evidence = { references: admittedReferences, claims, searchedAt: new Date().toISOString(), methodology: 'Live source discovery; accessible-URL verification; independent source admissibility and claim challenge; cited synthesis; independent final fact audit. Rejected and uncertain claims cannot determine scenario weights. This process reduces errors but does not guarantee that every source or judgment is correct.' };
   const context = `BRIEF\n${brief}\nVERIFIED REFERENCES\n${JSON.stringify(admittedReferences)}\nACCEPTED FACTS\n${JSON.stringify(accepted)}\nCOUNTERARGUMENT\n${challenged.review.argument}`;
-  const synthesize = async (feedback = '') => {
-    onProgress?.(2);
+  const runSynthesis = async (feedback: string, editorialFeedback: string) => {
     const stageStarted = Date.now();
     const response = await generateText({
       model: openai.responses(MODEL_CONFIG.openai), system,
@@ -87,11 +87,22 @@ export async function generateScenarioSet(input: ScenarioRequest, onProgress?: (
       toolChoice: { type: 'tool', toolName: 'web_search' },
       providerOptions: { openai: { reasoningEffort: 'low', store: false } },
       output: Output.object({ schema: scenarioGenerationSchema }), maxOutputTokens: 9500, abortSignal: signal(90_000),
-      prompt: `Use live search to cross-check the supplied evidence, then develop four distinct conditional scenarios. Factual assertions must come ONLY from the accepted ledger and carry numbered inline citations [N] using reference IDs, not claim IDs. Put sourceIds on the executive summary, EVERY driver, scenario and action, and dissent. Cite factual premises in narratives, thesis, driver assessments and action rationales. Label future outcomes as assumptions or conditional projections; recommendations are reasoned deductions, not facts. Do not repeat rejected claims. State specific strategic axes. Provide complete sentences within schema limits. For evidenceFactors choose the SAME 3–6 accepted claim IDs in ALL four scenarios and estimate likelihood of each piece of evidence if that scenario held (0.1–0.9), with an explicit rationale. Do NOT invent probabilities: put placeholder 25; the server computes conditional weights. Do not confuse the horizon with an observed date.\n${context}\nREPAIR FEEDBACK\n${feedback}`,
+      prompt: `Use live search to cross-check the supplied evidence, then develop four distinct conditional scenarios. Factual assertions must come ONLY from the accepted ledger and carry numbered inline citations [N] using reference IDs, not claim IDs. Put sourceIds on the executive summary, EVERY driver, scenario and action, and dissent. Cite factual premises in narratives, thesis, driver assessments and action rationales. Label future outcomes as assumptions or conditional projections; recommendations are reasoned deductions, not facts. Do not repeat rejected claims. State specific strategic axes. All prose assessments, narratives, rationales, avoid statements, theses and dissent must end in complete sentences with terminal punctuation. Write concisely, never truncate a sentence to meet a limit. Each thesis should be one sentence under 180 characters; each driver assessment under 250; action rationale under 260; likelihood rationale under 160; dissent two concise sentences under 420. Keep axis labels short and complete. For evidenceFactors choose the SAME 3–6 accepted claim IDs in ALL four scenarios and estimate likelihood of each piece of evidence if that scenario held (0.1–0.9), with an explicit rationale. Put 25 ONLY in the JSON probability field: the server replaces it with calculated conditional weights. NEVER mention placeholders, JSON formatting or these internal instructions in report prose. Do not confuse the horizon with an observed date.\n${context}\nFACT REPAIR FEEDBACK\n${feedback}\nEDITORIAL REPAIR FEEDBACK\n${editorialFeedback}`,
     });
     searched(response, 'cited synthesis');
     record('OpenAI', 'synthesizer', MODEL_CONFIG.openai, stageStarted);
     return response.output;
+  };
+  const synthesize = async (feedback = '') => {
+    onProgress?.(2);
+    let editorialFeedback = '';
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const draft = await runSynthesis(feedback, editorialFeedback);
+      const problems = reportProseProblems(draft);
+      if (!problems.length) return draft;
+      editorialFeedback = JSON.stringify(problems);
+    }
+    throw new EvidenceQualityError('The report did not meet the complete-prose requirement. No incomplete report was saved. Please retry.');
   };
   const audit = async (draft: z.infer<typeof scenarioDraftSchema>) => {
     onProgress?.(3);

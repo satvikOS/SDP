@@ -56,6 +56,22 @@ describe('evidence-based orchestration', () => {
     await expect(generateScenarioSet(sample.request)).rejects.toThrow('Live research did not run during the final fact audit');
     expect(mocks.generateText).toHaveBeenCalledTimes(4);
   });
+  it('repairs incomplete prose before starting the independent final audit', async () => {
+    configure();
+    const normal = mocks.generateText.getMockImplementation()!;
+    let firstSynthesis = true;
+    mocks.generateText.mockImplementation(async (options) => {
+      if (options.prompt.startsWith('Use live search to cross-check') && firstSynthesis) {
+        firstSynthesis = false;
+        return { sources, toolCalls: [], output: { ...draft, dissent: 'This test sentence is incomplete,' } };
+      }
+      return normal(options);
+    });
+    const result = await generateScenarioSet(sample.request);
+    expect(result.dissent).toBe(draft.dissent);
+    expect(mocks.generateText).toHaveBeenCalledTimes(6);
+    expect(mocks.generateText.mock.calls[3][0].prompt).toContain('dissent: end with a complete sentence');
+  });
   it('withholds a rejected report after one bounded repair and a new independent audit', async () => {
     configure(true, false);
     await expect(generateScenarioSet(sample.request)).rejects.toThrow('The final reference and fact audit did not pass');

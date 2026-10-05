@@ -37,7 +37,9 @@ export async function buildScenarioPdf(original: ScenarioResult) {
   // continuation lines. The footer zone is never available to body content.
   function paragraph(text: string, size = 10, after = 10, bold = false) {
     pdf.setFont('helvetica', bold ? 'bold' : 'normal'); pdf.setFontSize(size); pdf.setTextColor(0);
-    const lines = pdf.splitTextToSize(pdfSafe(text), cw) as string[];
+    // Reserve a small glyph-metric tolerance so actual PDF text bounds respect
+    // the margins even when Helvetica kerning differs from the wrap estimate.
+    const lines = pdf.splitTextToSize(pdfSafe(text), cw - 6) as string[];
     const lh = size * 1.42;
     let position = 0;
     while (position < lines.length) {
@@ -56,7 +58,7 @@ export async function buildScenarioPdf(original: ScenarioResult) {
   }
   function heading(number: string, title: string, followingSpace = 95) {
     pdf.setFont('helvetica', 'bold'); pdf.setFontSize(15);
-    const lines = pdf.splitTextToSize(pdfSafe(`${number}  ${title}`), cw) as string[];
+    const lines = pdf.splitTextToSize(pdfSafe(`${number}  ${title}`), cw - 6) as string[];
     ensure(lines.length * 21 + followingSpace);
     y += 10; pdf.setFont('helvetica', 'bold'); pdf.setFontSize(15); pdf.setTextColor(0);
     pdf.text(lines, m, y, {lineHeightFactor:1.4});
