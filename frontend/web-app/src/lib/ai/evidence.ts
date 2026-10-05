@@ -6,6 +6,19 @@ export class EvidenceQualityError extends Error {
   constructor(message: string) { super(message); this.name = 'EvidenceQualityError'; }
 }
 
+type ResearchTrace = { sources: unknown[]; toolCalls: { toolName?: string; providerExecuted?: boolean }[]; providerMetadata?: { google?: unknown } };
+export function hasLiveResearch(response: ResearchTrace) {
+  if (response.sources.length || response.toolCalls.some((t) => t.providerExecuted === true && ['web_search', 'google_search', 'server:google_search'].includes(t.toolName ?? ''))) return true;
+  // Grounded structured JSON can carry a search trace without text citations.
+  // Only provider metadata counts; a model's claim that it searched never does.
+  const metadata = response.providerMetadata?.google as {
+    groundingMetadata?: { webSearchQueries?: unknown[] } | null;
+    urlContextMetadata?: { urlMetadata?: { urlRetrievalStatus?: string }[] } | null;
+  } | undefined;
+  return Boolean(metadata?.groundingMetadata?.webSearchQueries?.some((q) => typeof q === 'string' && q.trim().length > 0)
+    || metadata?.urlContextMetadata?.urlMetadata?.some((url) => url.urlRetrievalStatus === 'URL_RETRIEVAL_STATUS_SUCCESS'));
+}
+
 export function assessEvidenceReview(references: EvidenceReference[], review: EvidenceReview) {
   const admitted = new Set(review.sourceAssessments.filter((s) => s.admissible && references.some((r) => r.id === s.sourceId)).map((s) => s.sourceId));
   const admittedReferences = references.filter((r) => admitted.has(r.id));

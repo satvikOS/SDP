@@ -5,7 +5,7 @@ import { generateText, Output } from 'ai';
 import { z } from 'zod';
 import { scenarioDraftSchema, scenarioGenerationSchema, evidenceReviewSchema, type ScenarioRequest, type ScenarioResult } from '@/lib/scenario-schema';
 import { assessScenarioProbabilities, probabilityMethod } from '@/lib/probability';
-import { assessEvidenceReview, assertCitations, EvidenceQualityError, mergeEvidenceSources, verifySearchSources } from './evidence';
+import { assessEvidenceReview, assertCitations, EvidenceQualityError, hasLiveResearch, mergeEvidenceSources, verifySearchSources } from './evidence';
 
 export const MODEL_CONFIG = {
   xai: process.env.XAI_MODEL ?? 'grok-4.3',
@@ -33,8 +33,8 @@ export async function generateScenarioSet(input: ScenarioRequest, onProgress?: (
   const brief = JSON.stringify(input);
   const provenance: ScenarioResult['provenance'] = [];
   const record = (provider: 'Google' | 'xAI' | 'OpenAI', role: ScenarioResult['provenance'][number]['role'], model: string, started: number) => provenance.push({ provider, role, model, status: 'complete', durationMs: Date.now() - started });
-  const searched = (response: { sources: unknown[]; toolCalls: unknown[] }) => {
-    if (!response.sources.length && !response.toolCalls.length) throw new EvidenceQualityError('Live research did not run. An unsourced report was withheld. Please retry.');
+  const searched = (response: Parameters<typeof hasLiveResearch>[0], stage: string) => {
+    if (!hasLiveResearch(response)) throw new EvidenceQualityError(`Live research did not run during ${stage}. No unverified report was saved. Please retry.`);
   };
 
   let started = Date.now();
@@ -44,7 +44,7 @@ export async function generateScenarioSet(input: ScenarioRequest, onProgress?: (
     maxOutputTokens: 3600, abortSignal: signal(65_000),
     prompt: `Research this decision using live search. Find 8–12 relevant publications from at least three independent publishers. Prioritize primary sources. Record dated facts, contrary evidence, uncertainties and sources. Do not develop scenarios yet.\nCLIENT BRIEF\n${brief}`,
   });
-  searched(research);
+  searched(research, 'source discovery');
   record('Google', 'researcher', MODEL_CONFIG.google, started);
   let references = await verifySearchSources(research.sources);
   if (references.length < 4 || new Set(references.map((r) => r.publisher)).size < 2) throw new EvidenceQualityError('Research did not yield enough accessible, independent sources. No unverified report was saved. Please retry.');
@@ -56,10 +56,11 @@ export async function generateScenarioSet(input: ScenarioRequest, onProgress?: (
     const response = await generateText({
       model: xai.responses(MODEL_CONFIG.xai), system,
       tools: { web_search: xai.tools.webSearch({}) }, providerOptions: { xai: { reasoningEffort: 'low' } },
+      toolChoice: 'required',
       output: Output.object({ schema: evidenceReviewSchema }), maxOutputTokens: 5200, abortSignal: signal(70_000),
       prompt: `Independently challenge the research. Use live search to read and cross-check the publications in the numbered registry. Assess EVERY source's legitimacy and relevance. Extract 6–16 material claims, with unique integer claim IDs distinct from reference IDs. Use sourceIds ONLY from this registry. In supportingText provide a concise paraphrase of what the source actually establishes, not invented quotations. Mark each claim accepted, rejected or uncertain and explain why. Prefer specific, dated observations. A historical observation can be accepted if its date is explicit; reject outdated facts presented as current. Official corporate publications are admissible for what the company reports or intends, not proof that its targets will be achieved. Regulatory publications establish published rules, not guaranteed future enforcement. Reject unsupported, contradicted or exaggerated assertions. Include a substantive counterargument. Keep uncertain claims out of accepted facts. Do not change a verdict merely to pass a threshold: find genuine support or retain the rejection.\nBRIEF\n${brief}\nSOURCE REGISTRY\n${JSON.stringify(references)}\nRESEARCH\n${research.text}\nREVIEW REPAIR FEEDBACK\n${feedback}`,
     });
-    searched(response);
+    searched(response, 'independent evidence review');
     record('xAI', 'challenger', MODEL_CONFIG.xai, stageStarted);
     return { review: response.output, sources: response.sources };
   };
@@ -84,11 +85,12 @@ export async function generateScenarioSet(input: ScenarioRequest, onProgress?: (
     const response = await generateText({
       model: openai.responses(MODEL_CONFIG.openai), system,
       tools: { web_search: openai.tools.webSearch({ externalWebAccess: true }) },
+      toolChoice: { type: 'tool', toolName: 'web_search' },
       providerOptions: { openai: { reasoningEffort: 'low', store: false } },
       output: Output.object({ schema: scenarioGenerationSchema }), maxOutputTokens: 9500, abortSignal: signal(90_000),
       prompt: `Use live search to cross-check the supplied evidence, then develop four distinct conditional scenarios. Factual assertions must come ONLY from the accepted ledger and carry numbered inline citations [N] using reference IDs, not claim IDs. Put sourceIds on the executive summary, EVERY driver, scenario and action, and dissent. Cite factual premises in narratives, thesis, driver assessments and action rationales. Label future outcomes as assumptions or conditional projections; recommendations are reasoned deductions, not facts. Do not repeat rejected claims. State specific strategic axes. Provide complete sentences within schema limits. For evidenceFactors choose the SAME 3–6 accepted claim IDs in ALL four scenarios and estimate likelihood of each piece of evidence if that scenario held (0.1–0.9), with an explicit rationale. Do NOT invent probabilities: put placeholder 25; the server computes conditional weights. Do not confuse the horizon with an observed date.\n${context}\nREPAIR FEEDBACK\n${feedback}`,
     });
-    searched(response);
+    searched(response, 'cited synthesis');
     record('OpenAI', 'synthesizer', MODEL_CONFIG.openai, stageStarted);
     return response.output;
   };
@@ -96,11 +98,11 @@ export async function generateScenarioSet(input: ScenarioRequest, onProgress?: (
     onProgress?.(3);
     const stageStarted = Date.now();
     const response = await generateText({
-      model: google(MODEL_CONFIG.google), system, tools: { google_search: google.tools.googleSearch({}) },
+      model: google(MODEL_CONFIG.google), system, tools: { google_search: google.tools.googleSearch({}), url_context: google.tools.urlContext({}) },
       output: Output.object({ schema: auditSchema }), maxOutputTokens: 1800, abortSignal: signal(40_000),
-      prompt: `Independently audit this final report using live search. Check every current/historical factual statement against its numbered source. Verify no unsupported numbers or fabricated references. Conditional future outcomes and clearly labeled recommendations are not historical facts. Approve ONLY if factual support, reference IDs and reasoning are sound. Do not add facts.\n${context}\nREPORT\n${JSON.stringify(draft)}`,
+      prompt: `Independently audit this final report using live search and URL context. Retrieve the numbered reference URLs now, then cross-check material facts with current search results. Do not approve based solely on the supplied ledger or training knowledge. Check every current/historical factual statement against its numbered source. Verify no unsupported numbers or fabricated references. Conditional future outcomes and clearly labeled recommendations are not historical facts. Approve ONLY if factual support, reference IDs and reasoning are sound. Do not add facts.\n${context}\nREPORT\n${JSON.stringify(draft)}`,
     });
-    searched(response);
+    searched(response, 'the final fact audit');
     record('Google', 'fact auditor', MODEL_CONFIG.google, stageStarted);
     return response.output;
   };

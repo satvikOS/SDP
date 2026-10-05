@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sample } from '../scenario-fixtures.test-data';
-import { assessEvidenceReview, assertCitations, canonicalUrl, mergeEvidenceSources } from './evidence';
+import { assessEvidenceReview, assertCitations, canonicalUrl, hasLiveResearch, mergeEvidenceSources } from './evidence';
 import { evidenceReviewSchema, type EvidenceReview, type ScenarioResult } from '../scenario-schema';
 function citedFixture(): ScenarioResult {
   return { ...sample, executiveSummarySourceIds: [1], dissentSourceIds: [1],
@@ -10,6 +10,15 @@ function citedFixture(): ScenarioResult {
     evidence: { searchedAt: new Date().toISOString(), methodology: 'Test fixture only.', references: [1,2,3,4].map((id) => ({ id, title: 'Test reference', publisher: 'Test', url: `https://example.org/${id}`, accessedAt: new Date().toISOString() })), claims: [{ id: 1, text: 'Test claim only, not real evidence.', sourceIds: [1], supportingText: 'Test fixture.', verdict: 'accepted', reason: 'Test only.' }] } };
 }
 describe('reference gate', () => {
+  it('requires real provider search or retrieval traces, not a model assertion', () => {
+    const empty = {sources:[], toolCalls:[]};
+    expect(hasLiveResearch(empty)).toBe(false);
+    expect(hasLiveResearch({...empty, toolCalls:[{toolName:'web_search', providerExecuted:false}]})).toBe(false);
+    expect(hasLiveResearch({...empty, toolCalls:[{toolName:'web_search', providerExecuted:true}]})).toBe(true);
+    expect(hasLiveResearch({...empty, providerMetadata:{google:{groundingMetadata:{webSearchQueries:['A dated source cross-check']}}}})).toBe(true);
+    expect(hasLiveResearch({...empty, providerMetadata:{google:{urlContextMetadata:{urlMetadata:[{urlRetrievalStatus:'URL_RETRIEVAL_STATUS_SUCCESS'}]}}}})).toBe(true);
+    expect(hasLiveResearch({...empty, providerMetadata:{google:{urlContextMetadata:{urlMetadata:[{urlRetrievalStatus:'URL_RETRIEVAL_STATUS_ERROR'}]}}}})).toBe(false);
+  });
   it('rejects missing coverage, fabricated citation IDs and rejected weighting claims', () => {
     const good = citedFixture(); expect(() => assertCitations(good)).not.toThrow();
     expect(() => assertCitations({ ...good, executiveSummarySourceIds: [] })).toThrow();
