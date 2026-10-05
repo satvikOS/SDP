@@ -16,9 +16,10 @@ export function ScenarioFlowDiagram() {
       mermaid.initialize({
         startOnLoad: false,
         securityLevel: 'strict',
+        htmlLabels: false,
         theme: 'base',
         themeVariables: mermaidThemeVariables,
-        flowchart: { curve: 'linear', htmlLabels: false, nodeSpacing: 42, rankSpacing: 62 },
+        flowchart: { curve: 'linear', nodeSpacing: 42, rankSpacing: 62 },
       });
       const id = `scenario-flow-${reactId.replace(/[^a-zA-Z0-9_-]/g, '')}`;
       const rendered = await mermaid.render(id, decisionFlowDefinition);

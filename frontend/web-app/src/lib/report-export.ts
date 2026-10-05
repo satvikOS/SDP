@@ -235,7 +235,7 @@ async function renderMermaidPng() {
   if(typeof window==='undefined'||typeof document==='undefined') return null;
   try {
     const {default:mermaid}=await import('mermaid');
-    mermaid.initialize({startOnLoad:false,securityLevel:'strict',theme:'base',themeVariables:mermaidThemeVariables,flowchart:{htmlLabels:false,curve:'linear',nodeSpacing:24,rankSpacing:32}});
+    mermaid.initialize({startOnLoad:false,securityLevel:'strict',htmlLabels:false,theme:'base',themeVariables:mermaidThemeVariables,flowchart:{curve:'linear',nodeSpacing:24,rankSpacing:32}});
     const rendered=await mermaid.render(`pdf-flow-${crypto.randomUUID()}`,decisionFlowDefinition);
     const svg=new DOMParser().parseFromString(rendered.svg,'image/svg+xml').documentElement;
     const vb=(svg.getAttribute('viewBox')??'0 0 1000 200').split(/\s+/).map(Number);
