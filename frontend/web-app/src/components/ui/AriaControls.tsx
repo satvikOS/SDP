@@ -123,7 +123,10 @@ export function AriaComboField({
       <Label>{label}</Label>
       <Group>
         <Search size={16} aria-hidden="true" />
-        <Input placeholder={placeholder} />
+        <Input placeholder={placeholder} onKeyDown={(event) => {
+          // Enter commits a choice/custom name; it must not start a paid run.
+          if (event.key === 'Enter') event.preventDefault();
+        }} />
         <Button aria-label={`Show ${label.toLowerCase()} options`}><ChevronDown size={16} /></Button>
       </Group>
       {description && <Text slot="description">{description}</Text>}

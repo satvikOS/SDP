@@ -254,6 +254,7 @@ button { color: inherit; }
 .form-submit { align-items: center; display: flex; justify-content: space-between; padding: 4px 2px; }
 .form-submit > span { color: var(--faint); font-size: 10px; }
 .form-error { background: rgba(255,93,84,.08); border: 1px solid rgba(255,93,84,.24); border-radius: 15px; color: #ffaaa5; display: flex; flex-direction: column; font-size: 11px; padding: 14px 16px; }
+.sr-only { border: 0; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; white-space: nowrap; width: 1px; }
 .analysis-rail { padding: 25px; position: sticky; top: 24px; }
 .analysis-rail ol { list-style: none; margin: 26px 0; padding: 0; position: relative; }
 .analysis-rail li { align-items: center; color: var(--faint); display: flex; gap: 12px; min-height: 55px; position: relative; }

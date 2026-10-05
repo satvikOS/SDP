@@ -250,11 +250,12 @@ export function ScenarioWorkbench() {
         </div>
       </Form>
 
-      <aside className="analysis-rail glass-panel" aria-live="polite">
+      <aside className="analysis-rail glass-panel">
         <header><span>Progress</span><h2>{isSubmitting ? 'Developing the scenario set' : 'Ready to begin'}</h2></header>
+        <span className="sr-only" role="status">{isSubmitting ? progressStages[stage] : ''}</span>
         <ol>
           {progressStages.map((item, index) => (
-            <li data-active={isSubmitting && index === stage} data-complete={isSubmitting && index < stage} key={item}>
+            <li aria-current={isSubmitting && index === stage ? 'step' : undefined} data-active={isSubmitting && index === stage} data-complete={isSubmitting && index < stage} key={item}>
               <i>{index + 1}</i><span>{item}</span>
             </li>
           ))}
