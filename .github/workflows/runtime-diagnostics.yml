@@ -1,0 +1,32 @@
+name: Inspect SDP runtime errors
+on:
+  workflow_dispatch:
+    inputs:
+      deployment:
+        description: Optional deployment URL to inspect
+        required: false
+        type: string
+permissions:
+  contents: read
+jobs:
+  logs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      SDP_DIAGNOSTIC_DEPLOYMENT: ${{ inputs.deployment }}
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - run: npm install --global vercel@62.2.0
+      - name: Read recent SDP runtime errors
+        shell: bash
+        run: |
+          args=(--project "$VERCEL_PROJECT_ID" --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN" --since 20m --level error --limit 10 --json)
+          if [ -n "$SDP_DIAGNOSTIC_DEPLOYMENT" ]; then
+            args+=(--deployment "$SDP_DIAGNOSTIC_DEPLOYMENT")
+          fi
+          vercel logs "${args[@]}"
