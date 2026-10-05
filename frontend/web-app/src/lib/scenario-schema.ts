@@ -36,7 +36,7 @@ export const scenarioDraftSchema = z.object({
       title: conciseText(3, 70),
       thesis: conciseText(20, 220),
       narrative: conciseText(120, 1500),
-      probability: z.number().min(1).max(97),
+      probability: z.number().min(0).max(100),
       coordinates: z.object({
         x: z.number().min(8).max(92),
         y: z.number().min(8).max(92),

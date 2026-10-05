@@ -22,4 +22,12 @@ describe('conditional evidence weights', () => {
     expect(() => assessScenarioProbabilities(parsed, [1,2])).toThrow();
     expect(() => assessScenarioProbabilities(parsed.map((s,i) => i ? s : { ...s, evidenceFactors: [...s.evidenceFactors,s.evidenceFactors[0]] }), [1,2,3])).toThrow();
   });
+  it('keeps valid small conditional weights readable and saveable', () => {
+    const ids = [1,2,3,4,5,6];
+    const extreme = parsed.map((s,i) => ({ ...s, evidenceFactors: ids.map((claimId) => ({claimId, likelihood: i === 0 ? 0.1 : 0.9, rationale:'A deliberately extreme hypothetical judgment for validation testing.'})) }));
+    const result = assessScenarioProbabilities(extreme, ids);
+    expect(result[0].probability).toBeLessThan(1);
+    expect(() => scenarioDraftSchema.shape.scenarios.parse(result)).not.toThrow();
+    expect(result.reduce((sum,s) => sum+s.probability,0)).toBeCloseTo(100,8);
+  });
 });
