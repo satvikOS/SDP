@@ -4,7 +4,7 @@ import type { ScenarioResult } from './scenario-schema';
 const DATABASE = 'sdp-documents';
 const STORE = 'reports';
 const VERSION = 2;
-const DOCUMENT_VERSION = 5;
+const DOCUMENT_VERSION = 6;
 
 type StoredScenarioDocument = {
   version: number;
@@ -24,7 +24,7 @@ export async function persistScenarioPdf(result: ScenarioResult) {
   }
 }
 
-export async function loadScenarioPdf(id: string): Promise<Blob | null> {
+export async function loadScenarioPdf(id: string, preserveImported = false): Promise<Blob | null> {
   try {
     const database = await openDatabase();
     const saved = await transactionComplete<StoredScenarioDocument | Blob | undefined>(
@@ -34,7 +34,7 @@ export async function loadScenarioPdf(id: string): Promise<Blob | null> {
     );
     database.close();
     if (saved instanceof Blob) return null;
-    return saved?.version === DOCUMENT_VERSION && saved.blob instanceof Blob ? saved.blob : null;
+    return (preserveImported || saved?.version === DOCUMENT_VERSION) && saved?.blob instanceof Blob ? saved.blob : null;
   } catch {
     return null;
   }

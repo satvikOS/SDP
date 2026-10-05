@@ -1,5 +1,6 @@
 import type { ScenarioResult } from './scenario-schema';
 import { decisionFlowDefinition, mermaidThemeVariables } from './scenario-visuals';
+import { neutralReport } from './report-text';
 
 const paper = 'F3F6FB', blue = '4D7FFF', moss = '6E9274', muted = 'AAB4C3';
 type Pdf = import('jspdf').jsPDF;
@@ -9,7 +10,8 @@ export async function exportScenarioPdf(result: ScenarioResult) {
 export async function createScenarioPdfBlob(result: ScenarioResult) {
   return (await buildScenarioPdf(result)).output('blob');
 }
-export async function buildScenarioPdf(result: ScenarioResult) {
+export async function buildScenarioPdf(original: ScenarioResult) {
+  const result = neutralReport(original);
   const [{ jsPDF }, { autoTable }] = await Promise.all([import('jspdf'), import('jspdf-autotable')]);
   const pdf = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
   const w = pdf.internal.pageSize.getWidth(), h = pdf.internal.pageSize.getHeight();
@@ -251,7 +253,8 @@ function pdfSafe(value:string) {
   return value.replace(/[\u2018\u2019]/g,"'").replace(/[\u201c\u201d]/g,'"').replace(/[\u2013\u2014]/g,'-').replace(/[\u2022\u00b7]/g,'-').replace(/\u2026/g,'...').replace(/[^\S\n]+/g,' ').trim();
 }
 
-export async function exportScenarioPptx(result: ScenarioResult) {
+export async function exportScenarioPptx(original: ScenarioResult) {
+  const result = neutralReport(original);
   const pptxModule = await import('pptxgenjs');
   const PptxGenJS = pptxModule.default;
   const deck = new PptxGenJS();

@@ -1,10 +1,12 @@
 import { CornerDownRight, Radar, ShieldCheck, TriangleAlert } from 'lucide-react';
 
 import type { ScenarioResult } from '@/lib/scenario-schema';
+import { neutralReport } from '@/lib/report-text';
 import { ScenarioFlowDiagram } from './ScenarioFlowDiagram';
 import { StrategicField } from './StrategicField';
 
-export function ScenarioResultView({ result }: { result: ScenarioResult }) {
+export function ScenarioResultView({ result: original }: { result: ScenarioResult }) {
+  const result = neutralReport(original);
   return (
     <div className="result-stack">
       <section className="result-hero glass-panel">

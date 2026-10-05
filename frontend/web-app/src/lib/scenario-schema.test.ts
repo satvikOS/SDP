@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
+import { z } from 'zod';
 
 import {
   normalizeProbabilities,
   scenarioDraftSchema,
   scenarioRequestSchema,
+  scenarioGenerationSchema,
 } from './scenario-schema';
 
 const request = {
@@ -29,6 +31,18 @@ const baseScenario = {
 };
 
 describe('scenario schemas', () => {
+  it('does not request server-calculated tuples from structured-output providers', () => {
+    const schema = z.toJSONSchema(scenarioGenerationSchema, { target: 'draft-7' });
+    expect(JSON.stringify(schema)).not.toContain('probabilityRange');
+    const inspect = (value: unknown) => {
+      if (value && typeof value === 'object') {
+        const object = value as Record<string,unknown>;
+        if ('items' in object) expect(Array.isArray(object.items)).toBe(false);
+        Object.values(object).forEach(inspect);
+      }
+    };
+    inspect(schema);
+  });
   it('accepts a complete bounded brief', () => {
     expect(scenarioRequestSchema.parse(request).organization).toBe('Northstar Energy');
   });

@@ -75,6 +75,12 @@ export const referenceSchema = z.object({
   accessedAt: z.string(),
 });
 
+// Providers accept homogeneous array items, not tuple-style JSON Schema.
+// Sensitivity bounds are computed on the server and never requested from an LLM.
+export const scenarioGenerationSchema = scenarioDraftSchema.extend({
+  scenarios: z.array(scenarioDraftSchema.shape.scenarios.element.omit({ probabilityRange: true })).length(4),
+});
+
 export const evidenceClaimSchema = z.object({
   id: z.number().int().positive(),
   text: z.string().min(10).max(450),

@@ -46,7 +46,7 @@ function ImportedPdf({ id, name }: { id: string; name: string }) {
   const [file, setFile] = useState<File | null>(null), [error, setError] = useState('');
   useEffect(() => {
     let active = true;
-    void loadScenarioPdf(id).then((blob) => {
+    void loadScenarioPdf(id, true).then((blob) => {
       if (active) { if (blob) setFile(new File([blob], name, { type: 'application/pdf' })); else setError('The saved PDF is unavailable. Import the surviving copy again.'); }
     });
     return () => { active = false; };

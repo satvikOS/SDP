@@ -3,7 +3,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { createXai } from '@ai-sdk/xai';
 import { generateText, Output } from 'ai';
 import { z } from 'zod';
-import { scenarioDraftSchema, evidenceClaimSchema, type ScenarioRequest, type ScenarioResult } from '@/lib/scenario-schema';
+import { scenarioDraftSchema, scenarioGenerationSchema, evidenceClaimSchema, type ScenarioRequest, type ScenarioResult } from '@/lib/scenario-schema';
 import { assessScenarioProbabilities, probabilityMethod } from '@/lib/probability';
 import { assertCitations, EvidenceQualityError, verifySearchSources } from './evidence';
 
@@ -81,7 +81,7 @@ export async function generateScenarioSet(input: ScenarioRequest, onProgress?: (
       model: openai.responses(MODEL_CONFIG.openai), system,
       tools: { web_search: openai.tools.webSearch({ externalWebAccess: true }) },
       providerOptions: { openai: { reasoningEffort: 'low', store: false } },
-      output: Output.object({ schema: scenarioDraftSchema }), maxOutputTokens: 9500, abortSignal: signal(90_000),
+      output: Output.object({ schema: scenarioGenerationSchema }), maxOutputTokens: 9500, abortSignal: signal(90_000),
       prompt: `Use live search to cross-check the supplied evidence, then develop four distinct conditional scenarios. Factual assertions must come ONLY from the accepted ledger and carry numbered inline citations [N] using reference IDs, not claim IDs. Put sourceIds on the executive summary, EVERY driver, scenario and action, and dissent. Cite factual premises in narratives, thesis, driver assessments and action rationales. Label future outcomes as assumptions or conditional projections; recommendations are reasoned deductions, not facts. Do not repeat rejected claims. State specific strategic axes. Provide complete sentences within schema limits. For evidenceFactors choose the SAME 3–6 accepted claim IDs in ALL four scenarios and estimate likelihood of each piece of evidence if that scenario held (0.1–0.9), with an explicit rationale. Do NOT invent probabilities: put placeholder 25; the server computes conditional weights. Do not confuse the horizon with an observed date.\n${context}\nREPAIR FEEDBACK\n${feedback}`,
     });
     searched(response);
