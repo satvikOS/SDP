@@ -55,7 +55,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Generated local QA artifacts
-output/pdf/*.pdf
+output/pdf/
 
 # Testing
 .coverage

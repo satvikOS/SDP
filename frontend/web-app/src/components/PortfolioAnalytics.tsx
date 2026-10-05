@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { useScenarioResults } from '@/lib/scenario-store';
 import { AriaButton, AriaTextField } from './ui/AriaControls';
+import { ConfirmButton } from './ui/ConfirmButton';
 
 type Initiative = { id: string; name: string; owner: string; exposure: 'Low' | 'Moderate' | 'High' };
 const KEY = 'sdp.initiatives.v1';
@@ -79,7 +80,7 @@ export function PortfolioAnalytics() {
               <select value={initiative.exposure} onChange={(event) => persist(initiatives.map((item) => item.id === initiative.id ? { ...item, exposure: event.target.value as Initiative['exposure'] } : item))} aria-label={`Exposure for ${initiative.name}`}>
                 <option>Low</option><option>Moderate</option><option>High</option>
               </select>
-              <AriaButton aria-label={`Remove ${initiative.name}`} onPress={() => persist(initiatives.filter((item) => item.id !== initiative.id))}><Trash2 size={16} /></AriaButton>
+              <ConfirmButton label={`Remove ${initiative.name}`} title="Remove this initiative?" description={`“${initiative.name}” will be permanently removed from the portfolio.`} confirmLabel="Remove initiative" onConfirm={() => persist(initiatives.filter((item) => item.id !== initiative.id))}><Trash2 size={16} /></ConfirmButton>
             </article>
           ))}
           {initiatives.length === 0 && <p className="empty-copy">Add initiatives to track exposure alongside the scenario portfolio.</p>}

@@ -1,543 +1,253 @@
 import type { ScenarioResult } from './scenario-schema';
 import { decisionFlowDefinition, mermaidThemeVariables } from './scenario-visuals';
 
-const paper = 'F3F6FB';
-const blue = '4D7FFF';
-const moss = '6E9274';
-const muted = 'AAB4C3';
-
+const paper = 'F3F6FB', blue = '4D7FFF', moss = '6E9274', muted = 'AAB4C3';
+type Pdf = import('jspdf').jsPDF;
 export async function exportScenarioPdf(result: ScenarioResult) {
-  const document = await buildScenarioPdf(result);
-  document.save(`${slug(result.briefTitle)}.pdf`);
+  (await buildScenarioPdf(result)).save(`${slug(result.briefTitle)}.pdf`);
 }
-
 export async function createScenarioPdfBlob(result: ScenarioResult) {
-  const document = await buildScenarioPdf(result);
-  return document.output('blob');
+  return (await buildScenarioPdf(result)).output('blob');
 }
-
 export async function buildScenarioPdf(result: ScenarioResult) {
   const [{ jsPDF }, { autoTable }] = await Promise.all([import('jspdf'), import('jspdf-autotable')]);
-  const document = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
-  const width = document.internal.pageSize.getWidth();
-  const height = document.internal.pageSize.getHeight();
-  const margin = 50;
-  const contentWidth = width - margin * 2;
-  const contentTop = 86;
-  const contentBottom = height - 62;
-  const ink: [number, number, number] = [18, 18, 18];
-  const gray: [number, number, number] = [87, 87, 87];
-  const rule: [number, number, number] = [205, 205, 205];
-  const wash: [number, number, number] = [246, 247, 248];
-  const analyticalBlue: [number, number, number] = [31, 75, 115];
-  let y = contentTop;
-  let tableNumber = 0;
-  let figureNumber = 0;
-  const framedPages = new Set<number>();
-
-  document.setProperties({
-    title: pdfSafe(result.briefTitle),
-    subject: pdfSafe(result.request.focalQuestion),
-    author: 'Scenario Development Process',
-    creator: 'SDP',
-    keywords: 'scenario planning, decision brief, strategy',
-  });
-
-  const drawPageFrame = (pageNumber: number) => {
-    if (framedPages.has(pageNumber)) return;
-    framedPages.add(pageNumber);
-    drawLetterheadAndFooter(document, result, width, height, margin, pageNumber, ink, gray, rule);
+  const pdf = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
+  const w = pdf.internal.pageSize.getWidth(), h = pdf.internal.pageSize.getHeight();
+  const m = 50, cw = w - 2 * m, top = 82, bottom = h - 65;
+  let y = top, tableNo = 0, figureNo = 0;
+  const framed = new Set<number>();
+  pdf.setProperties({ title: pdfSafe(result.briefTitle), subject: pdfSafe(result.request.focalQuestion), author: 'Scenario Development Process', creator: 'SDP', keywords: 'scenario planning, evidence, strategy' });
+  const frame = () => {
+    const page = pdf.getCurrentPageInfo().pageNumber;
+    if (framed.has(page)) return;
+    framed.add(page);
+    pdf.setFillColor(0,0,0); pdf.setTextColor(0); pdf.setDrawColor(180); pdf.setLineWidth(0.4);
+    drawSdpMark(pdf, m, 27, 0.72);
+    pdf.setFont('helvetica', 'bold'); pdf.setFontSize(11); pdf.text('SDP', m + 34, 38);
+    pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7); pdf.text('Scenario Development Process', m + 34, 49);
+    pdf.text(new Date(result.createdAt).toLocaleDateString('en-GB'), w - m, 39, { align: 'right' });
+    pdf.line(m, 61, w - m, 61);
   };
-
-  drawPageFrame(1);
-
-  const newPage = () => {
-    document.addPage();
-    drawPageFrame(document.getCurrentPageInfo().pageNumber);
-    y = contentTop;
-  };
-
-  const ensure = (space: number) => {
-    if (y + space <= contentBottom) return;
-    newPage();
-  };
-
-  const sectionHeading = (number: string, title: string, note?: string) => {
-    ensure(note ? 72 : 52);
-    document.setTextColor(...gray);
-    document.setFont('helvetica', 'bold');
-    document.setFontSize(8);
-    document.text(number.toUpperCase(), margin, y);
-    y += 17;
-    document.setTextColor(...ink);
-    document.setFontSize(17);
-    document.text(pdfSafe(title), margin, y);
-    y += 9;
-    document.setDrawColor(...ink);
-    document.setLineWidth(0.8);
-    document.line(margin, y, width - margin, y);
-    y += 15;
-    if (note) addParagraph(note, { size: 9, color: gray, after: 8 });
-  };
-
-  const subheading = (title: string) => {
-    ensure(34);
-    document.setTextColor(...ink);
-    document.setFont('helvetica', 'bold');
-    document.setFontSize(11);
-    document.text(pdfSafe(title), margin, y);
-    y += 17;
-  };
-
-  function addParagraph(
-    text: string,
-    options: { size?: number; color?: [number, number, number]; bold?: boolean; after?: number; width?: number } = {},
-  ) {
-    const size = options.size ?? 9.5;
-    const lineHeight = size * 1.42;
-    const availableWidth = options.width ?? contentWidth;
-    document.setFont('helvetica', options.bold ? 'bold' : 'normal');
-    document.setFontSize(size);
-    document.setTextColor(...(options.color ?? ink));
-    const lines = document.splitTextToSize(pdfSafe(text), availableWidth);
-    ensure(lines.length * lineHeight + (options.after ?? 8));
-    document.text(lines, margin, y, { lineHeightFactor: 1.42 });
-    y += lines.length * lineHeight + (options.after ?? 8);
-  }
-
-  const addLabel = (label: string, text: string) => {
-    ensure(34);
-    document.setFont('helvetica', 'bold');
-    document.setFontSize(8);
-    document.setTextColor(...gray);
-    document.text(pdfSafe(label.toUpperCase()), margin, y);
-    y += 13;
-    addParagraph(text, { size: 9.5, after: 10 });
-  };
-
-  const addCaption = (label: string, text: string) => {
-    document.setFont('helvetica', 'bold');
-    document.setFontSize(8);
-    document.setTextColor(...ink);
-    document.text(pdfSafe(label), margin, y);
-    const labelWidth = document.getTextWidth(pdfSafe(label));
-    document.setFont('helvetica', 'normal');
-    document.setTextColor(...gray);
-    document.text(` ${pdfSafe(text)}`, margin + labelWidth, y);
-    y += 15;
-  };
-
-  const addTable = (title: string, head: string[], body: string[][], widths?: Record<number, number>) => {
-    ensure(78);
-    tableNumber += 1;
-    addCaption(`Table ${tableNumber}.`, title);
-    autoTable(document, {
-      startY: y,
-      head: [head.map(pdfSafe)],
-      body: body.map((row) => row.map(pdfSafe)),
-      theme: 'grid',
-      margin: { left: margin, right: margin, top: contentTop, bottom: height - contentBottom },
-      showHead: 'everyPage',
-      rowPageBreak: 'avoid',
-      styles: {
-        font: 'helvetica',
-        fontSize: 8,
-        cellPadding: { top: 6, right: 6, bottom: 6, left: 6 },
-        lineColor: rule,
-        lineWidth: 0.4,
-        textColor: ink,
-        overflow: 'linebreak',
-        valign: 'top',
-      },
-      headStyles: { fillColor: ink, textColor: [255, 255, 255], fontStyle: 'bold', lineColor: ink },
-      alternateRowStyles: { fillColor: wash },
-      columnStyles: Object.fromEntries(Object.entries(widths ?? {}).map(([key, cellWidth]) => [key, { cellWidth }])),
-      didDrawPage: () => drawPageFrame(document.getCurrentPageInfo().pageNumber),
-    });
-    y = (document as typeof document & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 18;
-  };
-
-  // 1. Executive decision brief
-  document.setFont('helvetica', 'bold');
-  document.setFontSize(8);
-  document.setTextColor(...gray);
-  document.text('DECISION BRIEF', margin, y);
-  y += 25;
-  document.setTextColor(...ink);
-  document.setFontSize(24);
-  const titleLines = document.splitTextToSize(pdfSafe(result.briefTitle), contentWidth);
-  document.text(titleLines, margin, y, { lineHeightFactor: 1.08 });
-  y += titleLines.length * 26 + 13;
-  addParagraph(result.executiveSummary, { size: 11, after: 17 });
-  addTable('Decision frame', ['Field', 'Definition'], [
-    ['Organization', result.request.organization],
-    ['Industry', result.request.industry],
-    ['Geography', result.request.region],
-    ['Planning horizon', String(result.request.horizonYear)],
-    ['Focal question', result.request.focalQuestion],
-  ], { 0: 112, 1: contentWidth - 112 });
-  addLabel('Strategic context', result.request.strategicContext);
-  addParagraph('Purpose: support structured discussion, expose assumptions, and identify actions that remain useful across materially different futures. Planning weights are not forecasts.', { size: 8.5, color: gray, after: 0 });
-
-  // 2. Scenario architecture
-  newPage();
-  sectionHeading('02', 'Scenario architecture', 'The analysis moves from a defined decision to drivers, plausible environments, robust actions, and observable signposts.');
-  figureNumber += 1;
-  addCaption(`Figure ${figureNumber}.`, 'Decision logic');
-  const mermaidImage = await renderMermaidPng();
-  if (mermaidImage) {
-    document.addImage(mermaidImage, 'PNG', margin, y, contentWidth, 142, undefined, 'FAST');
-  } else {
-    drawDecisionFlow(document, margin, y, contentWidth, analyticalBlue, ink, gray, rule, wash);
-  }
-  y += 158;
-  addTable('Scenario overview', ['No.', 'Scenario', 'Thesis', 'Planning weight'], result.scenarios.map((scenario, index) => [
-    String(index + 1),
-    scenario.title,
-    scenario.thesis,
-    `${scenario.probability}%`,
-  ]), { 0: 30, 1: 104, 2: contentWidth - 204, 3: 70 });
-
-  // 3. Driver assessment and strategic field
-  newPage();
-  sectionHeading('03', 'Driver assessment', 'Drivers are classified by impact, uncertainty, and current direction.');
-  addTable('Critical driver assessment', ['Driver', 'Assessment', 'Impact', 'Uncertainty', 'Direction'], result.drivers.map((driver) => [
-    driver.name,
-    driver.assessment,
-    driver.impact,
-    driver.uncertainty,
-    driver.direction,
-  ]), { 0: 85, 1: contentWidth - 257, 2: 45, 3: 62, 4: 65 });
-  ensure(244);
-  figureNumber += 1;
-  addCaption(`Figure ${figureNumber}.`, 'Strategic field - relative scenario positions');
-  drawStrategicField(document, result, margin, y, contentWidth, 176, analyticalBlue, ink, gray, rule, wash);
-  y += 195;
-  figureNumber += 1;
-  addCaption(`Figure ${figureNumber}.`, 'Relative planning weights');
-  drawPlanningWeights(document, result, margin, y, contentWidth, analyticalBlue, ink, gray, rule);
-  y += 112;
-  addParagraph('Interpretation note: coordinates and weights support portfolio discussion; they do not express statistical confidence or predicted outcomes.', { size: 8, color: gray, after: 0 });
-
-  // 4. Scenario profiles
-  result.scenarios.forEach((scenario, index) => {
-    newPage();
-    sectionHeading(`04.${index + 1}`, `Scenario ${index + 1}: ${scenario.title}`);
-    document.setFillColor(...wash);
-    document.setDrawColor(...rule);
-    document.roundedRect(margin, y, contentWidth, 66, 3, 3, 'FD');
-    document.setFont('helvetica', 'bold');
-    document.setFontSize(8);
-    document.setTextColor(...gray);
-    document.text('PLANNING WEIGHT', margin + 13, y + 18);
-    document.setFontSize(18);
-    document.setTextColor(...analyticalBlue);
-    document.text(`${scenario.probability}%`, margin + 13, y + 43);
-    document.setFont('helvetica', 'bold');
-    document.setFontSize(10);
-    document.setTextColor(...ink);
-    const thesis = document.splitTextToSize(pdfSafe(scenario.thesis), contentWidth - 112);
-    document.text(thesis, margin + 100, y + 22, { lineHeightFactor: 1.3 });
-    y += 84;
-    subheading('Narrative');
-    addParagraph(scenario.narrative, { size: 9.5, after: 14 });
-    addTable('Scenario evidence and response', ['Type', 'Item'], [
-      ...scenario.keyDrivers.map((item) => ['Key driver', item]),
-      ...scenario.signposts.map((item) => ['Leading indicator', item]),
-      ...scenario.strategicMoves.map((item) => ['Response option', item]),
-    ], { 0: 102, 1: contentWidth - 102 });
-    ensure(65);
-    document.setDrawColor(...ink);
-    document.setLineWidth(1);
-    document.line(margin, y, margin, y + 45);
-    document.setFont('helvetica', 'bold');
-    document.setFontSize(8);
-    document.setTextColor(...ink);
-    document.text('AVOID', margin + 11, y + 10);
-    const avoid = document.splitTextToSize(pdfSafe(scenario.avoid), contentWidth - 22);
-    document.setFont('helvetica', 'normal');
-    document.setFontSize(9);
-    document.text(avoid, margin + 11, y + 25, { lineHeightFactor: 1.35 });
-  });
-
-  // 5. Robust action plan
-  newPage();
-  sectionHeading('05', 'Robust action plan', 'Actions below are intended to remain useful across the full scenario set.');
-  addTable('Cross-scenario actions', ['Timing', 'Action', 'Rationale'], result.robustActions.map((action) => [
-    action.timing,
-    action.action,
-    action.rationale,
-  ]), { 0: 78, 1: 150, 2: contentWidth - 228 });
-  ensure(180);
-  figureNumber += 1;
-  addCaption(`Figure ${figureNumber}.`, 'Action timing sequence');
-  drawActionTimeline(document, result, margin, y, contentWidth, analyticalBlue, ink, gray, rule, wash);
-  y += 155;
-  addParagraph('Governance note: assign one accountable owner, one review date, and one observable completion criterion to each selected action before execution.', { size: 8.5, color: gray, after: 0 });
-
-  // 6. Unknowns, dissent, and method
-  newPage();
-  sectionHeading('06', 'Critical unknowns and challenge', 'Unresolved questions should be translated into research, monitoring, or explicit decision assumptions.');
-  addTable('Critical unknowns', ['No.', 'Question or evidence gap'], result.criticalUnknowns.map((item, index) => [String(index + 1), item]), { 0: 34, 1: contentWidth - 34 });
-  subheading('Alternative interpretation');
-  addParagraph(result.dissent, { size: 9.5, after: 18 });
-  subheading('Method and use');
-  addParagraph('The Scenario Development Process separates framing, driver assessment, scenario construction, signpost design, and robust-action testing. The scenarios are internally coherent decision environments rather than forecasts. They should be reviewed when material evidence changes, when an agreed signpost is observed, or at the next scheduled strategy review.', { size: 9.5, after: 12 });
-  addParagraph('Limitations: the document is generated from the supplied brief and analytical model outputs. It does not independently verify external facts, replace specialist advice, or quantify probability from empirical data.', { size: 8.5, color: gray, after: 0 });
-
-  return document;
-}
-
-function drawLetterheadAndFooter(
-  document: import('jspdf').jsPDF,
-  result: ScenarioResult,
-  width: number,
-  height: number,
-  margin: number,
-  pageNumber: number,
-  ink: [number, number, number],
-  gray: [number, number, number],
-  rule: [number, number, number],
-) {
-  const issueDate = new Date(result.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
-  document.setFillColor(...ink);
-  drawSdpMark(document, margin, 39);
-  document.setFont('helvetica', 'bold');
-  document.setFontSize(10);
-  document.setTextColor(...ink);
-  document.text('SDP', margin + 31, 36);
-  document.setFont('helvetica', 'normal');
-  document.setFontSize(6.8);
-  document.setTextColor(...gray);
-  document.text('Scenario Development Process', margin + 31, 46);
-  document.setFontSize(7);
-  document.text(`Decision brief  |  ${issueDate}`, width - margin, 39, { align: 'right' });
-  document.setDrawColor(...rule);
-  document.setLineWidth(0.5);
-  document.line(margin, 60, width - margin, 60);
-  document.line(margin, height - 43, width - margin, height - 43);
-  document.setFontSize(7);
-  document.setTextColor(...gray);
-  document.text(pdfSafe(`${result.request.organization} | Scenario Development Process`), margin, height - 26);
-  document.text(`Page ${pageNumber}`, width - margin, height - 26, { align: 'right' });
-}
-
-function drawSdpMark(document: import('jspdf').jsPDF, x: number, baseline: number) {
-  const bar = (offset: number, top: number, barHeight: number) => {
-    document.lines([[7, 0], [5, -barHeight], [-7, 0], [-5, barHeight]], x + offset, baseline - top, [1, 1], 'F', true);
-  };
-  bar(0, 0, 8);
-  bar(8, 2, 11);
-  bar(16, 4, 14);
-}
-
-function drawDecisionFlow(
-  document: import('jspdf').jsPDF,
-  x: number,
-  y: number,
-  width: number,
-  blue: [number, number, number],
-  ink: [number, number, number],
-  gray: [number, number, number],
-  rule: [number, number, number],
-  wash: [number, number, number],
-) {
-  const labels = ['Decision frame', 'Critical drivers', 'Four scenarios', 'Robust actions', 'Signposts'];
-  const gap = 10;
-  const boxWidth = (width - gap * 4) / 5;
-  document.setLineWidth(1);
-  document.setDrawColor(...blue);
-  labels.forEach((label, index) => {
-    const boxX = x + index * (boxWidth + gap);
-    document.setFillColor(...(index === 2 ? [238, 243, 247] as [number, number, number] : wash));
-    document.setDrawColor(...(index === 2 ? blue : rule));
-    document.roundedRect(boxX, y + 37, boxWidth, 52, 2, 2, 'FD');
-    document.setTextColor(...(index === 2 ? blue : ink));
-    document.setFont('helvetica', 'bold');
-    document.setFontSize(7.5);
-    const lines = document.splitTextToSize(label, boxWidth - 12);
-    document.text(lines, boxX + boxWidth / 2, y + 59, { align: 'center', lineHeightFactor: 1.25 });
-    if (index < labels.length - 1) {
-      const start = boxX + boxWidth;
-      document.setDrawColor(...blue);
-      document.line(start, y + 63, start + gap - 3, y + 63);
-      document.triangle(start + gap - 3, y + 60, start + gap, y + 63, start + gap - 3, y + 66, 'F');
+  const next = () => { pdf.addPage(); frame(); y = top; };
+  const ensure = (space: number) => { if (y + space > bottom) next(); };
+  frame();
+  // Baselines, not box guesses: split long paragraphs with at least three
+  // continuation lines. The footer zone is never available to body content.
+  function paragraph(text: string, size = 10, after = 10, bold = false) {
+    pdf.setFont('helvetica', bold ? 'bold' : 'normal'); pdf.setFontSize(size); pdf.setTextColor(0);
+    const lines = pdf.splitTextToSize(pdfSafe(text), cw) as string[];
+    const lh = size * 1.42;
+    let position = 0;
+    while (position < lines.length) {
+      let fit = Math.floor((bottom - y - size * 0.35) / lh) + 1;
+      const remaining = lines.length - position;
+      if (fit < Math.min(3, remaining)) { next(); fit = Math.floor((bottom - y - size * 0.35) / lh) + 1; }
+      fit = Math.min(fit, remaining);
+      if (remaining > fit && remaining - fit < 3) fit -= 3 - (remaining - fit);
+      if (fit <= 0) { next(); continue; }
+      pdf.setFont('helvetica', bold ? 'bold' : 'normal'); pdf.setFontSize(size); pdf.setTextColor(0);
+      pdf.text(lines.slice(position, position + fit), m, y, { lineHeightFactor: 1.42 });
+      y += fit * lh; position += fit;
+      if (position < lines.length) next();
     }
-  });
-  document.setTextColor(...gray);
-  document.setFont('helvetica', 'normal');
-  document.setFontSize(7);
-  document.text('Signposts trigger review of the decision frame and its underlying assumptions.', x + width / 2, y + 116, { align: 'center' });
-}
-
-function drawStrategicField(
-  document: import('jspdf').jsPDF,
-  result: ScenarioResult,
-  x: number,
-  y: number,
-  width: number,
-  chartHeight: number,
-  blue: [number, number, number],
-  ink: [number, number, number],
-  gray: [number, number, number],
-  rule: [number, number, number],
-  wash: [number, number, number],
-) {
-  document.setFillColor(...wash);
-  document.setDrawColor(...rule);
-  document.rect(x, y, width, chartHeight, 'FD');
-  document.setLineWidth(0.5);
-  document.line(x + width / 2, y + 16, x + width / 2, y + chartHeight - 16);
-  document.line(x + 16, y + chartHeight / 2, x + width - 16, y + chartHeight / 2);
-  document.setFont('helvetica', 'normal');
-  document.setFontSize(6.5);
-  document.setTextColor(...gray);
-  document.text('Higher structural change', x + width / 2 + 6, y + 11);
-  document.text('Lower structural change', x + width / 2 + 6, y + chartHeight - 5);
-  document.text('Constrained response', x + 5, y + chartHeight / 2 - 5);
-  document.text('Adaptive response', x + width - 5, y + chartHeight / 2 - 5, { align: 'right' });
-  result.scenarios.forEach((scenario, index) => {
-    const cx = x + 24 + (scenario.coordinates.x / 100) * (width - 48);
-    const cy = y + chartHeight - 24 - (scenario.coordinates.y / 100) * (chartHeight - 48);
-    document.setFillColor(...blue);
-    document.setDrawColor(255, 255, 255);
-    document.circle(cx, cy, 8, 'FD');
-    document.setFont('helvetica', 'bold');
-    document.setFontSize(6.8);
-    document.setTextColor(255, 255, 255);
-    document.text(String(index + 1), cx, cy + 2.2, { align: 'center' });
-    document.setTextColor(...ink);
-    document.setFontSize(7);
-    const labelX = scenario.coordinates.x > 62 ? cx - 12 : cx + 12;
-    document.text(pdfSafe(scenario.title), labelX, cy + 2.2, { align: scenario.coordinates.x > 62 ? 'right' : 'left', maxWidth: 115 });
-  });
-}
-
-function drawPlanningWeights(
-  document: import('jspdf').jsPDF,
-  result: ScenarioResult,
-  x: number,
-  y: number,
-  width: number,
-  blue: [number, number, number],
-  ink: [number, number, number],
-  gray: [number, number, number],
-  rule: [number, number, number],
-) {
-  const labelWidth = 132;
-  const trackWidth = width - labelWidth - 36;
-  result.scenarios.forEach((scenario, index) => {
-    const rowY = y + index * 24;
-    document.setFont('helvetica', 'normal');
-    document.setFontSize(7.5);
-    document.setTextColor(...ink);
-    document.text(`${index + 1}. ${pdfSafe(scenario.title)}`, x, rowY + 8, { maxWidth: labelWidth - 8 });
-    document.setFillColor(...rule);
-    document.rect(x + labelWidth, rowY + 2, trackWidth, 7, 'F');
-    document.setFillColor(...blue);
-    document.rect(x + labelWidth, rowY + 2, trackWidth * (scenario.probability / 100), 7, 'F');
-    document.setFont('helvetica', 'bold');
-    document.setTextColor(...gray);
-    document.text(`${scenario.probability}%`, x + width, rowY + 8, { align: 'right' });
-  });
-}
-
-function drawActionTimeline(
-  document: import('jspdf').jsPDF,
-  result: ScenarioResult,
-  x: number,
-  y: number,
-  width: number,
-  blue: [number, number, number],
-  ink: [number, number, number],
-  gray: [number, number, number],
-  rule: [number, number, number],
-  wash: [number, number, number],
-) {
-  const timings = ['now', 'next 90 days', 'this year'] as const;
-  const gap = 10;
-  const columnWidth = (width - gap * 2) / 3;
-  timings.forEach((timing, column) => {
-    const columnX = x + column * (columnWidth + gap);
-    document.setFillColor(...wash);
-    document.setDrawColor(...rule);
-    document.rect(columnX, y, columnWidth, 128, 'FD');
-    document.setFillColor(...(column === 0 ? blue : ink));
-    document.rect(columnX, y, columnWidth, 23, 'F');
-    document.setTextColor(255, 255, 255);
-    document.setFont('helvetica', 'bold');
-    document.setFontSize(7.5);
-    document.text(timing.toUpperCase(), columnX + 8, y + 15);
-    const actions = result.robustActions.filter((item) => item.timing === timing).slice(0, 3);
-    let textY = y + 39;
-    actions.forEach((action, index) => {
-      document.setTextColor(...ink);
-      document.setFontSize(7.2);
-      document.setFont('helvetica', 'bold');
-      const lines = document.splitTextToSize(`${index + 1}. ${pdfSafe(action.action)}`, columnWidth - 16);
-      document.text(lines, columnX + 8, textY, { lineHeightFactor: 1.25 });
-      textY += lines.length * 9 + 8;
+    y += after;
+  }
+  function heading(number: string, title: string) {
+    pdf.setFont('helvetica', 'bold'); pdf.setFontSize(15);
+    const lines = pdf.splitTextToSize(pdfSafe(`${number}  ${title}`), cw) as string[];
+    ensure(lines.length * 21 + 65);
+    y += 10; pdf.setFont('helvetica', 'bold'); pdf.setFontSize(15); pdf.setTextColor(0);
+    pdf.text(lines, m, y, {lineHeightFactor:1.4});
+    y += (lines.length-1)*21+10;
+    pdf.setDrawColor(150); pdf.setLineWidth(0.4); pdf.line(m, y, w - m, y); y += 20;
+  }
+  function label(title: string, text: string) {
+    ensure(65); paragraph(title, 10, 3, true); paragraph(text);
+  }
+  function caption(type: 'Table' | 'Figure', title: string) {
+    paragraph(`${type} ${type === 'Table' ? ++tableNo : ++figureNo}. ${title}`, 9, 7, true);
+  }
+  function table(title: string, head: string[], rows: string[][], widths: Record<number, number> = {}) {
+    // Caption, header and first complete row stay together.
+    pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9);
+    const firstHeight = rows.length ? Math.max(...rows[0].map((cell, i) => (pdf.splitTextToSize(pdfSafe(cell), (widths[i] ?? cw / head.length) - 12) as string[]).length)) * 12.5 + 14 : 25;
+    ensure(Math.min(140, firstHeight + 52));
+    caption('Table', title);
+    autoTable(pdf, {
+      startY: y, head: [head.map(pdfSafe)], body: rows.map((r) => r.map(pdfSafe)), theme: 'plain',
+      margin: { left: m, right: m, top, bottom: h - bottom }, showHead: 'everyPage', rowPageBreak: 'avoid',
+      styles: { font: 'helvetica', fontSize: 9, cellPadding: 6, textColor: 0, fillColor: false, lineColor: 190, lineWidth: { bottom: 0.25 }, overflow: 'linebreak', valign: 'top', minCellHeight: 25 },
+      headStyles: { fillColor: false, textColor: 0, fontStyle: 'bold', lineColor: 0, lineWidth: { bottom: 0.6 } },
+      bodyStyles: { fillColor: false }, alternateRowStyles: { fillColor: false },
+      columnStyles: Object.fromEntries(Object.entries(widths).map(([key, cellWidth]) => [key, { cellWidth }])),
+      didDrawPage: frame,
     });
-    if (actions.length === 0) {
-      document.setTextColor(...gray);
-      document.setFont('helvetica', 'normal');
-      document.setFontSize(7.2);
-      document.text('No action assigned', columnX + 8, textY);
+    y = (pdf as Pdf & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20;
+  }
+  const cite = (text: string, ids: number[]) => {
+    const missing = ids.filter((id) => !new RegExp(`\\[${id}\\]`).test(text));
+    return text + (missing.length ? ' ' + missing.map((id) => `[${id}]`).join('') : '');
+  };
+  paragraph('DECISION BRIEF', 9, 8, true);
+  paragraph(result.briefTitle, 23, 13, true);
+  paragraph(cite(result.executiveSummary, result.executiveSummarySourceIds), 11, 16);
+  table('Decision frame — supplied by the client', ['Field', 'Definition'], [
+    ['Organization', result.request.organization], ['Industry', result.request.industry], ['Geography', result.request.region],
+    ['Horizon', String(result.request.horizonYear)], ['Decision question', result.request.focalQuestion],
+  ], { 0: 112, 1: cw - 112 });
+  label('Client context (not independently verified)', result.request.strategicContext);
+  paragraph('Purpose: explore conditional decision environments, identify testable assumptions and choose robust actions. This is not a forecast or an assurance of future outcomes.', 9);
+
+  heading('1', 'Architecture and scenario set');
+  ensure(145); caption('Figure', 'Decision logic — framing, evidence and response');
+  const flow = await renderMermaidPng();
+  if (flow) {
+    const fh = Math.min(104, cw * flow.height / flow.width);
+    const fw = fh * flow.width / flow.height;
+    pdf.addImage(flow.data, 'PNG', m + (cw - fw) / 2, y, fw, fh); y += fh + 15;
+  } else { drawDecisionFlow(pdf, m, y, cw); y += 85; }
+  table('Scenario overview (conditional alternatives)', ['No.', 'Scenario and thesis', 'Weight / sensitivity'], result.scenarios.map((s, i) => [String(i + 1), `${s.title}\n${cite(s.thesis, s.sourceIds)}`, weightLabel(s)]), { 0: 30, 1: cw - 140, 2: 110 });
+
+  heading('2', 'Drivers and strategic field');
+  table('Driver assessment', ['Driver', 'Assessment and evidence', 'Impact / uncertainty'], result.drivers.map((d) => [d.name, cite(d.assessment, d.sourceIds), `${d.impact} / ${d.uncertainty}\nDirection: ${d.direction}`]), { 0: 100, 1: cw - 195, 2: 95 });
+  ensure(285); caption('Figure', 'Strategic field — qualitative relative positions');
+  drawStrategicField(pdf, result, m, y, cw, 205); y += 228;
+  paragraph('Numbers identify the scenarios in Table 2. Coordinates represent analytical judgments, not measured observations.', 9);
+  ensure(190); caption('Figure', 'Conditional scenario weights and sensitivity');
+  drawPlanningWeights(pdf, result, m, y, cw); y += 124;
+  paragraph(result.probabilityMethod ?? 'Legacy planning weights: these estimates were not calculated from a verified evidence matrix and must not be interpreted as statistical probabilities.', 9);
+
+  result.scenarios.forEach((s, i) => {
+    heading(`3.${i + 1}`, `Scenario ${i + 1}: ${s.title}`);
+    label('Conditional planning weight', weightLabel(s));
+    paragraph(cite(s.thesis, s.sourceIds), 10, 10, true);
+    label('Conditional narrative', cite(s.narrative, s.sourceIds));
+    table('Assumptions, monitoring and response options', ['Category', 'Item'], [
+      ...s.keyDrivers.map((t) => ['Driver premise', cite(t, s.sourceIds)]),
+      ...s.signposts.map((t) => ['Monitoring proposal', t]),
+      ...s.strategicMoves.map((t) => ['Proposed response', t]),
+    ], { 0: 113, 1: cw - 113 });
+    label('Avoid', s.avoid);
+  });
+
+  heading('4', 'Robust action plan');
+  table('Actions and their supporting premises', ['No. / timing', 'Action', 'Rationale'], result.robustActions.map((a,i) => [`A${i+1}\n${a.timing}`, a.action, cite(a.rationale, a.sourceIds)]), { 0: 76, 1: 153, 2: cw - 229 });
+  ensure(130); caption('Figure', 'Action sequence — references to action numbers in the preceding table');
+  drawActionTimeline(pdf, result, m, y, cw); y += 70;
+  paragraph('Before execution, assign an accountable owner, review date and observable completion criterion to each selected action.', 9);
+
+  heading('5', 'Unknowns and alternative interpretation');
+  table('Research and monitoring gaps', ['No.', 'Question'], result.criticalUnknowns.map((t, i) => [String(i + 1), t]), { 0: 32, 1: cw - 32 });
+  label('Alternative interpretation', cite(result.dissent, result.dissentSourceIds));
+  heading('6', 'Evidence and assessment method');
+  paragraph(result.evidence?.methodology ?? 'This saved analysis predates live source verification. Its factual assertions have not been independently checked and no external references have been invented for it.', 9);
+  if (result.evidence) {
+    table('Accepted evidence ledger', ['Claim', 'Supported assertion', 'References'], result.evidence.claims.filter((c) => c.verdict === 'accepted').map((c) => [String(c.id), c.text, c.sourceIds.map((id) => `[${id}]`).join(' ')]), { 0: 38, 1: cw - 105, 2: 67 });
+    const commonFactors = result.scenarios[0].evidenceFactors;
+    if (commonFactors.length) {
+      table('Conditional likelihood inputs (judgments, not measured frequencies)', ['Claim', ...result.scenarios.map((_, i) => `S${i + 1}`)], commonFactors.map((f) => [`Claim ${f.claimId}`, ...result.scenarios.map((s) => String(s.evidenceFactors.find((v) => v.claimId === f.claimId)?.likelihood ?? '—'))]), { 0: 95, 1: (cw - 95) / 4, 2: (cw - 95) / 4, 3: (cw - 95) / 4, 4: (cw - 95) / 4 });
+      result.scenarios.forEach((s, i) => label(`Scenario ${i + 1}: likelihood reasoning`, s.evidenceFactors.map((f) => `Claim ${f.claimId}: ${f.rationale}`).join(' ')));
     }
+    const disputed = result.evidence.claims.filter((c) => c.verdict !== 'accepted');
+    if (disputed.length) table('Excluded claims — not relied on as facts', ['Claim / status', 'Reason for exclusion'], disputed.map((c) => [`${c.id} / ${c.verdict}`, c.reason]), { 0: 110, 1: cw - 110 });
+  }
+  paragraph('Limitations: source verification and independent challenge reduce error but cannot guarantee correctness. Evidence may be incomplete or become outdated. Conditional likelihoods are analyst judgments; sensitivity ranges are not empirical confidence intervals. Re-run research when material evidence or the decision changes.', 9);
+  if (result.evidence?.references.length) { heading('7', 'References'); result.evidence.references.forEach((r) => {
+    ensure(70);
+    paragraph(`[${r.id}] ${r.title}. ${r.publisher}. Accessed ${new Date(r.accessedAt).toLocaleDateString('en-GB')}.`, 9, 3);
+    paragraph(r.url, 8.5, 13);
+  }); }
+  // Add footers once all content is paginated, including table continuation pages.
+  const count = pdf.getNumberOfPages();
+  for (let page = 1; page <= count; page++) {
+    pdf.setPage(page); frame();
+    pdf.setDrawColor(180); pdf.setLineWidth(0.4); pdf.line(m, h - 43, w - m, h - 43);
+    pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7); pdf.setTextColor(0);
+    const name = pdf.splitTextToSize(pdfSafe(result.request.organization), cw - 100)[0] as string;
+    pdf.text(`${name} | SDP`, m, h - 27);
+    pdf.text(`${page} / ${count}`, w - m, h - 27, { align: 'right' });
+  }
+  return pdf;
+}
+function weightLabel(s: ScenarioResult['scenarios'][number]) {
+  return `${s.probability.toFixed(1)}%${s.probabilityRange ? `\nSensitivity: ${s.probabilityRange[0].toFixed(1)}–${s.probabilityRange[1].toFixed(1)}%` : '\nUncalibrated legacy weight'}`;
+}
+function drawSdpMark(pdf: Pdf, x: number, y: number, scale: number) {
+  // Exact shared 38x34 brand geometry; three separate bars, one baseline.
+  const polygons = [[[2,30],[7.2,17],[13.2,17],[8,30]], [[11.2,30],[19.6,9],[25.6,9],[17.2,30]], [[20.4,30],[31.6,2],[37.6,2],[26.4,30]]];
+  pdf.setFillColor(0,0,0);
+  polygons.forEach((p) => pdf.lines(p.slice(1).map((v,i) => [v[0]-p[i][0],v[1]-p[i][1]]), x+p[0][0]*scale, y+p[0][1]*scale, [scale,scale], 'F', true));
+}
+function drawDecisionFlow(pdf: Pdf, x: number, y: number, width: number) {
+  const labels = ['Decision frame', 'Verified evidence', 'Challenge facts', 'Four scenarios', 'Robust actions'];
+  const gap = 11, bw = (width - gap * 4) / 5;
+  pdf.setDrawColor(0); pdf.setTextColor(0); pdf.setFont('helvetica','normal'); pdf.setFontSize(8); pdf.setLineWidth(0.6);
+  labels.forEach((text,i) => {
+    const px=x+i*(bw+gap); pdf.rect(px,y+9,bw,46);
+    pdf.text(pdf.splitTextToSize(text,bw-12),px+bw/2,y+28,{align:'center',lineHeightFactor:1.3});
+    if(i<4) { pdf.line(px+bw,y+32,px+bw+gap-2,y+32); pdf.line(px+bw+gap-5,y+29,px+bw+gap-2,y+32); pdf.line(px+bw+gap-5,y+35,px+bw+gap-2,y+32); }
   });
 }
-
+function drawStrategicField(pdf: Pdf, result: ScenarioResult, x: number, y: number, width: number, height: number) {
+  const axes=result.strategicAxes; const px=x+58, py=y+29, pw=width-116, ph=height-61;
+  pdf.setDrawColor(170); pdf.setLineWidth(0.4); pdf.rect(px,py,pw,ph);
+  pdf.line(px+pw/2,py,px+pw/2,py+ph); pdf.line(px,py+ph/2,px+pw,py+ph/2);
+  pdf.setTextColor(0); pdf.setFont('helvetica','normal'); pdf.setFontSize(8);
+  pdf.text(pdf.splitTextToSize(pdfSafe(axes.yHigh),width),x+width/2,y+10,{align:'center'});
+  pdf.text(pdf.splitTextToSize(pdfSafe(axes.yLow),width),x+width/2,y+height+10,{align:'center'});
+  pdf.text(pdf.splitTextToSize(pdfSafe(axes.xLow),pw/2-8),px,py+ph+14);
+  pdf.text(pdf.splitTextToSize(pdfSafe(axes.xHigh),pw/2-8),px+pw,py+ph+14,{align:'right'});
+  result.scenarios.forEach((s,i) => {
+    const cx=px+pw*s.coordinates.x/100,cy=py+ph*(1-s.coordinates.y/100);
+    pdf.setDrawColor(0); pdf.setFillColor(255,255,255); pdf.circle(cx,cy,9,'FD');
+    pdf.setFont('helvetica','bold'); pdf.text(String(i+1),cx,cy+3,{align:'center'});
+  });
+}
+function drawPlanningWeights(pdf: Pdf,result: ScenarioResult,x:number,y:number,width:number) {
+  const left=x+32,track=width-112;
+  pdf.setDrawColor(140); pdf.setLineWidth(0.4); pdf.setTextColor(0); pdf.setFont('helvetica','normal'); pdf.setFontSize(8);
+  [0,25,50,75,100].forEach((v) => { const px=left+track*v/100; pdf.line(px,y,px,y+99); pdf.text(String(v),px,y+112,{align:'center'}); });
+  result.scenarios.forEach((s,i) => {
+    const cy=y+12+i*24; pdf.text(`S${i+1}`,x,cy+3);
+    pdf.setFillColor(220,220,220); pdf.setDrawColor(0); pdf.rect(left,cy-4,track*s.probability/100,8,'FD');
+    if(s.probabilityRange) { const a=left+track*s.probabilityRange[0]/100,b=left+track*s.probabilityRange[1]/100; pdf.line(a,cy,b,cy); pdf.line(a,cy-7,a,cy+7); pdf.line(b,cy-7,b,cy+7); }
+    pdf.text(`${s.probability.toFixed(1)}%`,x+width,cy+3,{align:'right'});
+  });
+}
+function drawActionTimeline(pdf: Pdf,result:ScenarioResult,x:number,y:number,width:number) {
+  const timings=['now','next 90 days','this year'] as const, gap=18,bw=(width-gap*2)/3;
+  pdf.setTextColor(0); pdf.setDrawColor(0); pdf.setLineWidth(0.6); pdf.setFontSize(9);
+  timings.forEach((timing,i) => {
+    const px=x+i*(bw+gap); pdf.rect(px,y,bw,50);
+    pdf.setFont('helvetica','bold'); pdf.text(timing.toUpperCase(),px+8,y+16);
+    pdf.setFont('helvetica','normal');
+    const ids=result.robustActions.flatMap((a,j)=>a.timing===timing?[`A${j+1}`]:[]);
+    pdf.text(ids.length?ids.join(', '):'No action assigned',px+8,y+35);
+    if(i<2) pdf.line(px+bw,y+25,px+bw+gap,y+25);
+  });
+}
 async function renderMermaidPng() {
-  if (typeof window === 'undefined' || typeof document === 'undefined') return null;
+  if(typeof window==='undefined'||typeof document==='undefined') return null;
   try {
-    const { default: mermaid } = await import('mermaid');
-    mermaid.initialize({
-      startOnLoad: false,
-      securityLevel: 'strict',
-      theme: 'base',
-      themeVariables: mermaidThemeVariables,
-      flowchart: { curve: 'linear', htmlLabels: false, nodeSpacing: 42, rankSpacing: 62 },
-    });
-    const rendered = await mermaid.render(`pdf-flow-${crypto.randomUUID()}`, decisionFlowDefinition);
-    const blob = new Blob([rendered.svg], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+    const {default:mermaid}=await import('mermaid');
+    mermaid.initialize({startOnLoad:false,securityLevel:'strict',theme:'base',themeVariables:mermaidThemeVariables,flowchart:{htmlLabels:false,curve:'linear',nodeSpacing:24,rankSpacing:32}});
+    const rendered=await mermaid.render(`pdf-flow-${crypto.randomUUID()}`,decisionFlowDefinition);
+    const svg=new DOMParser().parseFromString(rendered.svg,'image/svg+xml').documentElement;
+    const vb=(svg.getAttribute('viewBox')??'0 0 1000 200').split(/\s+/).map(Number);
+    const width=vb[2],height=vb[3];
+    svg.setAttribute('width',String(width)); svg.setAttribute('height',String(height));
+    const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)],{type:'image/svg+xml'}));
     try {
-      const image = await loadImage(url);
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.max(1200, image.naturalWidth * 2);
-      canvas.height = Math.max(360, image.naturalHeight * 2);
-      const context = canvas.getContext('2d');
-      if (!context) return null;
-      context.fillStyle = '#ffffff';
-      context.fillRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(image, 0, 0, canvas.width, canvas.height);
-      return canvas.toDataURL('image/png');
-    } finally {
-      URL.revokeObjectURL(url);
-    }
-  } catch {
-    return null;
-  }
+      const img=await new Promise<HTMLImageElement>((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=url;});
+      const canvas=document.createElement('canvas'); canvas.width=Math.ceil(width*2); canvas.height=Math.ceil(height*2);
+      const ctx=canvas.getContext('2d');if(!ctx)return null;
+      ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      return {data:canvas.toDataURL('image/png'),width,height};
+    }finally{URL.revokeObjectURL(url);}
+  } catch { return null; }
 }
-
-function loadImage(url: string) {
-  return new Promise<HTMLImageElement>((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = reject;
-    image.src = url;
-  });
-}
-
-function pdfSafe(value: string) {
-  return value
-    .replace(/[\u2018\u2019]/g, "'")
-    .replace(/[\u201c\u201d]/g, '"')
-    .replace(/[\u2013\u2014]/g, '-')
-    .replace(/[\u2022\u00b7]/g, '-')
-    .replace(/\u2026/g, '...')
-    .replace(/\s+/g, ' ')
-    .trim();
+function pdfSafe(value:string) {
+  return value.replace(/[\u2018\u2019]/g,"'").replace(/[\u201c\u201d]/g,'"').replace(/[\u2013\u2014]/g,'-').replace(/[\u2022\u00b7]/g,'-').replace(/\u2026/g,'...').replace(/[^\S\n]+/g,' ').trim();
 }
 
 export async function exportScenarioPptx(result: ScenarioResult) {

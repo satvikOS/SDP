@@ -5,6 +5,7 @@ import {
   MissingProviderKeysError,
 } from '@/lib/ai/scenario-engine';
 import { scenarioRequestSchema } from '@/lib/scenario-schema';
+import { EvidenceQualityError } from '@/lib/ai/evidence';
 
 export const maxDuration = 300;
 
@@ -19,6 +20,9 @@ export async function POST(request: Request) {
       headers: { 'Cache-Control': 'no-store' },
     });
   } catch (error) {
+    if (error instanceof EvidenceQualityError) {
+      return Response.json({ error: error.message }, { status: 422 });
+    }
     if (error instanceof SyntaxError) {
       return Response.json({ error: 'Request body must be valid JSON.' }, { status: 400 });
     }

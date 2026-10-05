@@ -1,21 +1,22 @@
 'use client';
 
-import { ArrowRight, Check, LoaderCircle, RotateCcw } from 'lucide-react';
+import { ArrowRight, LoaderCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Form } from 'react-aria-components';
 
 import { getGeographies, industries, scenarioTemplates } from '@/data/taxonomy';
-import { scenarioResultSchema, type ScenarioResult } from '@/lib/scenario-schema';
+import { scenarioResultSchema } from '@/lib/scenario-schema';
 import { saveScenarioResult } from '@/lib/scenario-store';
 import { AriaButton, AriaComboField, AriaTextArea, HorizonSlider, type Option } from './ui/AriaControls';
-import { ReportActions } from './ReportActions';
-import { ScenarioResultView } from './ScenarioResultView';
 
 type CompanyResult = {
   name: string;
   ownership: 'public' | 'private';
   ticker?: string;
   exchange?: string;
+  listings?: { ticker: string; exchange: string }[];
+  listingCount?: number;
 };
 
 const currentYear = new Date().getFullYear();
@@ -38,10 +39,10 @@ const initialForm = {
 };
 
 export function ScenarioWorkbench() {
+  const router = useRouter();
   const [form, setForm] = useState(initialForm);
   const [companyOptions, setCompanyOptions] = useState<Option[]>([]);
   const [isSearchingCompanies, setIsSearchingCompanies] = useState(false);
-  const [result, setResult] = useState<ScenarioResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [stage, setStage] = useState(0);
@@ -76,11 +77,9 @@ export function ScenarioWorkbench() {
         const response = await fetch(`/api/companies?q=${encodeURIComponent(query)}`, { signal: controller.signal });
         const payload = await response.json() as { items: CompanyResult[] };
         setCompanyOptions(payload.items.map((company) => ({
-          id: company.ownership === 'public'
-            ? `${company.exchange}:${company.ticker}`
-            : `private:${company.name}`,
+          id: `${company.ownership}:${company.name}`,
           name: company.name,
-          description: company.ownership === 'public' ? company.exchange : undefined,
+          description: company.ownership === 'public' ? (company.listings ?? [{ exchange: company.exchange, ticker: company.ticker }]).slice(0, 2).map((l) => `${l.exchange}: ${l.ticker}`).join(' · ') + ((company.listingCount ?? 0) > 2 ? ` · +${company.listingCount! - 2} listings` : '') : undefined,
           badge: company.ownership === 'public' ? company.ticker : 'Private',
         })));
       } catch (caught) {
@@ -118,7 +117,6 @@ export function ScenarioWorkbench() {
     setIsSubmitting(true);
     setError(null);
     setStage(0);
-    setResult(null);
 
     try {
       const response = await fetch('/api/scenarios', {
@@ -141,29 +139,12 @@ export function ScenarioWorkbench() {
       }
       const parsed = scenarioResultSchema.parse(data);
       await saveScenarioResult(parsed);
-      setResult(parsed);
+      router.push(`/workspace/library/${parsed.id}?view=analysis`);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'The scenario could not be created.');
     } finally {
       setIsSubmitting(false);
     }
-  }
-
-  if (result) {
-    return (
-      <div className="result-workspace">
-        <div className="result-toolbar glass-panel">
-          <p><Check size={16} /> Saved to Library</p>
-          <div>
-            <ReportActions result={result} />
-            <AriaButton className="button quiet-button" onPress={() => setResult(null)}>
-              <RotateCcw size={16} /> New scenario
-            </AriaButton>
-          </div>
-        </div>
-        <ScenarioResultView result={result} />
-      </div>
-    );
   }
 
   return (

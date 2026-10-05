@@ -2,13 +2,13 @@ import type { ScenarioResult } from '@/lib/scenario-schema';
 
 type FieldScenario = Pick<ScenarioResult['scenarios'][number], 'title' | 'probability' | 'coordinates'>;
 
-export function StrategicField({ scenarios }: { scenarios: FieldScenario[] }) {
+export function StrategicField({ scenarios, axes }: { scenarios: FieldScenario[]; axes?: ScenarioResult['strategicAxes'] }) {
   return (
     <div className="strategic-field" aria-label="Scenario uncertainty field">
-      <span className="axis-label axis-top">Environment more permissive</span>
-      <span className="axis-label axis-bottom">Environment more constrained</span>
-      <span className="axis-label axis-left">Demand fragments</span>
-      <span className="axis-label axis-right">Demand concentrates</span>
+      <span className="axis-label axis-top">{axes?.yHigh ?? 'Higher structural change'}</span>
+      <span className="axis-label axis-bottom">{axes?.yLow ?? 'Lower structural change'}</span>
+      <span className="axis-label axis-left">{axes?.xLow ?? 'Constrained response'}</span>
+      <span className="axis-label axis-right">{axes?.xHigh ?? 'Adaptive response'}</span>
       <div className="axis axis-x" />
       <div className="axis axis-y" />
       {scenarios.map((scenario, index) => (

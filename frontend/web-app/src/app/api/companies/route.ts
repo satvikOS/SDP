@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import publicCompanies from '@/data/public-companies.json';
+import globalCompanies from '@/data/global-companies.json';
+import catalogSource from '@/data/company-catalog-source.json';
 import { privateCompanies } from '@/data/private-companies';
+import { deduplicateCompanies, type CatalogCompany } from '@/lib/company-catalog';
 
 type PublicCompany = {
   name: string;
@@ -10,7 +13,7 @@ type PublicCompany = {
   ownership: 'public';
 };
 
-type CompanyResult = PublicCompany | { name: string; ownership: 'private' };
+type CompanyResult = CatalogCompany;
 
 type GlobalQuote = {
   quoteType?: string;
@@ -21,17 +24,18 @@ type GlobalQuote = {
   exchange?: string;
 };
 
-const catalog = [
+const catalog = deduplicateCompanies([
   ...(publicCompanies as PublicCompany[]),
+  ...(globalCompanies as CatalogCompany[]),
   ...privateCompanies,
-].map((company) => ({ ...company, search: company.name.toLocaleLowerCase() }));
+]).map((company) => ({ ...company, search: `${company.name} ${company.listings?.map((l) => l.ticker).join(' ') ?? ''}`.toLocaleLowerCase() }));
 
 export async function GET(request: NextRequest) {
   const query = request.nextUrl.searchParams.get('q')?.trim() ?? '';
   const normalized = query.toLocaleLowerCase();
 
   if (normalized.length === 0) {
-    return NextResponse.json({ items: [], total: catalog.length });
+    return NextResponse.json({ items: [], total: catalog.length, catalog: catalogSource });
   }
 
   const localItems: CompanyResult[] = catalog
@@ -42,22 +46,12 @@ export async function GET(request: NextRequest) {
       return aScore - bScore || a.name.localeCompare(b.name);
     })
     .slice(0, 45)
-    .map((company) => company.ownership === 'public'
-      ? { name: company.name, ownership: company.ownership, ticker: company.ticker, exchange: company.exchange }
-      : { name: company.name, ownership: company.ownership });
+    .map((company) => ({ name: company.name, ownership: company.ownership, ticker: company.ticker, exchange: company.exchange, listings: company.listings }));
 
   const globalItems = normalized.length > 1 ? await searchGlobalListings(query) : [];
-  const unique = new Map<string, CompanyResult>();
-  [...localItems, ...globalItems].forEach((company) => {
-    const key = company.ownership === 'public'
-      ? `${company.exchange}:${company.ticker}`.toLocaleLowerCase()
-      : `private:${company.name}`.toLocaleLowerCase();
-    if (!unique.has(key)) unique.set(key, company);
-  });
-
-  const items = [...unique.values()]
+  const items = deduplicateCompanies([...globalItems, ...localItems])
     .toSorted((a, b) => rank(a.name, normalized) - rank(b.name, normalized) || a.name.localeCompare(b.name))
-    .slice(0, 60);
+    .slice(0, 60).map((company) => ({ ...company, listingCount: company.listings?.length ?? 0, listings: company.listings?.slice(0, 5) }));
 
   return NextResponse.json(
     { items, total: catalog.length },

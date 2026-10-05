@@ -1,0 +1,9 @@
+{
+  "source": "https://github.com/JerBouma/FinanceDatabase",
+  "revision": "b788c012e3d8d026abd799e3748580777d9b1647",
+  "retrievedAt": "2026-10-05T00:36:24.620Z",
+  "globalIssuers": 60613,
+  "globalListings": 102165,
+  "uniquePublicIssuers": 62467,
+  "note": "Directory snapshot, not verified investment evidence. Live lookup supplements the directory; listing status may change."
+}

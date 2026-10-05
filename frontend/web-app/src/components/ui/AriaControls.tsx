@@ -14,6 +14,7 @@ import {
   Popover,
   Slider,
   SliderOutput,
+  NumberField,
   SliderThumb,
   SliderTrack,
   Text,
@@ -155,7 +156,7 @@ export function HorizonSlider({ value, onChange, min, max }: {
   max: number;
 }) {
   return (
-    <Slider
+    <div className="horizon-control"><Slider
       className="timeline-slider"
       minValue={min}
       maxValue={max}
@@ -165,7 +166,7 @@ export function HorizonSlider({ value, onChange, min, max }: {
     >
       <div className="timeline-heading">
         <Label>Planning horizon</Label>
-        <SliderOutput>{({ state }) => `${state.getThumbValue(0)}`}</SliderOutput>
+        <SliderOutput>{({ state }) => `${state.getThumbValue(0)} · ${state.getThumbValue(0) - new Date().getFullYear()} years`}</SliderOutput>
       </div>
       <SliderTrack className="timeline-track">
         {({ state }) => (
@@ -177,6 +178,12 @@ export function HorizonSlider({ value, onChange, min, max }: {
       </SliderTrack>
       <div className="timeline-years" aria-hidden="true"><span>{min}</span><span>{Math.round((min + max) / 2)}</span><span>{max}</span></div>
     </Slider>
+    <div className="horizon-options">
+      <NumberField className="horizon-year" aria-label="Exact horizon year" value={value} minValue={min} maxValue={max} step={1} formatOptions={{ useGrouping: false }} onChange={(year) => { if (Number.isFinite(year)) onChange(year); }}>
+        <Group><Button slot="decrement" aria-label="Previous year">−</Button><Input /><Button slot="increment" aria-label="Next year">+</Button></Group>
+      </NumberField>
+      <div aria-label="Common planning horizons">{[5,10,20].map((years) => <Button key={years} className="horizon-preset" data-selected={value === new Date().getFullYear()+years} onPress={() => onChange(Math.min(max, Math.max(min, new Date().getFullYear()+years)))}>{years} years</Button>)}</div>
+    </div></div>
   );
 }
 

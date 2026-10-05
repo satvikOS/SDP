@@ -4,6 +4,7 @@ import { ArrowDownRight, ArrowUpRight, Minus, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react';
 
 import { AriaButton, AriaTextField } from './ui/AriaControls';
+import { ConfirmButton } from './ui/ConfirmButton';
 
 type Signal = {
   id: string;
@@ -61,7 +62,7 @@ export function SignalsBoard() {
               <select value={signal.direction} onChange={(event) => persist(signals.map((item) => item.id === signal.id ? { ...item, direction: event.target.value as Signal['direction'] } : item))} aria-label={`Direction for ${signal.name}`}>
                 <option>Rising</option><option>Stable</option><option>Falling</option>
               </select>
-              <AriaButton aria-label={`Delete ${signal.name}`} onPress={() => persist(signals.filter((item) => item.id !== signal.id))}><Trash2 size={16} /></AriaButton>
+              <ConfirmButton label={`Delete ${signal.name}`} title="Delete this signal?" description={`“${signal.name}” and its observation will be permanently removed.`} confirmLabel="Delete signal" onConfirm={() => persist(signals.filter((item) => item.id !== signal.id))}><Trash2 size={16} /></ConfirmButton>
             </article>
           );
         })}

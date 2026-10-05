@@ -11,7 +11,7 @@ export function ScenarioResultView({ result }: { result: ScenarioResult }) {
         <div>
           <span className="eyebrow">Decision brief</span>
           <h2>{result.briefTitle}</h2>
-          <p>{result.executiveSummary}</p>
+          <p><CitedText text={result.executiveSummary} /></p>
         </div>
         <dl className="brief-meta">
           <div>
@@ -35,9 +35,10 @@ export function ScenarioResultView({ result }: { result: ScenarioResult }) {
             <span className="eyebrow">Scenario field</span>
             <h2>Four plausible operating environments</h2>
           </div>
-          <p>Planning weights are not forecasts. Use them to test exposure.</p>
+          <p>Conditional weights, not forecasts. Use them to test exposure.</p>
         </div>
-        <StrategicField scenarios={result.scenarios} />
+        <StrategicField scenarios={result.scenarios} axes={result.strategicAxes} />
+        <details className="weight-method"><summary>Weight calculation and limits</summary><p>{result.probabilityMethod ?? 'This legacy analysis uses uncalibrated planning weights, not verified probabilities.'}</p></details>
       </section>
 
       <section className="glass-panel decision-flow-panel">
@@ -58,11 +59,11 @@ export function ScenarioResultView({ result }: { result: ScenarioResult }) {
               <span>{String(index + 1).padStart(2, '0')}</span>
               <div>
                 <h3>{scenario.title}</h3>
-                <p>{scenario.thesis}</p>
+                <p><CitedText text={scenario.thesis} /></p>
               </div>
-              <strong>{scenario.probability}%</strong>
+              <strong>{scenario.probability.toFixed(1)}%{scenario.probabilityRange && <small>{scenario.probabilityRange[0].toFixed(1)}–{scenario.probabilityRange[1].toFixed(1)}%</small>}</strong>
             </header>
-            <p className="scenario-narrative">{scenario.narrative}</p>
+            <p className="scenario-narrative"><CitedText text={scenario.narrative} /></p>
             <div className="scenario-columns">
               <div>
                 <h4><Radar size={15} /> Watch for</h4>
@@ -91,7 +92,7 @@ export function ScenarioResultView({ result }: { result: ScenarioResult }) {
             {result.robustActions.map((item) => (
               <li key={item.action}>
                 <span>{item.timing}</span>
-                <div><strong>{item.action}</strong><p>{item.rationale}</p></div>
+                <div><strong>{item.action}</strong><p><CitedText text={item.rationale} /></p></div>
               </li>
             ))}
           </ol>
@@ -102,10 +103,22 @@ export function ScenarioResultView({ result }: { result: ScenarioResult }) {
           <ul>{result.criticalUnknowns.map((item) => <li key={item}>{item}</li>)}</ul>
           <div className="dissent-note">
             <strong>Alternative interpretation</strong>
-            <p>{result.dissent}</p>
+            <p><CitedText text={result.dissent} /></p>
           </div>
         </div>
       </section>
+      <section className="glass-panel evidence-panel">
+        <div className="panel-heading"><div><span className="eyebrow">Evidence</span><h2>Sources and verification</h2></div></div>
+        {result.evidence ? <>
+          <p>{result.evidence.methodology}</p>
+          <details><summary>{result.evidence.claims.filter((c) => c.verdict === 'accepted').length} accepted claims · {result.evidence.claims.filter((c) => c.verdict !== 'accepted').length} excluded from factual support</summary><ol className="evidence-claims">{result.evidence.claims.map((claim) => <li key={claim.id}><strong>Claim {claim.id} · {claim.verdict}</strong><p>{claim.verdict === 'accepted' ? <CitedText text={`${claim.text} ${claim.sourceIds.map((id) => `[${id}]`).join('')}`} /> : claim.reason}</p></li>)}</ol></details>
+          <h3>References</h3><ol className="reference-list">{result.evidence.references.map((source) => <li key={source.id} id={`reference-${source.id}`}><span>[{source.id}]</span><div><a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a><small>{source.publisher} · Accessed {new Date(source.accessedAt).toLocaleDateString()}</small></div></li>)}</ol>
+        </> : <p>This earlier analysis predates source verification. Its factual assertions have not been independently checked. Generate a new analysis for cited evidence.</p>}
+      </section>
     </div>
   );
+}
+
+function CitedText({ text }: { text: string }) {
+  return <>{text.split(/(\[\d+\])/g).map((part, index) => /^\[\d+\]$/.test(part) ? <a key={index} className="inline-citation" href={`#reference-${part.slice(1, -1)}`} aria-label={`Reference ${part.slice(1,-1)}`}>{part}</a> : part)}</>;
 }
