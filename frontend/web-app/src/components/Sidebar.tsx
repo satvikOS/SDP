@@ -8,11 +8,13 @@ import {
   Gauge,
   GitCompareArrows,
   LayoutTemplate,
+  MoreHorizontal,
   Radar,
   Waypoints,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Button, Menu, MenuItem, MenuTrigger, Popover } from 'react-aria-components';
 
 import { Brand } from './Brand';
 
@@ -29,6 +31,8 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const moreNavigation = [...navigation.slice(4), { name: 'Method', href: '/workspace/method', icon: BookOpenText }];
+  const moreActive = moreNavigation.some((item) => pathname.startsWith(item.href));
 
   return (
     <>
@@ -38,25 +42,35 @@ export function Sidebar() {
           {navigation.map((item) => {
             const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
             return (
-              <Link data-active={active} href={item.href} key={item.href}>
+              <Link data-active={active} aria-current={active ? 'page' : undefined} href={item.href} key={item.href}>
                 <item.icon size={18} strokeWidth={1.8} aria-hidden="true" />
                 <span>{item.name}</span>
               </Link>
             );
           })}
         </nav>
-        <Link className="method-link" data-active={pathname === '/workspace/method'} href="/workspace/method"><BookOpenText size={17} /> Method</Link>
+        <Link className="method-link" data-active={pathname === '/workspace/method'} aria-current={pathname === '/workspace/method' ? 'page' : undefined} href="/workspace/method"><BookOpenText size={17} aria-hidden="true" /> Method</Link>
       </aside>
 
       <nav className="mobile-nav" aria-label="Mobile workspace navigation">
-        {navigation.slice(0, 5).map((item) => {
+        {navigation.slice(0, 4).map((item) => {
           const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
           return (
-            <Link data-active={active} href={item.href} key={item.href} aria-label={item.name}>
+            <Link data-active={active} aria-current={active ? 'page' : undefined} href={item.href} key={item.href} aria-label={item.name}>
               <item.icon size={19} aria-hidden="true" />
             </Link>
           );
         })}
+        <MenuTrigger>
+          <Button className="mobile-more" data-active={moreActive} aria-label="More workspace navigation"><MoreHorizontal size={20} aria-hidden="true" /></Button>
+          <Popover className="action-popover" placement="top end">
+            <Menu className="action-menu" aria-label="More workspace pages">
+              {moreNavigation.map((item) => <MenuItem href={item.href} key={item.href} textValue={item.name}>
+                <item.icon size={17} aria-hidden="true" /><span>{item.name}</span>
+              </MenuItem>)}
+            </Menu>
+          </Popover>
+        </MenuTrigger>
       </nav>
     </>
   );
