@@ -40,6 +40,8 @@ export function DocumentStudio({ initialFile = null, allowUpload = true }: Docum
   const [document, setDocument] = useState<DocumentState | null>(null);
   const [page, setPage] = useState(1);
   const [zoom, setZoom] = useState(1);
+  const [availableWidth, setAvailableWidth] = useState(0);
+  const [pdfPageWidth, setPdfPageWidth] = useState(595.28);
   const [isLoading, setIsLoading] = useState(false);
   const [isPageRendering, setIsPageRendering] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -93,6 +95,19 @@ export function DocumentStudio({ initialFile = null, allowUpload = true }: Docum
   useEffect(() => () => releaseDocument(resourceRef.current), []);
 
   useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage || !document) return;
+    const measure = () => {
+      const style = window.getComputedStyle(stage);
+      setAvailableWidth(Math.max(0, stage.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight) - 2));
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, [document]);
+
+  useEffect(() => {
     if (document?.type !== 'pdf' || !canvasRef.current) return;
     let active = true;
     let renderTask: { cancel: () => void; promise: Promise<unknown> } | null = null;
@@ -100,14 +115,16 @@ export function DocumentStudio({ initialFile = null, allowUpload = true }: Docum
       setIsPageRendering(true);
       const pdfPage = await document.pdf.getPage(page);
       if (!active || !canvasRef.current) return;
-      const viewport = pdfPage.getViewport({ scale: 1.45 });
+      const renderScale = Math.min(2.5, Math.max(1.5, window.devicePixelRatio || 1));
+      const viewport = pdfPage.getViewport({ scale: renderScale });
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
       if (!context) return;
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-      canvas.style.width = `${viewport.width / 1.45}px`;
-      canvas.style.height = `${viewport.height / 1.45}px`;
+      setPdfPageWidth(viewport.width / renderScale);
+      canvas.style.width = `${viewport.width / renderScale}px`;
+      canvas.style.height = `${viewport.height / renderScale}px`;
       context.save();
       context.fillStyle = '#ffffff';
       context.fillRect(0, 0, canvas.width, canvas.height);
@@ -146,6 +163,8 @@ export function DocumentStudio({ initialFile = null, allowUpload = true }: Docum
   const pageCount = document?.type === 'pdf'
     ? document.pdf.numPages
     : document?.presentation.slides.length ?? 0;
+  const nativeWidth = document?.type === 'pptx' ? 960 : pdfPageWidth;
+  const fitScale = availableWidth > 0 ? Math.min(1, availableWidth / nativeWidth) : 1;
 
   useEffect(() => {
     if (!document) return;
@@ -194,10 +213,10 @@ export function DocumentStudio({ initialFile = null, allowUpload = true }: Docum
           <span>{page} / {pageCount}</span>
           <Button onPress={() => setPage((value) => Math.min(pageCount, value + 1))} isDisabled={page === pageCount} aria-label="Next page"><ChevronRight size={17} /></Button>
           <i />
-          <Button onPress={() => setZoom((value) => Math.max(0.6, value - 0.15))} aria-label="Zoom out"><ZoomOut size={17} /></Button>
-          <span>{Math.round(zoom * 100)}%</span>
-          <Button onPress={() => setZoom((value) => Math.min(2, value + 0.15))} aria-label="Zoom in"><ZoomIn size={17} /></Button>
-          <Button onPress={() => setZoom(1)} isDisabled={zoom === 1} aria-label="Reset zoom"><RotateCcw size={16} /></Button>
+          <Button onPress={() => setZoom((value) => Math.max(0.6, value - 0.15))} isDisabled={zoom <= 0.6} aria-label="Zoom out"><ZoomOut size={17} /></Button>
+          <span>{Math.round(zoom * fitScale * 100)}%</span>
+          <Button onPress={() => setZoom((value) => Math.min(2, value + 0.15))} isDisabled={zoom >= 2} aria-label="Zoom in"><ZoomIn size={17} /></Button>
+          <Button onPress={() => setZoom(1)} isDisabled={zoom === 1} aria-label="Fit page to width"><RotateCcw size={16} /></Button>
           <Button onPress={() => stageRef.current?.requestFullscreen()} aria-label="Enter fullscreen"><Expand size={17} /></Button>
           <a href={document.url} download={document.name} aria-label="Download original"><Download size={17} /></a>
           {allowUpload ? (
@@ -220,7 +239,7 @@ export function DocumentStudio({ initialFile = null, allowUpload = true }: Docum
         </aside>
         <div className="document-stage-wrap" ref={stageRef} aria-busy={isPageRendering}>
           {isPageRendering ? <span className="page-render-status" role="status">Rendering page {page}</span> : null}
-          <div className="document-stage" style={{ zoom }}>
+          <div className="document-stage" style={{ zoom: zoom * fitScale }}>
             {document.type === 'pdf'
               ? <canvas ref={canvasRef} aria-label={`PDF page ${page} of ${pageCount}`} />
               : <div className="pptx-render" ref={pptxRef} role="img" aria-label={`Slide ${page}`} />}

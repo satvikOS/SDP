@@ -249,7 +249,10 @@ async function renderMermaidPng() {
       ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);
       return {data:canvas.toDataURL('image/png'),width,height};
     }finally{URL.revokeObjectURL(url);}
-  } catch { return null; }
+  } catch (error) {
+    console.warn('PDF process diagram used its vector fallback', { name: error instanceof Error ? error.name : 'UnknownError', message: error instanceof Error ? error.message.slice(0, 200) : 'Diagram rasterization failed' });
+    return null;
+  }
 }
 function pdfSafe(value:string) {
   return value.replace(/[\u2018\u2019]/g,"'").replace(/[\u201c\u201d]/g,'"').replace(/[\u2013\u2014]/g,'-').replace(/[\u2022\u00b7]/g,'-').replace(/\u2026/g,'...').replace(/[^\S\n]+/g,' ').trim();
