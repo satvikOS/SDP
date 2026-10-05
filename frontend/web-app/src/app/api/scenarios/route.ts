@@ -13,6 +13,22 @@ export async function POST(request: Request) {
   try {
     const payload = await request.json();
     const input = scenarioRequestSchema.parse(payload);
+    if (request.headers.get('accept')?.includes('application/x-ndjson')) {
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        async start(controller) {
+          const send = (value: unknown) => controller.enqueue(encoder.encode(`${JSON.stringify(value)}\n`));
+          try {
+            const result = await generateScenarioSet(input, (stage) => send({ event: 'stage', stage }));
+            send({ event: 'result', result });
+          } catch (error) {
+            console.error('Scenario stream failed', { name: error instanceof Error ? error.name : 'UnknownError', message: error instanceof Error ? error.message : 'Unknown failure' });
+            send({ event: 'error', error: error instanceof EvidenceQualityError ? error.message : error instanceof MissingProviderKeysError ? 'The scenario service is not configured for this deployment.' : 'Scenario generation failed. No report was saved; please retry.' });
+          } finally { controller.close(); }
+        },
+      });
+      return new Response(stream, { headers: { 'Content-Type': 'application/x-ndjson', 'Cache-Control': 'no-store, no-transform', 'X-Content-Type-Options': 'nosniff' } });
+    }
     const result = await generateScenarioSet(input);
 
     return Response.json(result, {

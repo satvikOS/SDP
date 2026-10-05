@@ -52,10 +52,10 @@ export async function buildScenarioPdf(result: ScenarioResult) {
     }
     y += after;
   }
-  function heading(number: string, title: string) {
+  function heading(number: string, title: string, followingSpace = 95) {
     pdf.setFont('helvetica', 'bold'); pdf.setFontSize(15);
     const lines = pdf.splitTextToSize(pdfSafe(`${number}  ${title}`), cw) as string[];
-    ensure(lines.length * 21 + 65);
+    ensure(lines.length * 21 + followingSpace);
     y += 10; pdf.setFont('helvetica', 'bold'); pdf.setFontSize(15); pdf.setTextColor(0);
     pdf.text(lines, m, y, {lineHeightFactor:1.4});
     y += (lines.length-1)*21+10;
@@ -98,11 +98,12 @@ export async function buildScenarioPdf(result: ScenarioResult) {
   label('Client context (not independently verified)', result.request.strategicContext);
   paragraph('Purpose: explore conditional decision environments, identify testable assumptions and choose robust actions. This is not a forecast or an assurance of future outcomes.', 9);
 
-  heading('1', 'Architecture and scenario set');
-  ensure(145); caption('Figure', 'Decision logic — framing, evidence and response');
   const flow = await renderMermaidPng();
+  const flowHeight = flow ? Math.min(175, cw * flow.height / flow.width) : 70;
+  heading('1', 'Architecture and scenario set', flowHeight + 60);
+  ensure(flowHeight + 46); caption('Figure', 'Decision logic — framing, evidence and response');
   if (flow) {
-    const fh = Math.min(104, cw * flow.height / flow.width);
+    const fh = flowHeight;
     const fw = fh * flow.width / flow.height;
     pdf.addImage(flow.data, 'PNG', m + (cw - fw) / 2, y, fw, fh); y += fh + 15;
   } else { drawDecisionFlow(pdf, m, y, cw); y += 85; }

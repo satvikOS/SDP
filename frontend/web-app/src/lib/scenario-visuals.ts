@@ -1,9 +1,9 @@
 export const decisionFlowDefinition = `flowchart LR
-  A["Decision frame"] --> B["Verified evidence"]
-  B --> F["Independent challenge"]
-  F --> C["Four conditional scenarios"]
-  C --> D["Robust actions"]
-  C --> E["Observable signposts"]
+  A["Frame decision"] --> B["Verify evidence"]
+  B --> F["Challenge claims"]
+  F --> C["Build scenarios"]
+  C --> D["Test actions"]
+  C --> E["Monitor signposts"]
   E -. "refresh assumptions" .-> A`;
 
 export const mermaidThemeVariables = {

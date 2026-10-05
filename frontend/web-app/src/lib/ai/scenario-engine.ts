@@ -27,7 +27,7 @@ const reviewSchema = z.object({
 });
 const auditSchema = z.object({ approved: z.boolean(), unsupportedClaims: z.array(z.string().max(350)).max(12), citationErrors: z.array(z.string().max(250)).max(12), reasoning: z.string().max(700) });
 
-export async function generateScenarioSet(input: ScenarioRequest): Promise<ScenarioResult> {
+export async function generateScenarioSet(input: ScenarioRequest, onProgress?: (stage: number) => void): Promise<ScenarioResult> {
   const missing = REQUIRED_KEYS.filter((key) => !process.env[key]);
   if (missing.length) throw new MissingProviderKeysError([...missing]);
   const google = createGoogle({ apiKey: process.env.GEMINI_API! });
@@ -43,6 +43,7 @@ export async function generateScenarioSet(input: ScenarioRequest): Promise<Scena
   };
 
   let started = Date.now();
+  onProgress?.(0);
   const research = await generateText({
     model: google(MODEL_CONFIG.google), system, tools: { google_search: google.tools.googleSearch({}) },
     maxOutputTokens: 3600, abortSignal: signal(65_000),
@@ -54,6 +55,7 @@ export async function generateScenarioSet(input: ScenarioRequest): Promise<Scena
   if (references.length < 4 || new Set(references.map((r) => r.publisher)).size < 2) throw new EvidenceQualityError('Research did not yield enough accessible, independent sources. No unverified report was saved. Please retry.');
 
   started = Date.now();
+  onProgress?.(1);
   const challenged = await generateText({
     model: xai.responses(MODEL_CONFIG.xai), system,
     tools: { web_search: xai.tools.webSearch({}) }, providerOptions: { xai: { reasoningEffort: 'low' } },
@@ -73,6 +75,7 @@ export async function generateScenarioSet(input: ScenarioRequest): Promise<Scena
   const evidence = { references: admittedReferences, claims, searchedAt: new Date().toISOString(), methodology: 'Live source discovery; accessible-URL verification; independent source admissibility and claim challenge; cited synthesis; independent final fact audit. Rejected and uncertain claims cannot determine scenario weights. This process reduces errors but does not guarantee that every source or judgment is correct.' };
   const context = `BRIEF\n${brief}\nVERIFIED REFERENCES\n${JSON.stringify(admittedReferences)}\nACCEPTED FACTS\n${JSON.stringify(accepted)}\nCOUNTERARGUMENT\n${challenged.output.argument}`;
   const synthesize = async (feedback = '') => {
+    onProgress?.(2);
     const stageStarted = Date.now();
     const response = await generateText({
       model: openai.responses(MODEL_CONFIG.openai), system,
@@ -86,6 +89,7 @@ export async function generateScenarioSet(input: ScenarioRequest): Promise<Scena
     return response.output;
   };
   const audit = async (draft: z.infer<typeof scenarioDraftSchema>) => {
+    onProgress?.(3);
     const stageStarted = Date.now();
     const response = await generateText({
       model: google(MODEL_CONFIG.google), system, tools: { google_search: google.tools.googleSearch({}) },

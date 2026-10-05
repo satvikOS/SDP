@@ -21,11 +21,11 @@ type CompanyResult = {
 
 const currentYear = new Date().getFullYear();
 const progressStages = [
-  'Reading the decision and constraints',
-  'Testing the underlying assumptions',
-  'Mapping drivers and observable signals',
-  'Developing four distinct environments',
-  'Testing actions across the scenario set',
+  'Researching sources and verifying access',
+  'Challenging sources and factual claims',
+  'Building cited scenario alternatives',
+  'Auditing facts, citations and reasoning',
+  'Saving the analysis and PDF to Library',
 ];
 
 const initialForm = {
@@ -54,15 +54,6 @@ export function ScenarioWorkbench() {
       window.localStorage.removeItem('sdp.selected-template');
     }
   }, []);
-
-  useEffect(() => {
-    if (!isSubmitting) return;
-    const timer = window.setInterval(
-      () => setStage((value) => Math.min(value + 1, progressStages.length - 1)),
-      7_000,
-    );
-    return () => window.clearInterval(timer);
-  }, [isSubmitting]);
 
   useEffect(() => {
     const query = form.organization.trim();
@@ -121,7 +112,7 @@ export function ScenarioWorkbench() {
     try {
       const response = await fetch('/api/scenarios', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/x-ndjson' },
         body: JSON.stringify({
           ...form,
           knownUncertainties: form.knownUncertainties
@@ -130,14 +121,32 @@ export function ScenarioWorkbench() {
             .filter(Boolean),
         }),
       });
-      const data: unknown = await response.json();
       if (!response.ok) {
+        const data: unknown = await response.json();
         const message = typeof data === 'object' && data && 'error' in data
           ? String(data.error)
           : 'The scenario could not be created.';
         throw new Error(message);
       }
+      if (!response.body) throw new Error('The scenario response was interrupted. Please retry.');
+      const reader = response.body.getReader(), decoder = new TextDecoder();
+      let buffer = '', data: unknown;
+      while (true) {
+        const { value, done } = await reader.read();
+        buffer += decoder.decode(value, { stream: !done });
+        const lines = buffer.split('\n'); buffer = lines.pop() ?? '';
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const message = JSON.parse(line) as { event: string; stage?: number; result?: unknown; error?: string };
+          if (message.event === 'stage' && typeof message.stage === 'number') setStage(message.stage);
+          if (message.event === 'result') data = message.result;
+          if (message.event === 'error') throw new Error(message.error ?? 'The report could not be verified.');
+        }
+        if (done) break;
+      }
+      if (!data) throw new Error('The response ended before a verified report was returned. Please retry.');
       const parsed = scenarioResultSchema.parse(data);
+      setStage(4);
       await saveScenarioResult(parsed);
       router.push(`/workspace/library/${parsed.id}?view=analysis`);
     } catch (caught) {
