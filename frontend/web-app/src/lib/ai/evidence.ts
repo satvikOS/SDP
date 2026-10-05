@@ -1,9 +1,20 @@
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
 import type { EvidenceReference, EvidenceReview, ScenarioResult } from '../scenario-schema';
+import { evidenceAuditSchema } from '../scenario-schema';
 
 export class EvidenceQualityError extends Error {
   constructor(message: string) { super(message); this.name = 'EvidenceQualityError'; }
+}
+
+export function parseAuditDecision(text: string) {
+  const blocks = [...text.matchAll(/<audit_decision>([\s\S]*?)<\/audit_decision>/g)];
+  if (blocks.length !== 1 || !text.trim().endsWith('</audit_decision>')) throw new EvidenceQualityError('The grounded audit did not return one complete decision block. No unverified report was saved.');
+  try {
+    return evidenceAuditSchema.parse(JSON.parse(blocks[0][1].trim()));
+  } catch {
+    throw new EvidenceQualityError('The grounded audit decision was incomplete or invalid. No unverified report was saved.');
+  }
 }
 
 type ResearchTrace = { sources: unknown[]; toolCalls: { toolName?: string; providerExecuted?: boolean }[]; providerMetadata?: { google?: unknown } };

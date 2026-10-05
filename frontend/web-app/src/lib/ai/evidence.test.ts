@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sample } from '../scenario-fixtures.test-data';
-import { assessEvidenceReview, assertCitations, canonicalUrl, hasLiveResearch, mergeEvidenceSources } from './evidence';
+import { assessEvidenceReview, assertCitations, canonicalUrl, hasLiveResearch, mergeEvidenceSources, parseAuditDecision } from './evidence';
 import { evidenceReviewSchema, type EvidenceReview, type ScenarioResult } from '../scenario-schema';
 function citedFixture(): ScenarioResult {
   return { ...sample, executiveSummarySourceIds: [1], dissentSourceIds: [1],
@@ -10,6 +10,14 @@ function citedFixture(): ScenarioResult {
     evidence: { searchedAt: new Date().toISOString(), methodology: 'Test fixture only.', references: [1,2,3,4].map((id) => ({ id, title: 'Test reference', publisher: 'Test', url: `https://example.org/${id}`, accessedAt: new Date().toISOString() })), claims: [{ id: 1, text: 'Test claim only, not real evidence.', sourceIds: [1], supportingText: 'Test fixture.', verdict: 'accepted', reason: 'Test only.' }] } };
 }
 describe('reference gate', () => {
+  it('parses only a complete unambiguous grounded audit receipt', () => {
+    const block = '<audit_decision>{"approved":true,"unsupportedClaims":[],"citationErrors":[],"reasoning":"A test verdict, not real research."}</audit_decision>';
+    expect(parseAuditDecision(`Hypothetical audit findings.\n${block}`).approved).toBe(true);
+    expect(() => parseAuditDecision('Approved, trust me.')).toThrow();
+    expect(() => parseAuditDecision(`${block}${block}`)).toThrow();
+    expect(() => parseAuditDecision(block.replace('"approved":true','"approved":"yes"'))).toThrow();
+    expect(() => parseAuditDecision(`${block} Unvalidated extra text.`)).toThrow();
+  });
   it('requires real provider search or retrieval traces, not a model assertion', () => {
     const empty = {sources:[], toolCalls:[]};
     expect(hasLiveResearch(empty)).toBe(false);
