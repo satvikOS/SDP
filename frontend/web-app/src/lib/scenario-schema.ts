@@ -75,10 +75,20 @@ export const referenceSchema = z.object({
   accessedAt: z.string(),
 });
 
-// Providers accept homogeneous array items, not tuple-style JSON Schema.
+// Keep backwards-compatible defaults in saved records, not in provider inputs:
+// strict structured output requires every property to be explicitly required.
 // Sensitivity bounds are computed on the server and never requested from an LLM.
+const requiredSourceIds = sourceIds.unwrap().min(1);
 export const scenarioGenerationSchema = scenarioDraftSchema.extend({
-  scenarios: z.array(scenarioDraftSchema.shape.scenarios.element.omit({ probabilityRange: true })).length(4),
+  executiveSummarySourceIds: requiredSourceIds,
+  dissentSourceIds: requiredSourceIds,
+  strategicAxes: scenarioDraftSchema.shape.strategicAxes.unwrap(),
+  drivers: z.array(scenarioDraftSchema.shape.drivers.element.extend({ sourceIds: requiredSourceIds })).min(4).max(8),
+  scenarios: z.array(scenarioDraftSchema.shape.scenarios.element.omit({ probabilityRange: true }).extend({
+    sourceIds: requiredSourceIds,
+    evidenceFactors: scenarioDraftSchema.shape.scenarios.element.shape.evidenceFactors.unwrap().min(3).max(6),
+  })).length(4),
+  robustActions: z.array(scenarioDraftSchema.shape.robustActions.element.extend({ sourceIds: requiredSourceIds })).min(3).max(6),
 });
 
 export const evidenceClaimSchema = z.object({

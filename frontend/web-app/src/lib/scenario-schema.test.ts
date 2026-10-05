@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { z } from 'zod';
+import { zodSchema } from 'ai';
 
 import {
   normalizeProbabilities,
@@ -32,12 +32,17 @@ const baseScenario = {
 
 describe('scenario schemas', () => {
   it('does not request server-calculated tuples from structured-output providers', () => {
-    const schema = z.toJSONSchema(scenarioGenerationSchema, { target: 'draft-7' });
+    // AI SDK sends the input schema, where Zod defaults make properties optional.
+    const schema = zodSchema(scenarioGenerationSchema).jsonSchema;
     expect(JSON.stringify(schema)).not.toContain('probabilityRange');
     const inspect = (value: unknown) => {
       if (value && typeof value === 'object') {
         const object = value as Record<string,unknown>;
         if ('items' in object) expect(Array.isArray(object.items)).toBe(false);
+        if (object.type === 'object' && object.properties) {
+          expect([...(object.required as string[])].sort()).toEqual(Object.keys(object.properties).sort());
+          expect(object.additionalProperties).toBe(false);
+        }
         Object.values(object).forEach(inspect);
       }
     };
